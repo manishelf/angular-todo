@@ -1,6 +1,6 @@
 
 <div class='w-full flex flex-col-reverse md:flex-row h-full'>
-  <div class='bg-emerald-300 border-r-2 border-blue-400 rotate-180 flex-2/12 resize overflow-auto'>
+  <div class='bg-emerald-300 border-r-2 border-blue-400 rotate-180 flex-4/12 resize overflow-auto'>
     <div class="rotate-180">
       <div class='p-5'>
         <h2>Instructions</h2>
@@ -30,11 +30,12 @@
           toggle weekends
         </label>
       </div>
-      <div class='p-5'>
+      <div class='p-5 overflow-auto'>
         <h2>All Events ({{currentEvents().length}})</h2>
         <ul>
           <li *ngFor='let event of currentEvents()'>
-            <b>{{event.startStr}}</b>
+            <b>{{event.startStr.split('.')[0]}}</b>
+            <br>
             <i>{{event.title}}</i>
           </li>
         </ul>

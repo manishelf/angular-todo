@@ -1,20 +1,23 @@
 <div class="h-full scroll-auto overflow-scroll justify-center">
     <div class="w-full flex flex-col justify-center">
-        <span *ngIf="fromBin" class=" flex-auto text-center text-3xl m-2 text-amber-700">Local recycle bin
-            <a routerLink="/bin/clear" routerLinkActive="active" ariaCurrentWhenActive="page" title="clear the recycle bin"> clear </a>
-        </span>
-        <span *ngIf="itemList.length === 0"  class="text-center text-5xl text-emerald-700">
-            <div class="flex-auto">No Items Yet!</div>
-            <ul class="text-2xl text-justify m-8 flex-auto w-fit m-auto">
-                <div class="text-center">Features of this app</div>
-                <li> Frontend in Angular</li>
-                <li> Backend functionality with spring boot</li>
-                <li>Markdown formating for todo item description</li>
-                <li> can be used standalone as it uses indexDB api</li>
-                <li> fast search with mysql fulltext search in backend</li>
-                <li> advanced filtering with tags <br>[format -> searchQuery followed by !Tags: your tags seperated by ',']</li>
-            </ul>
-        </span>
+        <div class="mb-8">
+            <span *ngIf="fromBin" class="block text-center text-3xl font-semibold text-amber-600 mb-4">
+                Local Recycle Bin
+                <a routerLink="/bin/clear" routerLinkActive="active" ariaCurrentWhenActive="page" title="Clear the recycle bin" class="ml-4 text-2xl text-gray-500 hover:text-amber-800 transition-colors duration-200">Clear</a>
+            </span>
+            <span *ngIf="itemList.length === 0" class="block text-center text-4xl font-semibold text-emerald-600">
+                <div class="mb-4">No Items Yet!</div>
+                <ul class="text-lg text-left mt-6 p-6 bg-white rounded-4xl shadow-md w-fit mx-auto">
+                    <div class="text-center text-xl font-semibold mb-4">Features of this app</div>
+                    <li class="mb-2"><span class="font-medium">Frontend:</span> Angular</li>
+                    <li class="mb-2"><span class="font-medium">Backend:</span> Spring Boot</li>
+                    <li class="mb-2"><span class="font-medium">Database:</span> Uses IndexedDB API when offline,<br>MySql when connected with backend</li>
+                    <li class="mb-2"><span class="font-medium">Perk:</span> Item description supports Markdown formatting</li>
+                    <li class="mb-2"><span class="font-medium">Search:</span> Prefix matching when offline,<br>Fast MySQL Fulltext</li>
+                    <li><span class="font-medium">Filtering:</span> Advanced Grouping with tags (searchQuery !Tags: tag1,tag2)</li>
+                </ul>
+            </span>
+        </div>
     </div>
     <div class="h-fit w-full flex flex-row flex-wrap">
         <div *ngFor="let todoItem of itemList" class="flex-auto mx-2 my-0.5 drop-shadow-sm w-fit max-w-full">

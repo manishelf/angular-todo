@@ -9,4 +9,7 @@ export interface TodoItem {
     setForReminder: boolean;
     creationTimestamp: string;
     updationTimestamp: string;
+    eventStart?: string;
+    eventEnd?: string;
+    eventFullDay?: boolean;
 }

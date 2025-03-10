@@ -105,6 +105,23 @@ export class TodoServiceService implements OnDestroy{
     }
   }
 
+  getItemById(id: number, fromBin?: boolean): Observable<TodoItem>{
+    return this.db$.pipe(
+      switchMap((db) => {
+        return new Observable<TodoItem>((observer)=>{
+          let store = fromBin? 'deleted_todo_items': 'todo_items'; 
+          let txn = db.transaction(store, "readonly");
+          let request = txn.objectStore(store).get(id);
+          request.onsuccess = (result)=>{
+            let target = result.target as IDBRequest;
+            if(target)
+              observer.next(target.result);
+            observer.complete();
+          }
+        });
+      }));
+  }
+
   addItem(todoItem:  Omit<TodoItem, 'id'>): void {
     if(this.db){
       const txnTodo = this.db?.transaction(['todo_items',], 'readwrite');
@@ -185,6 +202,16 @@ export class TodoServiceService implements OnDestroy{
     if(this.userservice.getIsLoggedIn())
       this.http.delete<void>(`${this.apiUrl}/todo-items/${todoItem.id}`);
     
+    this.updateItemList();
+  }
+  deleteItemById(id: number, fromBin?: boolean):void{
+    let txn = this.db?.transaction(['todo_items'],'readwrite');
+    if(!fromBin){
+      txn?.objectStore('todo_items').delete(id);
+    }else{
+    }
+    if(this.userservice.getIsLoggedIn())
+      this.http.delete<void>(`${this.apiUrl}/todo-items/${id}`);
     this.updateItemList();
   }
 
