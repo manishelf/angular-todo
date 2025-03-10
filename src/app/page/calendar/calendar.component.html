@@ -1,0 +1,55 @@
+
+<div class='w-full flex flex-col-reverse md:flex-row h-full'>
+  <div class='bg-emerald-300 border-r-2 border-blue-400 rotate-180 flex-2/12 resize overflow-auto'>
+    <div class="rotate-180">
+      <div class='p-5'>
+        <h2>Instructions</h2>
+        <ul>
+          <li>Select dates and you will be prompted to create a new event</li>
+          <li>Drag, drop, and resize events</li>
+          <li>Click an event to delete it</li>
+        </ul>
+      </div>
+      <div class='p-5'>
+        <label>
+          <input
+            type='checkbox'
+            [checked]='calendarVisible()'
+            (change)='handleCalendarToggle()'
+          />
+          toggle whole calendar
+        </label>
+      </div>
+      <div class='p-5'>
+        <label>
+          <input
+            type='checkbox'
+            [checked]='calendarOptions().weekends'
+            (change)='handleWeekendsToggle()'
+          />
+          toggle weekends
+        </label>
+      </div>
+      <div class='p-5'>
+        <h2>All Events ({{currentEvents().length}})</h2>
+        <ul>
+          <li *ngFor='let event of currentEvents()'>
+            <b>{{event.startStr}}</b>
+            <i>{{event.title}}</i>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class='w-full rotate-180 flex-auto resize overflow-auto'> 
+    <full-calendar *ngIf='calendarVisible()' [options]='calendarOptions()' class="h-full p-7 rotate-180">
+      <ng-template #eventContent let-arg>
+        <div class="text-center">
+          <b>{{ arg.timeText }}</b>
+          <i>{{ arg.event.title }}</i>
+        </div>
+      </ng-template>
+    </full-calendar>
+  </div>
+
+</div>

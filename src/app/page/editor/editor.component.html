@@ -4,16 +4,26 @@
       <app-bean-item (click)="onOptionClick()">
         {{option}}
       </app-bean-item>
-      <app-bean-item (click)="onAddClick()">
-        <mat-icon>note_add</mat-icon>
+      <app-bean-item (click)="onAddClick()" title="save the note">
+        <mat-icon>save</mat-icon>
       </app-bean-item>
-      <app-bean-item (click)="onReminderClick()">
-        <mat-icon>add_alert</mat-icon>
+      <app-bean-item>
+      <textarea type="text" *ngIf="showTags" placeholder="add tags here ',' seperated"
+      class="border-b-2 border-b-blue-500 text-blue-900 text-center focus:outline-0" [value]="tagNameList" (input)="onUpdateTags($event)" rows="1"></textarea>
+      <button type="button" class="cursor-pointer m-0.5 hover:scale-120" title="tags" (click)="onClickTags()" >
+          <mat-icon>queue_add</mat-icon>
+      </button>
+      </app-bean-item>
+      <app-bean-item (click)="onReminderClick()" [title]="!setForReminder?'set reminder':'clear reminder'">
+        <mat-icon>{{!setForReminder?'alarm_add':'alarm_off'}}</mat-icon>
+      </app-bean-item>
+      <app-bean-item (click)="onCompletionClick()" [title]="!completionStatus?'status: pending':'status: done'">
+        <mat-icon>{{!completionStatus?'timelapse':'done_all'}}</mat-icon>
       </app-bean-item>
     </div>
     <div class="bg-emerald-400">
       <div *ngIf="option !== 'Editor'" class="w-full min-h-3/12 p-2 border-2 border-emerald-300 rounded-2xl drop-shadow-lg text-blue-700 bg-amber-100">
-        <input type="text" class="m-1 w-full text-2xl border-2 border-emerald-200 rounded-2xl p-2" [(ngModel)]="title" placeholder="enter a unique title for you note"/>
+        <input type="text" class="m-1 w-full text-2xl border-2 border-emerald-200 rounded-2xl p-2" [(ngModel)]="title" placeholder="enter a title for you note [must be unique]"/>
         <textarea [(ngModel)]="markdownText" 
         placeholder="Enter your note here [supports markdown]"
         class="w-full h-full p-2 border-2 rounded-lg"

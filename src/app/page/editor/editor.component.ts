@@ -7,6 +7,7 @@ import { BeanItemComponent } from '../../component/bean-item/bean-item.component
 import { TodoServiceService } from './../../service/todo-service.service';
 import { TodoItem } from '../../models/todo-item';
 import { Router } from '@angular/router';
+import { Tag } from '../../models/tag';
 
 @Component({
   selector: 'app-markdown-editor',
@@ -19,8 +20,30 @@ export class EditorComponent {
   convertedMarkdown: string = '';
   option: string = 'MD Preview';
   title: string = '';
-
-  constructor(private todoServie : TodoServiceService, private router: Router){}
+  setForReminder: boolean = false;
+  completionStatus: boolean = false;
+  tagList: Tag[] = [];
+  tagNameList: string[] = [];
+  forEdit: boolean = false;
+  showTags: boolean = false;
+  toUpdate: TodoItem|null = null;
+  constructor(private todoServie : TodoServiceService, private router: Router){
+    if(router.url === '/edit'){
+      this.forEdit = true;
+      const navigation = this.router.getCurrentNavigation();
+      if (navigation && navigation.extras && navigation.extras.state) {
+          this.toUpdate = navigation.extras.state as TodoItem;
+          this.title = this.toUpdate.subject;
+          this.markdownText = this.toUpdate.description;
+          this.completionStatus = this.toUpdate.completionStatus;
+          this.setForReminder = this.toUpdate.completionStatus;
+          this.tagList = this.toUpdate.tags;
+          this.tagNameList = this.tagList.map(tag=>tag.name);
+      }else{
+        router.navigate(['/home']);
+      }
+    }
+  }
 
   @HostListener('keydown', ['$event'])
   handleKeydown(event: KeyboardEvent): void {
@@ -51,15 +74,51 @@ export class EditorComponent {
     }
   }
   onAddClick(){
-    const item: Partial<TodoItem> = {
+    const item: Omit<TodoItem, 'id'> = {
       subject: this.title,
-      description: this.markdownText
+      description: this.markdownText,
+      tags: this.tagList,
+      completionStatus: this.completionStatus,
+      setForReminder: this.setForReminder,
+      creationTimestamp: new Date(Date.now()).toISOString(),
+      updationTimestamp: new Date(Date.now()).toISOString(),
     }
-    this.todoServie.addItem(item);
+    if(this.forEdit){
+      if(this.toUpdate){
+        this.toUpdate.updationTimestamp = new Date(Date.now()).toISOString();
+        this.toUpdate.subject = this.title;
+        this.toUpdate.description = this.markdownText;
+        this.toUpdate.tags= this.tagList,
+        this.toUpdate.completionStatus= this.completionStatus,
+        this.toUpdate.setForReminder= this.setForReminder,
+        this.todoServie.updateItem(this.toUpdate);
+      }
+    }else{
+      this.todoServie.addItem(item);
+    }
+    
     this.router.navigate(['/home']);
   }
 
+  onUpdateTags(event: Event){
+    let inputValue = (event.target as HTMLInputElement).value;
+    this.tagList = [];
+    inputValue.split(',').forEach(
+      (name)=>{
+        this.tagList.push(
+          {name: name}
+        )
+      }
+    )
+  }
+  onClickTags(){
+    this.showTags = !this.showTags;    
+  }
   onReminderClick(){
-    
+    this.setForReminder = !this.setForReminder;
+  }
+
+  onCompletionClick(){
+    this.completionStatus =!this.completionStatus;
   }
 }

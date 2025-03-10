@@ -1,36 +1,30 @@
-<div class="bg-emerald-400 text-white rounded-2xl p-3">
+<div  [class]="`${bgColour} text-white rounded-2xl p-3 cursor-pointer hover:outline-2 hover:shadow-2xl outline-offset-2 outline-blue-400 transition-all`">
     <div class="flex flex-row justify-between">
-        <div class="text-2xl flex flex-row">
+        <div class="text-2xl max-w-full overflow-clip overflow-ellipsis hover:scale-105 cursor-pointer transition-all" (click)="onItemClick()" title="edit">
             {{item.subject}}
-            <div *ngIf="item.tags.length!=0" 
-            class="text-sm mx-2 text-emerald-100 rounded-2xl p-1 cursor-pointer text-center" >
-                <mat-icon class="hover:scale-150" title="tags" (click)="showTags=!showTags">keyboard_arrow_down</mat-icon>
-                <div class="flex flex-row" *ngIf="showTags">
-                    Tags: 
-                    <div *ngFor="let tag of item.tags">
-                       &nbsp;{{tag.name}} |
-                    </div>
-                </div>
-            </div>
         </div>
-        <div *ngIf="!optionsDisplayed" (click)="optionsDisplayed=!optionsDisplayed" class="cursor-pointer hover:scale-120" title="options">
+        <div *ngIf="!optionsDisplayed && !fromBin" (click)="optionsDisplayed=!optionsDisplayed" class="cursor-pointer hover:scale-120" title="options">
             <mat-icon>more_horiz</mat-icon>
         </div>
-        <div *ngIf="optionsDisplayed" class="flex flex-row">
-            <button type="button" class="cursor-pointer hover:scale-120 m-0.5" title="set a reminder">
-                <mat-icon>add_alert</mat-icon>
-            </button>
-            <button type="button" class="cursor-pointer m-0.5 hover:scale-120" title="add a tag">
-                <mat-icon>library_add</mat-icon>
-            </button>
-            <button type="button" class="cursor-pointer m-0.5 hover:scale-120" title="mark as done">
-                <mat-icon>done</mat-icon>
-            </button>
+        <div *ngIf="optionsDisplayed || fromBin" class="flex flex-row">
+            <div *ngIf="!fromBin">
+                <textarea type="text" *ngIf="showTags" placeholder="add tags here ',' seperated"
+                class="border-b-2 border-b-blue-500 text-blue-900 text-center focus:outline-0" [value]="tagNameList" (input)="onUpdateTags($event)" rows="1"></textarea>
+                <button type="button" class="cursor-pointer m-0.5 hover:scale-120" title="tags" (click)="onClickTags()" >
+                    <mat-icon>add_box</mat-icon>
+                </button>
+                <button type="button" class="cursor-pointer m-0.5 hover:scale-120" (click)="onClickSetReminder()" [title]="!item.setForReminder?'set reminder':'clear reminder'">
+                    <mat-icon>{{!item.setForReminder?'alarm_add':'alarm_off'}}</mat-icon>
+                </button>
+                <button class="cursor-pointer m-0.5 hover:scale-120" (click)="onClickCompletionStatus()" [title]="!item.completionStatus?'status: pending':'status: done'">
+                <mat-icon>{{!item.completionStatus?'timelapse':'done_all'}}</mat-icon>
+                </button>
+            </div>
             <button type="button" class="cursor-pointer m-0.5 hover:scale-120" title="move to recycle bin" (click)="onClickDelete()">
                 <mat-icon>delete</mat-icon>
             </button>
         </div>
     </div>
-    <div class="m-1" [innerHtml]="parsedMD">
+    <div class="m-1 max-w-full overflow-clip overflow-ellipsis"  [innerHtml]="parsedMD">
     </div>
 </div>

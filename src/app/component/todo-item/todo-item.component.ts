@@ -4,7 +4,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import * as marked from 'marked';
 import { TodoServiceService } from '../../service/todo-service.service';
-import { Router } from '@angular/router';
+import { NavigationExtras, Router } from '@angular/router';
 
 @Component({
   selector: 'app-todo-item',
@@ -23,23 +23,74 @@ export class TodoItemComponent implements OnInit {
     creationTimestamp: Date.now().toString(),
     updationTimestamp: Date.now().toString()
   };
-  showTags: boolean = false;
-  parsedMD: string = "";
-
+  parsedMD: string = '';
+  fromBin: boolean;
+  bgColour: string = 'bg-emerald-400';
+  tagNameList: string[] = [];
   optionsDisplayed: boolean = false;
-  constructor(private todoService: TodoServiceService, private cdr: ChangeDetectorRef, private router: Router) {}
+  showTags:boolean = false;
+
+  constructor(private todoService: TodoServiceService, private cdr: ChangeDetectorRef, private router: Router) {
+    let url = this.router.url;    
+    this.fromBin = (url.substring(0,5) !== '/home');
+  }
   ngOnInit(): void {
+    if (this.item.setForReminder) {
+      this.bgColour = 'bg-amber-400'
+    }
+    if (this.item.completionStatus) {
+      this.bgColour = 'bg-blue-300'
+    }
     this.parsedMD = marked.parse(this.item.description).toString();
+    this.item.tags.forEach((tag)=>{
+      this.tagNameList.push(' '+tag.name+' ');
+    });
+  }
+
+  onItemClick(){
+    let extra : NavigationExtras = {
+      state: this.item
+    };
+    this.router.navigate(['/edit'],extra);
   }
 
   onClickDelete(){
-    let fromBin = this.router.url === '/bin';
-    if(!fromBin){
+    if(!this.fromBin){
       this.todoService.deleteItem(this.item);
-      this.router.navigate(['/bin']);
     }else{
-      this.todoService.deleteItem(this.item, fromBin);
-      this.router.navigate(['/home']);  
+      this.todoService.deleteItem(this.item, this.fromBin);
+    }
+  }
+
+  onClickCompletionStatus(){
+    this.item.completionStatus =! this.item.completionStatus;
+    this.updateSave();
+  }
+
+  onClickSetReminder(){
+    this.item.setForReminder =! this.item.setForReminder;
+    this.updateSave();
+  }
+
+  private updateSave(){
+    this.todoService.updateItem(this.item);
+  }
+
+  onUpdateTags(event: Event){
+    let inputValue = (event.target as HTMLInputElement).value;
+    this.item.tags = [];
+    inputValue.split(',').forEach(
+      (name)=>{
+        this.item.tags.push(
+          {name: name}
+        )
+      }
+    )
+  }
+  onClickTags(){
+    this.showTags = !this.showTags;    
+    if(this.showTags==false){
+      this.updateSave();
     }
   }
 }

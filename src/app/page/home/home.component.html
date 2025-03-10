@@ -1,9 +1,24 @@
-<div class="flex flex-row flex-wrap h-fi/t max-h-screen scroll-auto overflow-scroll scroll-m-11 justify-center">
-    <span *ngIf="fromBin" class=" flex-auto text-center text-3xl w-full m-2 text-amber-700">Local recycle bin
-        <a routerLink="/bin/clear" routerLinkActive="active" ariaCurrentWhenActive="page" title="clear the recycle bin"> clear </a>
-    </span>
-    <span *ngIf="itemList.length === 0"  class="text-center text-5xl w-full m-2 text-emerald-700"> No Items Yet! </span>
-    <div *ngFor="let todoItem of itemList" class="flex-auto mx-1 my-0.5 drop-shadow-sm">
-        <app-todo-item [item]="todoItem"/>
+<div class="h-full scroll-auto overflow-scroll justify-center">
+    <div class="w-full flex flex-col justify-center">
+        <span *ngIf="fromBin" class=" flex-auto text-center text-3xl m-2 text-amber-700">Local recycle bin
+            <a routerLink="/bin/clear" routerLinkActive="active" ariaCurrentWhenActive="page" title="clear the recycle bin"> clear </a>
+        </span>
+        <span *ngIf="itemList.length === 0"  class="text-center text-5xl text-emerald-700">
+            <div class="flex-auto">No Items Yet!</div>
+            <ul class="text-2xl text-justify m-8 flex-auto w-fit m-auto">
+                <div class="text-center">Features of this app</div>
+                <li> Frontend in Angular</li>
+                <li> Backend functionality with spring boot</li>
+                <li>Markdown formating for todo item description</li>
+                <li> can be used standalone as it uses indexDB api</li>
+                <li> fast search with mysql fulltext search in backend</li>
+                <li> advanced filtering with tags <br>[format -> searchQuery followed by !Tags: your tags seperated by ',']</li>
+            </ul>
+        </span>
+    </div>
+    <div class="h-fit w-full flex flex-row flex-wrap">
+        <div *ngFor="let todoItem of itemList" class="flex-auto mx-2 my-0.5 drop-shadow-sm w-fit max-w-full">
+            <app-todo-item [item]="todoItem"/>
+        </div>
     </div>
 </div>    
