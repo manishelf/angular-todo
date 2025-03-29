@@ -57,6 +57,9 @@ export class EditorComponent {
       target.value = target.value.substring(0, start) + '\t' + target.value.substring(end);
 
       target.selectionStart = target.selectionEnd = start + 1;
+    }else if(event.key === 'Enter' && event.target instanceof HTMLInputElement){
+      event.preventDefault();
+      this.onAddClick();
     }
   }
   @HostListener('input', ['$event.target'])

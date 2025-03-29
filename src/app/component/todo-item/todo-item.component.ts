@@ -42,6 +42,7 @@ export class TodoItemComponent implements OnInit {
       this.bgColour = 'bg-blue-300'
     }
     this.parsedMD = marked.parse(this.item.description).toString();
+    this.parsedMD = this.parsedMD.replace(/\n/g, '<br>');
     this.item.tags.forEach((tag)=>{
       this.tagNameList.push(' '+tag.name+' ');
     });
