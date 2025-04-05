@@ -15,30 +15,30 @@ import { Tag } from '../../models/tag';
   styleUrls: ['./editor.component.css'],
   imports: [FormsModule, CommonModule, MatIconModule, BeanItemComponent]
 })
+
 export class EditorComponent {
-  markdownText: string = '';
   convertedMarkdown: string = '';
   option: string = 'MD Preview';
-  title: string = '';
-  setForReminder: boolean = false;
-  completionStatus: boolean = false;
-  tagList: Tag[] = [];
   tagNameList: string[] = [];
-  forEdit: boolean = false;
+  forEdit: number = -1;
   showTags: boolean = false;
-  toUpdate: TodoItem|null = null;
+  todoItem: Omit<TodoItem, 'id'> = {
+    subject: '',
+    description: '',
+    tags: [],
+    completionStatus: false,
+    setForReminder: false,
+    creationTimestamp: new Date(Date.now()).toISOString(),
+    updationTimestamp: new Date(Date.now()).toISOString(),
+  };
   constructor(private todoServie : TodoServiceService, private router: Router){
     if(router.url === '/edit'){
-      this.forEdit = true;
       const navigation = this.router.getCurrentNavigation();
       if (navigation && navigation.extras && navigation.extras.state) {
-          this.toUpdate = navigation.extras.state as TodoItem;
-          this.title = this.toUpdate.subject;
-          this.markdownText = this.toUpdate.description;
-          this.completionStatus = this.toUpdate.completionStatus;
-          this.setForReminder = this.toUpdate.completionStatus;
-          this.tagList = this.toUpdate.tags;
-          this.tagNameList = this.tagList.map(tag=>tag.name);
+          let itemForUpdate = navigation.extras.state as TodoItem;
+          this.forEdit = itemForUpdate.id;
+          this.todoItem = itemForUpdate;
+          this.tagNameList = this.todoItem.tags.map(tag=>tag.name);
       }else{
         router.navigate(['/home']);
       }
@@ -71,33 +71,16 @@ export class EditorComponent {
   onOptionClick() {
     this.option = this.option === 'MD Preview' ? 'Editor' : 'MD Preview';
     if(this.option === 'Editor'){
-      this.convertedMarkdown = marked.parse(this.markdownText).toString();
+      this.convertedMarkdown = marked.parse(this.todoItem.description).toString();
       this.convertedMarkdown = this.convertedMarkdown.replace(/\n/g, '<br>');
-      this.convertedMarkdown = `<h1>${this.title}</h1><br>`+this.convertedMarkdown;
+      this.convertedMarkdown = `<h1>${this.todoItem.subject}</h1><br>`+this.convertedMarkdown;
     }
   }
   onAddClick(){
-    const item: Omit<TodoItem, 'id'> = {
-      subject: this.title,
-      description: this.markdownText,
-      tags: this.tagList,
-      completionStatus: this.completionStatus,
-      setForReminder: this.setForReminder,
-      creationTimestamp: new Date(Date.now()).toISOString(),
-      updationTimestamp: new Date(Date.now()).toISOString(),
-    }
-    if(this.forEdit){
-      if(this.toUpdate){
-        this.toUpdate.updationTimestamp = new Date(Date.now()).toISOString();
-        this.toUpdate.subject = this.title;
-        this.toUpdate.description = this.markdownText;
-        this.toUpdate.tags= this.tagList,
-        this.toUpdate.completionStatus= this.completionStatus,
-        this.toUpdate.setForReminder= this.setForReminder,
-        this.todoServie.updateItem(this.toUpdate);
-      }
+    if(this.forEdit !== -1){
+      this.todoServie.updateItem({id: this.forEdit, ...this.todoItem});
     }else{
-      this.todoServie.addItem(item);
+      this.todoServie.addItem(this.todoItem);
     }
     
     this.router.navigate(['/home']);
@@ -105,10 +88,10 @@ export class EditorComponent {
 
   onUpdateTags(event: Event){
     let inputValue = (event.target as HTMLInputElement).value;
-    this.tagList = [];
+    this.todoItem.tags = [];
     inputValue.split(',').forEach(
       (name)=>{
-        this.tagList.push(
+        this.todoItem.tags.push(
           {name: name}
         )
       }
@@ -118,10 +101,10 @@ export class EditorComponent {
     this.showTags = !this.showTags;    
   }
   onReminderClick(){
-    this.setForReminder = !this.setForReminder;
+    this.todoItem.setForReminder = !this.todoItem.setForReminder;
   }
 
   onCompletionClick(){
-    this.completionStatus =!this.completionStatus;
+    this.todoItem.completionStatus =!this.todoItem.completionStatus;
   }
 }

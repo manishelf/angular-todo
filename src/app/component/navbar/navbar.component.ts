@@ -19,7 +19,7 @@ export class NavbarComponent {
     let searchQuery = inputValue;
     let tagList: string[] = [];
 
-    let input: string[] =inputValue.split('!Tags:');
+    let input: string[] =inputValue.split('!T:');
     if(input.length==2){
       searchQuery = input[0];
       tagList = input[1].split(',');

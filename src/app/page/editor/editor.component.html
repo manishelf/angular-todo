@@ -12,18 +12,19 @@
       </button>
       <textarea
         *ngIf="showTags"
-        placeholder="Add tags here, comma-separated"
-        class="absolute top-10 right-0 bg-white border rounded p-2 text-sm shadow-md focus:outline-none"
+        placeholder="Add tags here like t1 , t2"
+        class="absolute top-10 right-0 bg-white border rounded p-2 shadow-md focus:outline-none"
         [value]="tagNameList"
         (input)="onUpdateTags($event)"
         rows="1"
+        height="auto"
       ></textarea>
     </div>
-    <button (click)="onReminderClick()" [title]="!setForReminder ? 'Set reminder' : 'Clear reminder'" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded">
-      <mat-icon>{{ !setForReminder ? 'alarm_add' : 'alarm_off' }}</mat-icon>
+    <button (click)="onReminderClick()" [title]="!todoItem.setForReminder ? 'Set reminder' : 'Clear reminder'" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded">
+      <mat-icon>{{ !todoItem.setForReminder ? 'alarm_add' : 'alarm_off' }}</mat-icon>
     </button>
-    <button (click)="onCompletionClick()" [title]="!completionStatus ? 'Status: Pending' : 'Status: Done'" class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
-      <mat-icon>{{ !completionStatus ? 'timelapse' : 'done_all' }}</mat-icon>
+    <button (click)="onCompletionClick()" [title]="!todoItem.completionStatus ? 'Status: Pending' : 'Status: Done'" class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
+      <mat-icon>{{ !todoItem.completionStatus ? 'timelapse' : 'done_all' }}</mat-icon>
     </button>
   </div>
 
@@ -32,11 +33,11 @@
       <input
         type="text"
         class="w-full p-3 border rounded-lg text-lg focus:outline-none focus:ring focus:border-blue-300"
-        [(ngModel)]="title"
+        [(ngModel)]="todoItem.subject"
         placeholder="Enter a title for your note (must be unique)"
       />
       <textarea
-        [(ngModel)]="markdownText"
+        [(ngModel)]="todoItem.description"
         placeholder="Enter your note here (supports markdown)"
         class="w-full h-64 p-3 border rounded-lg mt-2 resize-vertical focus:outline-none focus:ring focus:border-blue-300"
       ></textarea>

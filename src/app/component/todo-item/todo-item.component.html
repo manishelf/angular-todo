@@ -1,6 +1,6 @@
 <div  [class]="`${bgColour} text-white rounded-2xl p-3 cursor-pointer hover:outline-2 hover:shadow-2xl outline-offset-2 outline-blue-400 transition-all`">
     <div class="flex flex-row justify-between">
-        <div class="text-2xl max-w-full overflow-clip overflow-ellipsis hover:scale-105 cursor-pointer transition-all" (click)="onItemClick()" title="edit">
+        <div class="text-2xl max-w-full overflow-clip overflow-ellipsis hover:scale-110 cursor-pointer transition-all" (click)="onItemClick()" title="edit">
             {{item.subject}}
         </div>
         <div *ngIf="!optionsDisplayed && !fromBin" (click)="optionsDisplayed=!optionsDisplayed" class="cursor-pointer hover:scale-120" title="options">

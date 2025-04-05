@@ -253,23 +253,40 @@ export class TodoServiceService implements OnDestroy{
           let txn = db.transaction([itemStore, 'tags_todo_items'],'readonly');
           let tagStore = txn.objectStore('tags_todo_items');
           let index = tagStore?.index("tagName");
-          const tagFilterResults : number[][] = [];
-          
+          const includeItems: number[] = [];
+          const excludeItems : number[] = [];
+          const unfilteredItems : number[] = [];
           let request = index?.openCursor();
           request.onsuccess = (event) => {
             const cursor = (event.target as IDBRequest<IDBCursorWithValue>).result;
             if (cursor) {
-              const item = cursor.value;
-              if(item && tagsFilter.includes(item.name))
-                tagFilterResults.push(item.todo_items);
+              const item = cursor.value;              
+              if(item){
+                if((tagsFilter.includes('+'+item.name)||tagsFilter.includes(item.name))){
+                  includeItems.push(...item.todo_items);                  
+                }
+                else if(tagsFilter.includes('-'+item.name)){
+                  excludeItems.push(...item.todo_items);
+                }else{
+                  unfilteredItems.push(...item.todo_items);
+                }
+              }
               cursor.continue();
             } else {
               let uniqueTodoIds: Set<number> = new Set(); 
-              tagFilterResults.forEach(arr=>{
-                arr.forEach(id=>{
-                  uniqueTodoIds.add(id);
+              if(includeItems.length!=0){
+                includeItems.forEach(id=>{
+                  if(!excludeItems.includes(id))
+                    uniqueTodoIds.add(id);
                 });
-              });        
+              }else{
+                if(excludeItems.length!=0){
+                  unfilteredItems.forEach(id=>{
+                    if(!excludeItems.includes(id))
+                      uniqueTodoIds.add(id);
+                  });
+                }
+              }        
               observer.next(uniqueTodoIds);
               observer.complete();
             }
@@ -352,7 +369,6 @@ export class TodoServiceService implements OnDestroy{
           let list: TodoItem[] = [];
           results[0].forEach(item=>list.push(item));
           observer.next(list);
-          console.log(list);
         }else observer.next([]);
         
         observer.complete();

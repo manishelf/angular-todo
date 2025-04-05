@@ -23,7 +23,7 @@ h1, h2, h3, h4, h5, h6 {
   }
   
   li {
-    @apply mb-2;
+    @apply mb-0.5;
   }
   
   code {
@@ -31,7 +31,7 @@ h1, h2, h3, h4, h5, h6 {
   }
   
   pre {
-    @apply bg-gray-800 text-white p-2 rounded overflow-auto;
+    @apply bg-emerald-900 text-white p-2 rounded overflow-auto;
   }
   
   img {
