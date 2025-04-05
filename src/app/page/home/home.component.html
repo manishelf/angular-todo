@@ -13,7 +13,8 @@
     </div>
     <div class="h-fit w-full flex flex-row flex-wrap">
         <div *ngFor="let todoItem of itemList" class="flex-auto mx-2 my-0.5 drop-shadow-sm w-fit max-w-full">
-            <app-todo-item [item]="todoItem"/>
+            <app-todo-item *ngIf="fromSearch" [item]="todoItem" [optionsDisplayed]=true [showTags] = true/>
+            <app-todo-item *ngIf="!fromSearch" [item]="todoItem"/>
         </div>
     </div>
 </div>    

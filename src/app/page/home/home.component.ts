@@ -14,7 +14,8 @@ templateUrl: './home.component.html',
 })
 export class HomeComponent implements OnInit, OnDestroy{
   itemList: TodoItem[] = [];
-  fromBin: boolean;
+  fromBin: boolean = false;
+  fromSearch: boolean = false;
   private todoItemsSubscription: Subscription | undefined;
   private queryParamsSubscription: Subscription | undefined;
   
@@ -50,11 +51,12 @@ export class HomeComponent implements OnInit, OnDestroy{
       if(searchQuery || tags)
       this.todoService.searchTodos(searchQuery?searchQuery:'', tags?tags:[], this.fromBin).subscribe(
         (itemList)=>{
+              this.fromSearch = true;
               this.itemList = itemList.sort((x,y)=>{
                 if(x.setForReminder||y.completionStatus) return -1;
                 if(y.setForReminder||x.completionStatus) return 1;
                 return 0;
-              });                
+              });     
             },
             (error)=>{
               console.error('error fetching tasks ',error);

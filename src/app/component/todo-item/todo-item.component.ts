@@ -27,8 +27,8 @@ export class TodoItemComponent implements OnInit {
   fromBin: boolean;
   bgColour: string = 'bg-emerald-400';
   tagNameList: string[] = [];
-  optionsDisplayed: boolean = false;
-  showTags:boolean = false;
+  @Input() optionsDisplayed: boolean = false;
+  @Input() showTags:boolean = false;
 
   constructor(private todoService: TodoServiceService, private cdr: ChangeDetectorRef, private router: Router) {
     let url = this.router.url;    
