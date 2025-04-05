@@ -56,13 +56,13 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 /* styles for FullCalendar buttons */
  .fc-button {
-  background-color: oklch(0.905 0.093 164.15) !important;
-  color: oklch(0.424 0.199 265.638) !important;
-  border: 1px solid #2980b9 !important;
+  background-color: rgba(102, 86, 86, 0.9) !important;
+  color: white !important;
+  border: 1px solid #ffffff !important;
   border-radius: 4px !important;
   cursor: pointer !important;
   margin: 2px !important;
-  @apply hover:scale-105 hover:shadow-2xs shadow-blue-400 transition-all
+  @apply hover:scale-105 hover:shadow-2xs shadow-white transition-all
 }
 .fc-button-group{
   @media (width <= 40rem) {
@@ -71,7 +71,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   }
 }
 .fc-event:hover {
-  box-shadow: 0px 0px 5px 3px rgba(18,18,18,0.20);
+  box-shadow: 0px 0px 5px 3px rgb(255, 255, 255);
   -webkit-box-shadow: 0px 0px 5px 3px rgba(18,18,18,0.20);
   -moz-box-shadow: 0px 0px 5px 3px rgba(18,18,18,0.20);
   @apply scale-105 transition-all;

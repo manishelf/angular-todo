@@ -1,4 +1,4 @@
-<div  [class]="`${bgColour} text-white rounded-2xl p-3 cursor-pointer hover:outline-2 hover:shadow-2xl outline-offset-2 outline-blue-400 transition-all`">
+<div  [class]="`${bgColour} text-white rounded-2xl p-3 cursor-pointer hover:outline-2 hover:shadow-xl shadow-gray-50 outline-offset-2 outline-white transition-all`">
     <div class="flex flex-row justify-between">
         <div class="text-2xl max-w-full overflow-clip overflow-ellipsis hover:scale-110 cursor-pointer transition-all" (click)="onItemClick()" title="edit">
             {{item.subject}}
@@ -9,7 +9,7 @@
         <div *ngIf="optionsDisplayed || fromBin" class="flex flex-row">
             <div *ngIf="!fromBin">
                 <textarea type="text" *ngIf="showTags" placeholder="add tags here ',' seperated"
-                class="border-b-2 border-b-blue-500 text-blue-900 text-center focus:outline-0" [value]="tagNameList" (input)="onUpdateTags($event)" rows="1"></textarea>
+                class="border-b-2 border-b-blue-500 text-white text-center focus:outline-0" [value]="tagNameList" (input)="onUpdateTags($event)" rows="1"></textarea>
                 <button type="button" class="cursor-pointer m-0.5 hover:scale-120" title="tags" (click)="onClickTags()" >
                     <mat-icon>add_box</mat-icon>
                 </button>

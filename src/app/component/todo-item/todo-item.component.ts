@@ -25,7 +25,7 @@ export class TodoItemComponent implements OnInit {
   };
   parsedMD: string = '';
   fromBin: boolean;
-  bgColour: string = 'bg-emerald-400';
+  bgColour: string = 'bg-gray-600 border-2 border-amber-400';
   tagNameList: string[] = [];
   @Input() optionsDisplayed: boolean = false;
   @Input() showTags:boolean = false;
@@ -36,10 +36,10 @@ export class TodoItemComponent implements OnInit {
   }
   ngOnInit(): void {
     if (this.item.setForReminder) {
-      this.bgColour = 'bg-amber-400'
+      this.bgColour = 'bg-gray-600 border-2 border-red-600'
     }
     if (this.item.completionStatus) {
-      this.bgColour = 'bg-blue-300'
+      this.bgColour = 'bg-gray-600 border-2 border-green-700'
     }
     this.parsedMD = marked.parse(this.item.description).toString();
     this.parsedMD = this.parsedMD.replace(/\n/g, '<br>');
