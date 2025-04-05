@@ -13,7 +13,7 @@ import { Tag } from '../../models/tag';
   selector: 'app-markdown-editor',
   templateUrl: './editor.component.html',
   styleUrls: ['./editor.component.css'],
-  imports: [FormsModule, CommonModule, MatIconModule, BeanItemComponent]
+  imports: [FormsModule, CommonModule, MatIconModule]
 })
 
 export class EditorComponent {

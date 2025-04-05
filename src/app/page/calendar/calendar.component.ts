@@ -101,7 +101,7 @@ export class CalendarComponent {
         setForReminder: true,
         eventStart: selectInfo.startStr,
         eventEnd: selectInfo.endStr,
-        tags: [{name: 'calendar event'}],
+        tags: [{name: 'calendar event'}, {name: 'start-'+selectInfo.startStr}, {name: 'end-'+selectInfo.endStr}],
         eventFullDay: selectInfo.allDay
       };
       this.todoService.addItem(newTodoItem);
