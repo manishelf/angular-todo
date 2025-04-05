@@ -1,5 +1,5 @@
 <div class="h-full m-4 p-4">
-  <div class="flex justify-end space-x-2 mb-4">
+  <div class="flex justify-end space-x-2 m-4">
     <button (click)="onOptionClick()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
       {{ option }}
     </button>
@@ -29,7 +29,7 @@
   </div>
 
   <div class="bg-white rounded-lg shadow-md p-4">
-    <div *ngIf="option !== 'Editor'" class="mb-4">
+    <div *ngIf="option !== 'Editor'" class="">
       <input
         type="text"
         class="w-full p-3 border rounded-lg text-lg focus:outline-none focus:ring focus:border-blue-300"
@@ -39,7 +39,7 @@
       <textarea
         [(ngModel)]="todoItem.description"
         placeholder="Enter your note here (supports markdown)"
-        class="w-full h-64 p-3 border rounded-lg mt-2 resize-vertical focus:outline-none focus:ring focus:border-blue-300"
+        class="w-full p-3 border rounded-lg mt-2 resize-vertical focus:outline-none focus:ring focus:border-blue-300 overflow-hidden"
       ></textarea>
     </div>
     <div
