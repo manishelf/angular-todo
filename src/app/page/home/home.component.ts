@@ -9,7 +9,7 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-home',
   imports: [CommonModule, TodoItemComponent, RouterLink, RouterLinkActive],
-templateUrl: './home.component.html',
+  templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
 export class HomeComponent implements OnInit, OnDestroy{
@@ -23,13 +23,14 @@ export class HomeComponent implements OnInit, OnDestroy{
     private todoService: TodoServiceService, 
     private router: Router, 
     private route: ActivatedRoute){
-    if(this.router.url === '/bin/clear') todoService.clearBin();
     let url = this.router.url;    
+    if(url === '/bin/clear') todoService.clearBin();
     this.fromBin = (url.substring(0,5) !== '/home');    
+    this.todoService.fromBin = this.fromBin;    
    }
 
   ngOnInit(): void {    
-    this.todoService.initializeItems(this.fromBin);
+    this.todoService.initializeItems();
     this.todoItemsSubscription = this.todoService.todoItems$.subscribe(
       (itemList)=>{
         this.itemList = itemList.sort((x,y)=>{
@@ -45,11 +46,11 @@ export class HomeComponent implements OnInit, OnDestroy{
     );
 
       this.queryParamsSubscription = this.route.queryParams.subscribe((params: Params) => {
-      let searchQuery = params['search'];
-      let tags = params['tag'];
+      let searchQuery = params['search']? params['search']: '';
+      let tags = params['tag']? params['tag']: [];
             
-      if(searchQuery || tags)
-      this.todoService.searchTodos(searchQuery?searchQuery:'', tags?tags:[], this.fromBin).subscribe(
+      if(searchQuery !== '' || tags.length > 0)
+      this.todoService.searchTodos(searchQuery, tags).subscribe(
         (itemList)=>{
               this.fromSearch = true;
               this.itemList = itemList.sort((x,y)=>{

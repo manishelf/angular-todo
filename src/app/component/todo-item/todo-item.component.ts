@@ -32,7 +32,8 @@ export class TodoItemComponent implements OnInit {
 
   constructor(private todoService: TodoServiceService, private cdr: ChangeDetectorRef, private router: Router) {
     let url = this.router.url;    
-    this.fromBin = (url.substring(0,5) !== '/home');
+    this.fromBin = (url.substring(0,5) !== '/home');    
+    this.todoService.fromBin = this.fromBin;
   }
   ngOnInit(): void {
     if (this.item.setForReminder) {
@@ -55,12 +56,8 @@ export class TodoItemComponent implements OnInit {
     this.router.navigate(['/edit'],extra);
   }
 
-  onClickDelete(){
-    if(!this.fromBin){
-      this.todoService.deleteItem(this.item);
-    }else{
-      this.todoService.deleteItem(this.item, this.fromBin);
-    }
+  onClickDelete(){    
+    this.todoService.deleteItem(this.item);
   }
 
   onClickCompletionStatus(){

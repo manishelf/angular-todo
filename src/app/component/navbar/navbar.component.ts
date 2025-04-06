@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { BeanItemComponent } from './../bean-item/bean-item.component';
 import { SocialUser, GoogleSigninButtonModule,SocialLoginModule, GoogleLoginProvider, SocialAuthService } from "@abacritt/angularx-social-login";
 import { CommonModule } from '@angular/common';
+import { ToastService } from 'angular-toastify';
 
 @Component({
   selector: 'app-navbar',
@@ -16,7 +17,7 @@ export class NavbarComponent implements OnInit{
   user: SocialUser = new SocialUser();
   loggedIn: boolean = false;
 
-  constructor(private router: Router,  private authService: SocialAuthService) { }
+  constructor(private router: Router,  private authService: SocialAuthService, private toaster: ToastService) { }
 
   ngOnInit() {
     this.authService.authState.subscribe((user) => {
@@ -42,5 +43,9 @@ export class NavbarComponent implements OnInit{
     let url = this.router.url;
     url = url.substring(url.indexOf('/'),url.indexOf('?'))
     this.router.navigate([],{queryParams: {search: searchQuery.trim(),tag:tagList }});
+  }
+
+  syncNotes(){
+    this.toaster.info("Syncing notes...");
   }
 }

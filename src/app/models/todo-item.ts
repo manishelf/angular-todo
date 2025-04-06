@@ -12,4 +12,5 @@ export interface TodoItem {
     eventStart?: string;
     eventEnd?: string;
     eventFullDay?: boolean;
+    deleted?:boolean;
 }

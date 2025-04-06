@@ -4,6 +4,10 @@ import { provideRouter , withComponentInputBinding} from '@angular/router';
 import { routes } from './app.routes';
 import { provideHttpClient } from '@angular/common/http';
 
+import { ToastService, AngularToastifyModule } from 'angular-toastify'; 
+
+import { environment } from '../environments/environments';
+
 import { SocialAuthServiceConfig } from '@abacritt/angularx-social-login';
 import {
   GoogleLoginProvider,
@@ -23,7 +27,7 @@ export const appConfig: ApplicationConfig = {
           {
             id: GoogleLoginProvider.PROVIDER_ID,
             provider: new GoogleLoginProvider(
-              '540718559124-1hj72mur74a1f314va0su6vfao4l5vr6.apps.googleusercontent.com'
+              environment.googleClientId
             )
           },
         ],
@@ -32,6 +36,7 @@ export const appConfig: ApplicationConfig = {
         }
       } as SocialAuthServiceConfig,
     },
+    ToastService
   ]
 
 };

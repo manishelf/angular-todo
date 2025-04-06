@@ -34,7 +34,7 @@ export class CalendarComponent {
     },
     initialView: 'dayGridMonth',
     events: (fetchInfo, successCallback, failureCallback) => {
-      this.todoService.getAllItemsForPage(1, false).subscribe({
+      this.todoService.getAll().subscribe({
         next: (result) => {
           const events: EventInput[] = result.map(item => ({
             id: item.id.toString(),
@@ -65,6 +65,7 @@ export class CalendarComponent {
   currentEvents = signal<EventApi[]>([]);
 
   constructor(private changeDetector: ChangeDetectorRef, private todoService: TodoServiceService) {
+    this.todoService.fromBin=false;
   }
 
   handleCalendarToggle() {
@@ -135,7 +136,7 @@ export class CalendarComponent {
   
   handleEventChange(changeInfo: EventChangeArg){
     const event = changeInfo.event;
-    this.todoService.getItemById(Number(event.id), false).subscribe((result)=>{
+    this.todoService.getItemById(Number(event.id)).subscribe((result)=>{
       result.creationTimestamp= event.start?event.start.toISOString():new Date().toISOString();
       result.eventStart = event.start?event.start.toISOString():new Date().toISOString();
       result.eventEnd = event.end?event.end.toISOString():new Date().toISOString();
@@ -145,7 +146,7 @@ export class CalendarComponent {
   }
 
   handleEventRemove(removeInfo: EventRemoveArg){
-    this.todoService.deleteItemById(Number(removeInfo.event.id), false);
+    this.todoService.deleteItemById(Number(removeInfo.event.id));
   }
 
   handleEvents(events: EventApi[]) {

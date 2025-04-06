@@ -78,7 +78,7 @@ export class EditorComponent {
   }
   onAddClick(){
     if(this.forEdit !== -1){
-      this.todoServie.updateItem({id: this.forEdit, ...this.todoItem});
+      this.todoServie.updateItem({id: this.forEdit, ...this.todoItem});      
     }else{
       this.todoServie.addItem(this.todoItem);
     }
