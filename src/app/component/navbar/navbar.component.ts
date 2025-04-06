@@ -25,12 +25,12 @@ export class NavbarComponent implements OnInit{
       this.loggedIn = (user != null);
       fetch('https://www.googleapis.com/drive/v3/files', {
         headers: {
-          Authorization: `Bearer ${user.idToken}`
+          Authorization: `Bearer ${this.authService.getAccessToken(GoogleLoginProvider.PROVIDER_ID)}`
         }
       })
       .then(response => response.json())
       .then(data => console.log(data));
-      console.log(user);
+      console.log(user +'2');
     });
   }
 
