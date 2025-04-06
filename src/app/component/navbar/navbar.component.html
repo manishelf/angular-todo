@@ -3,12 +3,22 @@
         <span class="text-blue-50 text-3xl m-3">TODO</span>
     </a>
     <input type="search" class="w-7/12 h-10 p-2 rounded-2xl bg-white" (input)="searchItems($event)" placeholder="Search for your notes"/>
-    <app-bean-item>
-        <button type="button" class="drop-shadow-lg">
-            <div title="offline! login" 
-            class="object-cover outline-2 outline-offset-1 scale-180 text-white outline-emerald-300 flex justify-center rounded-full cursor-pointer hover:scale-200">
-                <mat-icon>account_circle</mat-icon>
-            </div>
-        </button>
-    </app-bean-item>
+    <asl-google-signin-button type='icon' size='medium'>
+        <app-bean-item>
+            <button type="button" class="drop-shadow-lg">
+                <div *ngIf="!loggedIn">
+                    <div title="offline! login" 
+                        class="object-cover outline-2 outline-offset-1 scale-180 text-white outline-emerald-300 flex justify-center rounded-full cursor-pointer hover:scale-200">
+                    <mat-icon>sync_disabled</mat-icon>
+                    </div>
+                </div>
+                <div *ngIf="loggedIn">
+                    <div title={{user.name}} 
+                        class="object-cover outline-2 outline-offset-1 scale-180 text-white outline-emerald-300 flex justify-center rounded-full cursor-pointer hover:scale-200">
+                        <img src="{{ user.photoUrl }}" referrerpolicy="no-referrer">
+                    </div>
+                </div>
+            </button>
+        </app-bean-item>
+    </asl-google-signin-button>
 </nav>

@@ -1,17 +1,30 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
 import { BeanItemComponent } from './../bean-item/bean-item.component';
+import { SocialUser, GoogleSigninButtonModule,SocialLoginModule, GoogleLoginProvider, SocialAuthService } from "@abacritt/angularx-social-login";
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-navbar',
-  imports: [MatIconModule, BeanItemComponent],
-templateUrl: './navbar.component.html',
+  imports: [MatIconModule, BeanItemComponent, SocialLoginModule, GoogleSigninButtonModule, CommonModule],
+  templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css'
 })
-export class NavbarComponent {
+export class NavbarComponent implements OnInit{
+  accessToken:string | null = null;
+  user: SocialUser = new SocialUser();
+  loggedIn: boolean = false;
 
-  constructor(private router: Router){}
+  constructor(private router: Router,  private authService: SocialAuthService) { }
+
+  ngOnInit() {
+    this.authService.authState.subscribe((user) => {
+      this.user = user;
+      this.loggedIn = (user != null);
+    });
+  }
+
 
   searchItems(event: Event): void{
     let inputValue = (event.target as HTMLInputElement).value;

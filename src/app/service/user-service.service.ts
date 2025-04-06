@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { SocialUser, GoogleSigninButtonModule,SocialLoginModule, GoogleLoginProvider, SocialAuthService } from "@abacritt/angularx-social-login";
 
 @Injectable({
   providedIn: 'root'
@@ -10,6 +11,10 @@ export class UserServiceService {
   private userAuthTokenSubject = new BehaviorSubject<string | null>(null);
   private isLoggedInSubject = new BehaviorSubject<boolean | null>(false);
   private themeSubject = new BehaviorSubject<string | null>(null);
+
+  accessToken:string | null = null;
+  user: SocialUser = new SocialUser();
+  loggedIn: boolean = false;
   
   // $ is a common convention to indicate that a variable holds a observable
 
@@ -36,5 +41,4 @@ export class UserServiceService {
   getUserAuthToken(): string | null {
     return this.userAuthTokenSubject.getValue();
   }
-  constructor() { }
 }
