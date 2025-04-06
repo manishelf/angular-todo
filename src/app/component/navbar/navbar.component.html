@@ -8,7 +8,7 @@
             <asl-google-signin-button theme='filled_black' shape='pill' type='standard' size='large'>
             </asl-google-signin-button>
         </div>
-        <div *ngIf="loggedIn"  title="sync notes to drive" class="mr-0.5" (click)="syncNotes()">
+        <div *ngIf="loggedIn"  title="sync notes to drive" (click)="syncNotes()">
             <app-bean-item>
                 <button type="button" class="drop-shadow-lg">
                     <div 

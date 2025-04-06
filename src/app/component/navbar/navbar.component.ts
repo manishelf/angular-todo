@@ -23,16 +23,18 @@ export class NavbarComponent implements OnInit{
     this.authService.authState.subscribe((user) => {
       this.user = user;
       this.loggedIn = (user != null);
-      fetch('https://www.googleapis.com/drive/v3/files', {
-        headers: {
-          Authorization: `Bearer ${this.authService.getAccessToken(GoogleLoginProvider.PROVIDER_ID)}`
-        }
+      this.authService.getAccessToken(GoogleLoginProvider.PROVIDER_ID).then((result)=>{
+        console.log(result);
+        console.log('result');
+          
+        fetch('https://www.googleapis.com/drive/v3/files', {
+          headers: {
+            Authorization: `Bearer ${result}`
+          }
+        })
+        .then(response => response.json())
+        .then(data => console.log(data));    
       })
-      .then(response => response.json())
-      .then(data => console.log(data));
-      console.log(this.authService.getAccessToken(GoogleLoginProvider.PROVIDER_ID));
-      console.log(user.authToken);
-      console.log(user.idToken +'3');
     });
   }
 
