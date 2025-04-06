@@ -14,7 +14,7 @@ import { CommonModule } from '@angular/common';
 export class NavbarComponent implements OnInit{
   accessToken:string | null = null;
   user: SocialUser = new SocialUser();
-  loggedIn: boolean = false;
+  loggedIn: boolean = true;
 
   constructor(private router: Router,  private authService: SocialAuthService) { }
 
