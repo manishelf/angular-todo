@@ -30,7 +30,7 @@ export class NavbarComponent implements OnInit{
       })
       .then(response => response.json())
       .then(data => console.log(data));
-      console.log(user +'2');
+      console.log(this.authService.getAccessToken(GoogleLoginProvider.PROVIDER_ID), user.authToken,  user.idToken +'3');
     });
   }
 
