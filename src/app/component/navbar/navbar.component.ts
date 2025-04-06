@@ -25,7 +25,7 @@ export class NavbarComponent implements OnInit{
       this.loggedIn = (user != null);
       fetch('https://www.googleapis.com/drive/v3/files', {
         headers: {
-          Authorization: `Bearer ${user.authToken}`
+          Authorization: `Bearer ${user.idToken}`
         }
       })
       .then(response => response.json())
