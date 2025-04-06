@@ -21,14 +21,17 @@ export const appConfig: ApplicationConfig = {
     {
       provide: 'SocialAuthServiceConfig',
       useValue: {
-        autoLogin: false,
+        autoLogin: true,
         lang: 'en',
         providers: [
           {
             id: GoogleLoginProvider.PROVIDER_ID,
             provider: new GoogleLoginProvider(
-              environment.googleClientId
-            )
+              environment.googleClientId,
+              {
+                scopes: 'https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/userinfo.email'
+              }
+            ),
           },
         ],
         onError: (err) => {
