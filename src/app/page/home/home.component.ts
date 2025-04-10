@@ -37,9 +37,8 @@ export class HomeComponent implements OnInit, OnDestroy{
           if(x.setForReminder||y.completionStatus) return -1;
           if(y.setForReminder||x.completionStatus) return 1;
           return 0;
-        }); 
-               
-      },
+        });
+        },
       (error)=>{
         console.error('error fetching tasks ',error);
       }

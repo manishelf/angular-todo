@@ -28,9 +28,9 @@ export const appConfig: ApplicationConfig = {
             id: GoogleLoginProvider.PROVIDER_ID,
             provider: new GoogleLoginProvider(
               environment.googleClientId,
-              {
-                scopes: 'https://www.googleapis.com/auth/drive'
-              }
+              // {
+              //   scopes: 'https://www.googleapis.com/auth/drive'
+              // }
             ),
           },
         ],

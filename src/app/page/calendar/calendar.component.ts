@@ -86,13 +86,6 @@ export class CalendarComponent {
     calendarApi.unselect(); // clear date selection
 
     if (title) {
-      calendarApi.addEvent({
-        id: '0',
-        title,
-        start: selectInfo.startStr,
-        end: selectInfo.endStr,
-        allDay: selectInfo.allDay
-      });
       const newTodoItem: Omit<TodoItem,'id'> = {
         subject: title,
         description: '',
@@ -105,7 +98,13 @@ export class CalendarComponent {
         tags: [{name: 'calendar event'}, {name: 'start-'+selectInfo.startStr}, {name: 'end-'+selectInfo.endStr}],
         eventFullDay: selectInfo.allDay
       };
-      this.todoService.addItem(newTodoItem);
+      calendarApi.addEvent({
+        id: '0',
+        title,
+        start: selectInfo.startStr,
+        end: selectInfo.endStr,
+        allDay: selectInfo.allDay
+      });
     }
   }
 
@@ -118,8 +117,7 @@ export class CalendarComponent {
   
   handleEventAdd(addInfo: EventAddArg) {
     const event = addInfo.event;
-    const newTodoItem: TodoItem = {
-      id: Number(event.id),
+    const newTodoItem: Omit<TodoItem, 'id'> = {
       subject: event.title,
       description: '',
       creationTimestamp: event.startStr,
