@@ -1,43 +1,22 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
-import { BeanItemComponent } from './../bean-item/bean-item.component';
-import { SocialUser, GoogleSigninButtonModule,SocialLoginModule, GoogleLoginProvider, SocialAuthService } from "@abacritt/angularx-social-login";
 import { CommonModule } from '@angular/common';
 import { ToastService } from 'angular-toastify';
 import { TodoServiceService } from '../../service/todo-service.service';
-import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-navbar',
-  imports: [MatIconModule, BeanItemComponent, SocialLoginModule, GoogleSigninButtonModule, CommonModule],
+  imports: [MatIconModule, CommonModule],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css'
 })
 export class NavbarComponent implements OnInit{
   accessToken:string | null = null;
-  user: SocialUser = new SocialUser();
-  loggedIn: boolean = true;
 
-  constructor(private router: Router,  private authService: SocialAuthService, private toaster: ToastService, private todoService: TodoServiceService) { }
+  constructor(private router: Router, private toaster: ToastService, private todoService: TodoServiceService) { }
 
   ngOnInit() {
-    // this.authService.authState.subscribe((user) => {
-    //   this.user = user;
-    //   this.loggedIn = (user != null);
-      // this.authService.getAccessToken(GoogleLoginProvider.PROVIDER_ID).then((result)=>{
-      //   console.log(result);
-      //   console.log('result');
-          
-      //   fetch('https://www.googleapis.com/drive/v3/files', {
-      //     headers: {
-      //       Authorization: `Bearer ${result}`
-      //     }
-      //   })
-      //   .then(response => response.json())
-      //   .then(data => console.log(data));    
-      // })
-    // });
   }
 
 
@@ -60,7 +39,7 @@ export class NavbarComponent implements OnInit{
   }
 
   syncNotes(): void{
-    this.toaster.info("Syncing notes...");   
+    this.toaster.info("Downloading notes...");   
     this.todoService.fromBin = false; 
     this.todoService.getAll().subscribe((itemList)=>{
       this.todoService.serializeManyToJson(itemList).subscribe((json)=>{

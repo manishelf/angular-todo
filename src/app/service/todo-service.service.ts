@@ -190,9 +190,33 @@ export class TodoServiceService{
 
   addMany(items: TodoItem[]): void{
     try{
-      console.log(items);
       items.forEach(item=>{
-        this.addService.addItem(this.db$, item);
+        try{
+          this.addItem(item);
+        }catch(e){
+          try{
+            this.getItemById(item.id).subscribe((existingItem)=>{
+              if(existingItem){
+                if(new Date(existingItem.updationTimestamp)<new Date(item.updationTimestamp)){
+                  this.updateItem(item);
+                  this.toaster.info('updated an existing item');
+                }
+              }
+              else{
+                this.searchTodos(item.subject).subscribe((existingItem)=>{
+                  if(new Date(existingItem[0].updationTimestamp)<new Date(item.updationTimestamp)){
+                    this.updateItem(item);
+                    this.toaster.info('updated an existing item');
+                  }
+                });
+              }
+            });
+          }catch(e){
+            console.log('error adding item', e);
+            this.toaster.error('error adding item');
+          }
+          console.log('error adding todo item', e);
+        }
       });
       this.initializeItems();  
     }catch(e){

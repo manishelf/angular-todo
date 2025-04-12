@@ -4,27 +4,10 @@
     </a>
     <input type="search" class="w-7/12 h-10 p-2 rounded-2xl bg-white" (input)="searchItems($event)" placeholder="Search for your notes"/>
     <div class="m-1 mr-3 transition-all flex cursor-pointer">
-        <div *ngIf="!loggedIn" title="offline! signin to sync to drive">
-            <asl-google-signin-button theme='filled_black' shape='pill' type='standard' size='large'>
-            </asl-google-signin-button>
+        <div class="text-white scale-180 flex items-center hover:scale-200 transition-all mx-3" (click)="syncNotes()" title="click to download as a local backup">
+            <mat-icon>cloud_download</mat-icon>
         </div>
-        <div *ngIf="loggedIn"  title="sync notes to drive" (click)="syncNotes()">
-            <div>
-                <app-bean-item>
-                    <button type="button" class="drop-shadow-lg">
-                        <div
-                            class="object-cover scale-180 flex justify-center items-center rounded-full cursor-pointer max-w-5 max-h-5">
-                            <img src={{user.photoUrl}} referrerpolicy="no-referrer">
-                              <div
-                                class="object-cover colour-blue-600 rounded-full cursor-pointer text-blue-400 relative left-2">
-                                <mat-icon>sync</mat-icon>
-                            </div>
-                        </div>
-                    </button>
-                </app-bean-item>
-            </div>
-        </div>
-        <div class="text-white scale-180 flex items-center ml-3 mr-1 hover:scale-200 transition-all" (click)="uploadNotes()" title="click to upload local backup">
+        <div class="text-white scale-180 flex items-center hover:scale-200 transition-all mx-3" (click)="uploadNotes()" title="click to upload local backup">
             <mat-icon>cloud_upload</mat-icon>
         </div>
     </div>
