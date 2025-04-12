@@ -24,7 +24,13 @@ export class HomeComponent implements OnInit, OnDestroy{
     private router: Router, 
     private route: ActivatedRoute){
     let url = this.router.url;    
-    if(url === '/bin/clear') todoService.clearBin();
+    if(url === '/bin/clear'){
+      todoService.fromBin = true;
+      todoService.deleteAll();
+    }else if(url === '/home/clear'){
+      todoService.fromBin = false;
+      todoService.deleteAll();
+    }
     this.fromBin = (url.substring(0,5) !== '/home');    
     this.todoService.fromBin = this.fromBin;    
    }

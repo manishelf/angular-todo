@@ -67,14 +67,19 @@ export class TodoServiceService{
   getAll(): Observable<TodoItem[]> {
     return this.getService.getAllItems(this.db$, this.fromBin);
   }
-
-  clearBin(): void{
+  deleteAll():void{
+    let res = prompt(`Are you sure you want to delete all items from ${this.fromBin?'bin':'item list'}?\n [ Y | N ]`,'N');
+    if(res === 'Y')
     try{
-      this.deleteService.clearBin(this.db$);
-      this.toaster.success('local recycle bin cleared');
+      this.getService.getAllItems(this.db$, this.fromBin).subscribe((items)=>{
+        items.forEach(item=>{
+          this.deleteItem(item);
+        });
+      }); 
+      this.toaster.success('cleared all items from '+(this.fromBin?'bin':'todo list'));
     }catch(e){
-      this.toaster.error('error clearing local recycle bin');
-      console.error('error clearing local recycle bin: ', e);
+      this.toaster.error('error deleting all items');
+      console.error('error deleting all items: ', e);
     }
   }
   searchTodos(subjectQuery: string, tagFilter: string[] =[]): Observable<TodoItem[]> {
@@ -124,10 +129,10 @@ export class TodoServiceService{
   serializeOneToJson(item:TodoItem): string{
     return `{
       "id": ${item.id?item.id:null},
-      "subject": "${item.subject}",
-      "description": "${item.description}",
+      "subject": "${item.subject.replace(/\"/g,"&quot;")}",
+      "description": "${item.description.replace(/\"/g,"&quot;").replace(/\n/g,"<br>")}",
       "tags": [${
-        item.tags.map(tag => `{"id": ${tag.id?tag.id:null}, "name": "${tag.name}"}`)
+        item.tags.map(tag => `{"id": ${tag.id?tag.id:null}, "name": "${tag.name.replace(/\"/g,"&quot;")}"}`)
       }],
       "completionStatus": ${item.completionStatus},
       "setForReminder": ${item.setForReminder},
@@ -179,7 +184,7 @@ export class TodoServiceService{
       let items: TodoItem[] = [];
       try{
         let result = JSON.parse(xmlString);
-        items = result.items
+        items = result.items;
       }catch(e){
         console.error('error deserializing xml string to todo item', e);
         this.toaster.error('error deserializing xml string to todo item ');

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectorRef, AfterViewInit } from '@angular/core';
 import { TodoItem } from '../../models/todo-item';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
@@ -6,13 +6,17 @@ import * as marked from 'marked';
 import { TodoServiceService } from '../../service/todo-service.service';
 import { NavigationExtras, Router } from '@angular/router';
 
+import Prism from 'prismjs';
+import 'prismjs/plugins/autoloader/prism-autoloader';
+import 'prismjs/themes/prism-tomorrow.css';
+
 @Component({
   selector: 'app-todo-item',
   imports: [MatIconModule, CommonModule],
   templateUrl: './todo-item.component.html',
   styleUrl: './todo-item.component.css'
 })
-export class TodoItemComponent implements OnInit {
+export class TodoItemComponent implements OnInit, AfterViewInit {
   @Input() item: TodoItem = {
     id:0,
     subject: "",
@@ -34,6 +38,7 @@ export class TodoItemComponent implements OnInit {
     let url = this.router.url;    
     this.fromBin = (url.substring(0,5) !== '/home');    
     this.todoService.fromBin = this.fromBin;
+    Prism.plugins['autoloader'].languages_path = 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/components/';
   }
   ngOnInit(): void {
     if (this.item.setForReminder) {
@@ -44,10 +49,23 @@ export class TodoItemComponent implements OnInit {
     }
     this.parsedMD = marked.parse(this.item.description).toString();
     this.parsedMD = this.parsedMD.replace(/\n/g, '<br>');
+    let code = this.parsedMD.match(/<code class="language-(\w+)">([\s\S]*?)<\/code>/g) || this.parsedMD.match(/<code>([\s\S]*?)<\/code>/);
+    if (code) {
+     for (let i = 0; i < code.length; i++) {      
+      let snippet = code[i];
+      this.parsedMD = this.parsedMD.replace(snippet,  snippet.replace(/<br>/g,'\n').replace(/&lt;br&gt;/g, '<br>'));
+    }
+    }
+
     this.item.tags.forEach((tag)=>{
       this.tagNameList.push(' '+tag.name+' ');
     });
   }
+
+  ngAfterViewInit() {
+     Prism.highlightAll();
+  }
+  
 
   onItemClick(){
     let extra : NavigationExtras = {

@@ -18,15 +18,9 @@ export class TodoItemDeleteService {
           this.todoItemUtils.getObjectStoreRW(db, 'deleted_todo_items').add(item);
           this.todoItemUtils.getObjectStoreRW(db, 'todo_items').delete(item.id);
         }else{
-          
           this.todoItemUtils.getObjectStoreRW(db, 'deleted_todo_items').delete(item.id);
         }
       }
     );
-  }
-  clearBin(db$:Observable<IDBDatabase>):void{
-    db$.subscribe((db)=>{
-      this.todoItemUtils.getObjectStoreRW(db, 'deleted_todo_items').clear();
-    });
   }
 }

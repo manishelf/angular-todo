@@ -8,7 +8,7 @@ import { TodoServiceService } from './../../service/todo-service.service';
 import { TodoItem } from '../../models/todo-item';
 import { Router } from '@angular/router';
 import { Tag } from '../../models/tag';
-
+import Prism from 'prismjs';
 @Component({
   selector: 'app-markdown-editor',
   templateUrl: './editor.component.html',
@@ -38,24 +38,23 @@ export class EditorComponent {
           let itemForUpdate = navigation.extras.state as TodoItem;
           this.forEdit = itemForUpdate.id;
           this.todoItem = itemForUpdate;
+          this.todoItem.description = this.todoItem.description.replace(/<br>/g, '\n');
           this.tagNameList = this.todoItem.tags.map(tag=>tag.name);
       }else{
         router.navigate(['/home']);
       }
     }
+    Prism.plugins['autoloader'].languages_path = 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/components/';
   }
 
   @HostListener('keydown', ['$event'])
   handleKeydown(event: KeyboardEvent): void {
     if (event.key === 'Tab' && event.target instanceof HTMLTextAreaElement) {
       event.preventDefault();
-
       const target = event.target as HTMLTextAreaElement;
       const start = target.selectionStart;
       const end = target.selectionEnd;
-
       target.value = target.value.substring(0, start) + '\t' + target.value.substring(end);
-
       target.selectionStart = target.selectionEnd = start + 1;
     }else if(event.key === 'Enter' && event.target instanceof HTMLInputElement){
       event.preventDefault();
@@ -73,7 +72,15 @@ export class EditorComponent {
     if(this.option === 'Editor'){
       this.convertedMarkdown = marked.parse(this.todoItem.description).toString();
       this.convertedMarkdown = this.convertedMarkdown.replace(/\n/g, '<br>');
+      let code = this.convertedMarkdown.match(/<code class="language-(\w+)">([\s\S]*?)<\/code>/g) || this.convertedMarkdown.match(/<code>([\s\S]*?)<\/code>/);
+      if (code) {
+        for (let i = 0; i < code.length; i++) {
+        let snippet = code[i];
+        this.convertedMarkdown = this.convertedMarkdown.replace(snippet, snippet.replace(/<br>/g, '\n'));
+      }
+    }
       this.convertedMarkdown = `<h1>${this.todoItem.subject}</h1><br>`+this.convertedMarkdown;
+      setTimeout(()=>{Prism.highlightAll()}, 100);
     }
   }
   onAddClick(){
@@ -82,7 +89,6 @@ export class EditorComponent {
     }else{
       this.todoServie.addItem(this.todoItem);
     }
-    
     this.router.navigate(['/home']);
   }
 
