@@ -83,7 +83,8 @@ export class EditorComponent {
       }
     }
       this.convertedMarkdown = `<u class="text-3xl">${this.todoItem.subject}</u><br>`+this.convertedMarkdown;
-      setTimeout(()=>{Prism.highlightAll()}, 100);
+      setTimeout(()=>{Prism.highlightAll(); console.log('highlighted');
+      }, 100);
     }
   }
   onAddClick(){
