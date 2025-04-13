@@ -59,12 +59,15 @@ export class EditorComponent {
     }else if(event.key === 'Enter' && event.target instanceof HTMLInputElement){
       event.preventDefault();
       this.onAddClick();
+    }else if(event.key === 'Enter' && event.target instanceof HTMLTextAreaElement){
+      this.onEventForResize(event);
     }
   }
-  @HostListener('input', ['$event.target'])
-  onInput(target: HTMLTextAreaElement): void {
-    target.style.height = 'auto';
-    target.style.height = target.scrollHeight + 'px';
+  @HostListener('focusin',['$event'])
+  onEventForResize(event: Event): void { 
+   const target = event.target as HTMLTextAreaElement;
+   target.style.height = 'auto';
+   target.style.height = target.scrollHeight + 'px';
   }
 
   onOptionClick() {
@@ -79,7 +82,7 @@ export class EditorComponent {
         this.convertedMarkdown = this.convertedMarkdown.replace(snippet, snippet.replace(/<br>/g, '\n'));
       }
     }
-      this.convertedMarkdown = `<h1>${this.todoItem.subject}</h1><br>`+this.convertedMarkdown;
+      this.convertedMarkdown = `<u class="text-3xl">${this.todoItem.subject}</u><br>`+this.convertedMarkdown;
       setTimeout(()=>{Prism.highlightAll()}, 100);
     }
   }

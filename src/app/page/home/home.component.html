@@ -1,5 +1,5 @@
-<div class="h-full scroll-auto overflow-scroll justify-center">
-    <div class="w-full flex flex-col justify-center">
+<div class="h-full overflow-y-auto justify-center mt-2 pb-10">
+    <div class="w-full flex flex-col justify-center" *ngIf="itemList.length === 0 || fromBin">
         <div class="mb-8">
             <span *ngIf="fromBin" class="block text-center text-3xl font-semibold text-amber-600 m-4">
                 Local Recycle Bin
@@ -12,7 +12,7 @@
         </div>
     </div>
     <div class="h-fit w-full flex flex-row flex-wrap">
-        <div *ngFor="let todoItem of itemList" class="flex-auto mx-2 my-0.5 drop-shadow-sm w-fit max-w-full">
+        <div *ngFor="let todoItem of itemList" class="flex-auto mx-2 my-0.5 drop-shadow-sm">
             <app-todo-item *ngIf="fromSearch" [item]="todoItem" [optionsDisplayed]=true [showTags] = true/>
             <app-todo-item *ngIf="!fromSearch" [item]="todoItem"/>
         </div>
