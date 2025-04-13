@@ -44,7 +44,7 @@ export class EditorComponent {
         router.navigate(['/home']);
       }
     }
-    Prism.plugins['autoloader'].languages_path = 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/components/';
+    Prism.plugins['autoloader'].languages_path = 'https://cdn.jsdelivr.net/npm/prismjs@1.14.0/components/';
   }
 
   @HostListener('keydown', ['$event'])
