@@ -27,16 +27,19 @@ export class TodoItemComponent implements OnInit, AfterViewInit {
     creationTimestamp: Date.now().toString(),
     updationTimestamp: Date.now().toString()
   };
+
+  toolTipString: string = '';
   parsedMD: string = '';
   fromBin: boolean;
   bgColour: string = 'bg-gray-600 border-2 border-amber-400';
   tagNameList: string[] = [];
+
   @Input() optionsDisplayed: boolean = false;
   @Input() showTags:boolean = false;
 
   constructor(private todoService: TodoServiceService, private cdr: ChangeDetectorRef, private router: Router) {
-    let url = this.router.url;    
-    this.fromBin = (url.substring(0,5) !== '/home');    
+    let url = this.router.url;
+    this.fromBin = (url.substring(0,5) !== '/home');
     this.todoService.fromBin = this.fromBin;
     Prism.plugins['autoloader'].languages_path = 'https://cdn.jsdelivr.net/npm/prismjs@1.14.0/components/';
   }
@@ -51,7 +54,7 @@ export class TodoItemComponent implements OnInit, AfterViewInit {
     this.parsedMD = this.parsedMD.replace(/\n/g, '<br>');
     let code = this.parsedMD.match(/<code class="language-(\w+)">([\s\S]*?)<\/code>/g) || this.parsedMD.match(/<code>([\s\S]*?)<\/code>/);
     if (code) {
-     for (let i = 0; i < code.length; i++) {      
+     for (let i = 0; i < code.length; i++) {
       let snippet = code[i];
       this.parsedMD = this.parsedMD.replace(snippet,  snippet.replace(/<br>/g,'\n').replace(/&lt;br&gt;/g, '<br>'));
     }
@@ -60,13 +63,16 @@ export class TodoItemComponent implements OnInit, AfterViewInit {
     this.item.tags.forEach((tag)=>{
       this.tagNameList.push(' '+tag.name+' ');
     });
+    const neverUpdated = this.item.creationTimestamp === this.item.updationTimestamp;
+    this.toolTipString = neverUpdated ? 'created on - ' + this.item.creationTimestamp :
+                                        'last updated on - ' + this.item.updationTimestamp;
   }
 
   ngAfterViewInit() {
     setTimeout(()=>{Prism.highlightAll(); console.log('highlighted');
            }, 100);
   }
-  
+
 
   onItemClick(){
     let extra : NavigationExtras = {
@@ -75,7 +81,7 @@ export class TodoItemComponent implements OnInit, AfterViewInit {
     this.router.navigate(['/edit'],extra);
   }
 
-  onClickDelete(){    
+  onClickDelete(){
     this.todoService.deleteItem(this.item);
   }
 
@@ -105,7 +111,7 @@ export class TodoItemComponent implements OnInit, AfterViewInit {
     )
   }
   onClickTags(){
-    this.showTags = !this.showTags;    
+    this.showTags = !this.showTags;
     if(this.showTags==false){
       this.updateSave();
     }

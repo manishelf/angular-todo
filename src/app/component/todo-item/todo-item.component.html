@@ -1,4 +1,4 @@
-<div  [class]="`${bgColour} text-white rounded-2xl p-3 cursor-pointer hover:outline-2 hover:shadow-xl shadow-gray-50 outline-offset-2 outline-white transition-all`">
+<div  [class]="`${bgColour} text-white rounded-2xl p-3 hover:outline-2 hover:shadow-xl shadow-gray-50 outline-offset-2 outline-white transition-all`" [title]="toolTipString">
     <div class="flex flex-row justify-between">
         <div class="text-3xl max-w-full overflow-clip overflow-ellipsis hover:scale-110 cursor-pointer transition-all" (click)="onItemClick()" title="edit">
             <u>{{item.subject}}</u>
