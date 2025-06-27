@@ -3,8 +3,16 @@
         <div class="text-3xl max-w-full overflow-clip overflow-ellipsis hover:scale-110 cursor-pointer transition-all" (click)="onItemClick()" title="edit">
             <u>{{item.subject}}</u>
         </div>
-        <div *ngIf="!optionsDisplayed && !fromBin" (click)="optionsDisplayed=!optionsDisplayed" class="cursor-pointer hover:scale-120" title="options">
-            <mat-icon>more_horiz</mat-icon>
+        <div *ngIf="!optionsDisplayed && !fromBin">
+            <mat-icon (click)="optionsDisplayed=!optionsDisplayed" class="cursor-pointer hover:scale-120" title="options">
+              more_horiz
+            </mat-icon>
+            <mat-icon *ngIf="!minimized && item.description" class="cursor-pointer hover:scale-120" title="minimize" (click)="minimized=true">
+              unfold_less
+            </mat-icon>
+            <mat-icon *ngIf="minimized && item.description" class="cursor-pointer hover:scale-120" title="maximize" (click)="minimized=false">
+              unfold_more
+            </mat-icon>
         </div>
         <div *ngIf="optionsDisplayed || fromBin" class="flex flex-row">
             <div *ngIf="!fromBin">
@@ -25,6 +33,9 @@
             </button>
         </div>
     </div>
-    <div class="m-1 max-w-full overflow-clip overflow-ellipsis"  [innerHtml]="parsedMD">
+    <div [ngClass]="minimized?'max-h-0 opacity-0 max-w-0':'max-h-[1000px] max-w-[1000px] opacity-100'"
+      class="m-1 overflow-clip overflow-ellipsis
+      transition-all duration-1000 ease-in-out"
+      [innerHtml]="parsedMD">
     </div>
 </div>

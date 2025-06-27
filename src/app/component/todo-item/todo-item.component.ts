@@ -31,6 +31,7 @@ export class TodoItemComponent implements OnInit, AfterViewInit {
   toolTipString: string = '';
   parsedMD: string = '';
   fromBin: boolean;
+  minimized: boolean = false;
   bgColour: string = 'bg-gray-600 border-2 border-amber-400';
   tagNameList: string[] = [];
 
@@ -116,4 +117,5 @@ export class TodoItemComponent implements OnInit, AfterViewInit {
       this.updateSave();
     }
   }
+
 }
