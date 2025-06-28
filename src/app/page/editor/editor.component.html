@@ -41,10 +41,10 @@
         placeholder="Enter your note here (supports markdown)"
         class="w-full p-3 border rounded-lg mt-2 resize-vertical focus:outline-none focus:ring focus:border-blue-300 overflow-hidden"
         ></textarea>
+      <div id="div-for-scrolling"></div>
     </div>
     <div
       *ngIf="option !== 'MD Preview'"
-      class="prose max-w-none"
       [innerHtml]="convertedMarkdown"
     ></div>
   </div>

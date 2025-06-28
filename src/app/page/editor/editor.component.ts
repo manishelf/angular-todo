@@ -1,8 +1,8 @@
 import { Component, HostListener } from '@angular/core';
 import * as marked from 'marked';
 import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';  
-import {MatIconModule} from '@angular/material/icon'
+import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon'
 import { BeanItemComponent } from '../../component/bean-item/bean-item.component';
 import { TodoServiceService } from './../../service/todo-service.service';
 import { TodoItem } from '../../models/todo-item';
@@ -31,16 +31,17 @@ export class EditorComponent {
     creationTimestamp: new Date(Date.now()).toISOString(),
     updationTimestamp: new Date(Date.now()).toISOString(),
   };
-  constructor(private todoServie : TodoServiceService, private router: Router){
-    if(router.url === '/edit'){
+
+  constructor(private todoServie: TodoServiceService, private router: Router) {
+    if (router.url === '/edit') {
       const navigation = this.router.getCurrentNavigation();
       if (navigation && navigation.extras && navigation.extras.state) {
-          let itemForUpdate = navigation.extras.state as TodoItem;
-          this.forEdit = itemForUpdate.id;
-          this.todoItem = itemForUpdate;
-          this.todoItem.description = this.todoItem.description.replace(/<br>/g, '\n');
-          this.tagNameList = this.todoItem.tags.map(tag=>tag.name);
-      }else{
+        let itemForUpdate = navigation.extras.state as TodoItem;
+        this.forEdit = itemForUpdate.id;
+        this.todoItem = itemForUpdate;
+        this.todoItem.description = this.todoItem.description.replace(/<br>/g, '\n');
+        this.tagNameList = this.todoItem.tags.map(tag => tag.name);
+      } else {
         router.navigate(['/home']);
       }
     }
@@ -56,65 +57,74 @@ export class EditorComponent {
       const end = target.selectionEnd;
       target.value = target.value.substring(0, start) + '\t' + target.value.substring(end);
       target.selectionStart = target.selectionEnd = start + 1;
-    }else if(event.key === 'Enter' && event.target instanceof HTMLInputElement){
+    } else if (event.key === 'Enter' && event.target instanceof HTMLInputElement) {
       event.preventDefault();
       this.onAddClick();
-    }else if(event.key === 'Enter' && event.target instanceof HTMLTextAreaElement){
+    } else if (event.key === 'Enter' && event.target instanceof HTMLTextAreaElement) {
+      this.onEventForResize(event);
+    } else if(event.key === 'Control'){
+      this.commandPalletVisible = true;
       this.onEventForResize(event);
     }
   }
-  @HostListener('focusin',['$event'])
-  onEventForResize(event: Event): void { 
-   const target = event.target as HTMLTextAreaElement;
-   target.style.height = 'auto';
-   target.style.height = target.scrollHeight + 'px';
+  @HostListener('focusin', ['$event'])
+  onEventForResize(event: Event): void {
+    const target = event.target as HTMLTextAreaElement;
+    target.style.height = 'auto';
+    target.style.height = target.scrollHeight + 'px';
+    target.nextElementSibling?.scrollIntoView(true);
   }
+
 
   onOptionClick() {
     this.option = this.option === 'MD Preview' ? 'Editor' : 'MD Preview';
-    if(this.option === 'Editor'){
+    if (this.option === 'Editor') {
       this.convertedMarkdown = marked.parse(this.todoItem.description).toString();
-      this.convertedMarkdown = this.convertedMarkdown.replace(/\n/g, '<br>');
+      this.convertedMarkdown = this.convertedMarkdown.replaceAll('\n','<br>');
+
       let code = this.convertedMarkdown.match(/<code class="language-(\w+)">([\s\S]*?)<\/code>/g) || this.convertedMarkdown.match(/<code>([\s\S]*?)<\/code>/);
       if (code) {
         for (let i = 0; i < code.length; i++) {
-        let snippet = code[i];
-        this.convertedMarkdown = this.convertedMarkdown.replace(snippet, snippet.replace(/<br>/g, '\n'));
+          let snippet = code[i];
+          this.convertedMarkdown = this.convertedMarkdown.replace(snippet, snippet.replace(/<br>/g, '\n'));
+        }
+        setTimeout(() => {
+          Prism.highlightAll(); 
+        }, 100);
+      }
+      if(this.todoItem.subject.trim.length != 0){
+        this.convertedMarkdown = `<u class="text-3xl">${this.todoItem.subject}</u><br>` + this.convertedMarkdown;
       }
     }
-      this.convertedMarkdown = `<u class="text-3xl">${this.todoItem.subject}</u><br>`+this.convertedMarkdown;
-      setTimeout(()=>{Prism.highlightAll(); console.log('highlighted');
-      }, 100);
-    }
   }
-  onAddClick(){
-    if(this.forEdit !== -1){
-      this.todoServie.updateItem({id: this.forEdit, ...this.todoItem});      
-    }else{
+  onAddClick() {
+    if (this.forEdit !== -1) {
+      this.todoServie.updateItem({ id: this.forEdit, ...this.todoItem });
+    } else {
       this.todoServie.addItem(this.todoItem);
     }
     this.router.navigate(['/home']);
   }
 
-  onUpdateTags(event: Event){
+  onUpdateTags(event: Event) {
     let inputValue = (event.target as HTMLInputElement).value;
     this.todoItem.tags = [];
     inputValue.split(',').forEach(
-      (name)=>{
+      (name) => {
         this.todoItem.tags.push(
-          {name: name}
+          { name: name }
         )
       }
     )
   }
-  onClickTags(){
-    this.showTags = !this.showTags;    
+  onClickTags() {
+    this.showTags = !this.showTags;
   }
-  onReminderClick(){
+  onReminderClick() {
     this.todoItem.setForReminder = !this.todoItem.setForReminder;
   }
 
-  onCompletionClick(){
-    this.todoItem.completionStatus =!this.todoItem.completionStatus;
-  }
+  onCompletionClick() {
+    this.todoItem.completionStatus = !this.todoItem.completionStatus;
+  } 
 }

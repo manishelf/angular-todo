@@ -19,20 +19,25 @@ h1, h2, h3, h4, h5, h6 {
   }
 
   ul, ol {
-    @apply list-disc pl-5;
+    @apply pl-5;
   }
-
-  li {
-    @apply mb-0.5;
+  ul {
+    @apply list-disc;
+  }
+  ol {
+    @apply list-decimal;
+  }  
+  ol br, ul br{
+    display: none;
   }
 
   code {
     @apply bg-gray-700 text-green-600 px-2 py-1 rounded;
   }
 
-  pre {
+  /*pre {
     @apply bg-gray-500 text-white p-4 rounded overflow-auto;
-  }
+  }*/
 
   img {
     @apply max-w-full h-auto shadow-sm;
