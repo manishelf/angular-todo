@@ -63,7 +63,6 @@ export class EditorComponent {
     } else if (event.key === 'Enter' && event.target instanceof HTMLTextAreaElement) {
       this.onEventForResize(event);
     } else if(event.key === 'Control'){
-      this.commandPalletVisible = true;
       this.onEventForResize(event);
     }
   }
