@@ -31,7 +31,7 @@ export class TodoItemComponent implements OnInit, AfterViewInit {
   toolTipString: string = '';
   parsedMD: string = '';
   fromBin: boolean;
-  minimized: boolean = false;
+  minimized: boolean = true;
   bgColour: string = 'bg-gray-600 border-2 border-amber-400';
   tagNameList: string[] = [];
 
