@@ -62,8 +62,9 @@ export class EditorComponent {
       this.onAddClick();
     } else if (event.key === 'Enter' && event.target instanceof HTMLTextAreaElement) {
       this.onEventForResize(event);
-    } else if(event.key === 'Control'){
-      this.onEventForResize(event);
+    } else if(event.key === 's' && event.ctrlKey){
+      event.preventDefault();
+      this.onAddClick();
     }
   }
   @HostListener('focusin', ['$event'])
@@ -91,7 +92,7 @@ export class EditorComponent {
           Prism.highlightAll(); 
         }, 100);
       }
-      if(this.todoItem.subject.trim.length != 0){
+      if(this.todoItem.subject.trim().length != 0){
         this.convertedMarkdown = `<u class="text-3xl">${this.todoItem.subject}</u><br>` + this.convertedMarkdown;
       }
     }
