@@ -1,8 +1,8 @@
 <nav class="bg-gray-600 h-full flex flex-row items-center justify-between p-2">
-    <a href="./home">
-        <span class="text-blue-50 text-3xl m-3">TODO</span>
+    <a href="./home" tabindex="-1">
+        <span class="text-blue-50 text-3xl m-3" >TODO</span>
     </a>
-    <input type="search" class="w-7/12 h-10 p-2 rounded-2xl bg-white" (input)="searchItems($event)" placeholder="Search for your notes"/>
+    <input type="search" class="w-7/12 h-10 p-2 rounded-2xl bg-white" #searchBox tabindex="0" (input)="searchItems($event)" placeholder="Search for your notes"/>
     <div class="m-1 mr-3 transition-all flex cursor-pointer">
         <div class="text-white scale-180 flex items-center hover:scale-200 transition-all mx-3" (click)="syncNotes()" title="click to download as a local backup">
             <mat-icon>cloud_download</mat-icon>

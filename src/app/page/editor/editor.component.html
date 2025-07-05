@@ -1,37 +1,92 @@
-<div class="h-full m-4 p-4 overflow-auto">
-  <div class="flex justify-end space-x-2 m-4">
-    <button (click)="onOptionClick()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-      {{ option }}
-    </button>
-    <button (click)="onAddClick()" title="Save the note" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-      <mat-icon>save</mat-icon>
-    </button>
-    <div class="relative">
-      <button (click)="onClickTags()" title="Tags" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">
-        <mat-icon>queue_add</mat-icon>
-      </button>
-      <textarea
-        *ngIf="showTags"
-        placeholder="Add tags here like t1 , t2"
-        class="absolute top-10 right-0 bg-white border rounded p-2 shadow-md focus:outline-none"
-        [value]="tagNameList"
-        (input)="onUpdateTags($event)"
-        rows="1"
-        height="auto"
-      ></textarea>
-    </div>
-    <button (click)="onReminderClick()" [title]="!todoItem.setForReminder ? 'Set reminder' : 'Clear reminder'" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded">
-      <mat-icon>{{ !todoItem.setForReminder ? 'alarm_add' : 'alarm_off' }}</mat-icon>
-    </button>
-    <button (click)="onCompletionClick()" [title]="!todoItem.completionStatus ? 'Status: Pending' : 'Status: Done'" class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
-      <mat-icon>{{ !todoItem.completionStatus ? 'timelapse' : 'done_all' }}</mat-icon>
-    </button>
-  </div>
+<div class="h-full m-4 p-4">
+  <div class="flex flex-row flex-wrap justify-between p-4">
+    <div class="flex flex-row">
+      <div
+        class="flex flex-row h-5 m-1"
+        *ngFor="let customType of customTypes"
+      >
+        <input type="text" class="bg-white rounded" />
+        <span class="content-center text-white text-nowrap">&nbsp;->&nbsp;</span>
+        <input type="number" placeholder="0.0" class="bg-white rounded" />
+      </div> 
+      <div
+        class="flex flex-row h-5 m-1"
+        *ngFor="let customType of customTypes"
+      >
+        <input type="text" class="bg-white rounded" />
+        <span class="content-center text-white text-nowrap">&nbsp;->&nbsp;</span>
+        <input type="number" placeholder="0.0" class="bg-white rounded" />
+      </div>
 
+    </div>
+    <div class="flex justify-end space-x-2">
+      <button
+        (click)="onOptionClick()"
+        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+      >
+        {{ option }}
+      </button>
+      <button
+        (click)="onAddClick()"
+        title="Save the note"
+        class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+      >
+        <mat-icon>save</mat-icon>
+      </button> 
+      <button
+        (click)="onReminderClick()"
+        [title]="!todoItem.setForReminder ? 'Set reminder' : 'Clear reminder'"
+        class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded"
+      >
+        <mat-icon>{{
+          !todoItem.setForReminder ? "alarm_add" : "alarm_off"
+        }}</mat-icon>
+      </button>
+      <button
+        (click)="onCompletionClick()"
+        [title]="
+          !todoItem.completionStatus ? 'Status: Pending' : 'Status: Done'
+        "
+        class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded"
+      >
+        <mat-icon>{{
+          !todoItem.completionStatus ? "timelapse" : "done_all"
+        }}</mat-icon>
+      </button>
+      <div class="relative">
+        <button
+          (click)="onClickTags()"
+          title="Tags"
+          class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 w-full h-full rounded"
+        >
+          <mat-icon>label</mat-icon>
+        </button>
+        <textarea
+          [ngClass]="showTags?'':'hidden'"
+          placeholder="Add tags here like t1 , t2"
+          class="absolute top-10 right-0 bg-white border rounded p-2 shadow-md focus:outline-none"
+          [value]="tagNameList"
+          (input)="onUpdateTags($event)"
+          rows="1"
+          height="auto"
+        ></textarea>
+      </div>
+      <div class="relative">
+        <button
+          (click)="onClickUserTypeAdd()"
+          title="add custom type"
+          class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 w-full h-full rounded"
+        >
+          <mat-icon>queue-add</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
   <div class="bg-white rounded-lg shadow-md p-4">
     <div *ngIf="option !== 'Editor'">
       <input
         type="text"
+        #subjectTxt
         class="w-full p-3 border rounded-lg text-lg focus:outline-none focus:ring focus:border-blue-300"
         [(ngModel)]="todoItem.subject"
         placeholder="Enter a title for your note (must be unique)"
@@ -40,12 +95,9 @@
         [(ngModel)]="todoItem.description"
         placeholder="Enter your note here (supports markdown)"
         class="w-full p-3 border rounded-lg mt-2 resize-vertical focus:outline-none focus:ring focus:border-blue-300 overflow-hidden"
-        ></textarea>
+      ></textarea>
       <div id="div-for-scrolling"></div>
     </div>
-    <div
-      *ngIf="option !== 'MD Preview'"
-      [innerHtml]="convertedMarkdown"
-    ></div>
+    <div *ngIf="option !== 'MD Preview'" [innerHtml]="convertedMarkdown"></div>
   </div>
 </div>

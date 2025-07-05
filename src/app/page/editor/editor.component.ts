@@ -1,4 +1,4 @@
-import { Component, HostListener } from '@angular/core';
+import { AfterViewChecked, AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import * as marked from 'marked';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -9,6 +9,7 @@ import { TodoItem } from '../../models/todo-item';
 import { Router } from '@angular/router';
 import { Tag } from '../../models/tag';
 import Prism from 'prismjs';
+import { UserDefinedType } from '../../models/userdefined-type';
 @Component({
   selector: 'app-markdown-editor',
   templateUrl: './editor.component.html',
@@ -16,12 +17,19 @@ import Prism from 'prismjs';
   imports: [FormsModule, CommonModule, MatIconModule]
 })
 
-export class EditorComponent {
+export class EditorComponent implements AfterViewInit {
+  @ViewChild('subjectTxt') subjectTxt! : ElementRef;
+  
   convertedMarkdown: string = '';
   option: string = 'MD Preview';
   tagNameList: string[] = [];
   forEdit: number = -1;
   showTags: boolean = false;
+  customTypesVisible: boolean = false;
+  customTypes: UserDefinedType[] = [
+    {name : "type1", content : ["id", "name"]},
+    {name : "type2", content : ["age", "marks"]}
+  ];
   todoItem: Omit<TodoItem, 'id'> = {
     subject: '',
     description: '',
@@ -46,6 +54,10 @@ export class EditorComponent {
       }
     }
     Prism.plugins['autoloader'].languages_path = 'https://cdn.jsdelivr.net/npm/prismjs@1.14.0/components/';
+  }
+
+  ngAfterViewInit(): void {
+    this.subjectTxt.nativeElement.focus();
   }
 
   @HostListener('keydown', ['$event'])
@@ -117,6 +129,11 @@ export class EditorComponent {
       }
     )
   }
+
+  onClickUserTypeAdd(){
+
+  }
+
   onClickTags() {
     this.showTags = !this.showTags;
   }

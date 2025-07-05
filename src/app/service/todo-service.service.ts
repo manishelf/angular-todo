@@ -141,7 +141,8 @@ export class TodoServiceService{
       "eventStart": ${item.eventStart?"\""+item.eventStart+"\"":null},
       "eventEnd": ${item.eventEnd?"\""+item.eventEnd+"\"":null},
       "eventFullDay": ${item.eventFullDay?item.eventFullDay:false},
-      "deleted": ${item.deleted?item.deleted:false}
+      "deleted": ${item.deleted?item.deleted:false},
+      "userDefined": ${JSON.stringify(item.userDefined)},
     }`;
   }
 
@@ -168,7 +169,8 @@ export class TodoServiceService{
       eventStart: '',
       eventEnd: '',
       eventFullDay: false,
-      deleted: false
+      deleted: false,
+      userDefined:{name:'', content:null}
     };
     try{
       item = JSON.parse(xmlString);

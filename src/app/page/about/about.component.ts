@@ -7,5 +7,8 @@ import { Component } from '@angular/core';
   styleUrl: './about.component.css'
 })
 export class AboutComponent {
-
+/**
+ * add menu for proper details
+ * add info for shortcuts
+ */
 }

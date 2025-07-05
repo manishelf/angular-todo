@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -11,14 +11,11 @@ import { TodoServiceService } from '../../service/todo-service.service';
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css'
 })
-export class NavbarComponent implements OnInit{
+export class NavbarComponent{
   accessToken:string | null = null;
+  @ViewChild ('searchBox') searchBox! : ElementRef;
 
   constructor(private router: Router, private toaster: ToastService, private todoService: TodoServiceService) { }
-
-  ngOnInit() {
-  }
-
 
   searchItems(event: Event): void{
     let inputValue = (event.target as HTMLInputElement).value;

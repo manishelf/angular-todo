@@ -1,4 +1,5 @@
 import { Tag } from "./tag";
+import { UserDefinedType } from './userdefined-type';
 
 export interface TodoItem {
     id: number;
@@ -13,4 +14,5 @@ export interface TodoItem {
     eventEnd?: string;
     eventFullDay?: boolean;
     deleted?:boolean;
+    userDefined?: UserDefinedType;
 }
