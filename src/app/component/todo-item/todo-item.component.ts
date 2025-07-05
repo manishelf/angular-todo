@@ -70,7 +70,7 @@ export class TodoItemComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    setTimeout(()=>{Prism.highlightAll(); console.log('highlighted');
+    setTimeout(()=>{Prism.highlightAll(); 
            }, 100);
   }
 

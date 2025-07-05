@@ -1,0 +1,73 @@
+<form [formGroup]="dynamicForm" autocomplete="on">
+  <table class="border border-collapse border-1 border-white">
+    <tr
+      *ngFor="let field of schema?.fields"
+      class="text-white flex flex-row justify-between rounded"
+    >
+      <td class="w-4/12 text-center">
+        <label [for]="field.name" class="p-1">{{ field.label }}</label>
+      </td>
+      <td class="flex content-center justify-center w-8/12">
+        <input
+          *ngIf="inputTagTypes.includes(field.type)"
+          [type]="field.type"
+          [id]="field.name"
+          [formControlName]="field.name"
+          [placeholder]="field.placeholder || ''"
+          [min]="field.validation?.min"
+          [max]="field.validation?.max"
+          [step]="field.validation?.step"
+          class="w-full"
+        />
+        <textarea
+          *ngIf="field.type === 'TEXTAREA'"
+          [id]="field.name"
+          [formControlName]="field.name"
+          [placeholder]="field.placeholder || ''"
+          class="w-full"
+        ></textarea>
+        <select
+          *ngIf="field.type === 'SELECT'"
+          class="bg-black w-full"
+          [id]="field.name"
+          [formControlName]="field.name"
+        >
+          <option *ngFor="let option of field.options">{{ option }}</option>
+        </select>
+        <div *ngIf="field.type === 'BOOLEAN'" [id]="field.name">
+          false:<input
+            [formControlName]="field.name"
+            type="radio"
+            [name]="field.name"
+            value="false"
+          />
+          &nbsp;
+          true:<input
+            [formControlName]="field.name"
+            type="radio"
+            [name]="field.name"
+            value="true"
+          />
+        </div>
+        <div
+          *ngIf="field.type === 'IMAGE'"
+          [title]="field.label"
+        >
+          <input
+            class=""
+            style="mix-blend-mode: difference"
+            [value]="dynamicForm.get(field.name)?.value"
+            type="text"
+            [formControlName]="field.name"
+            [placeholder]="field.placeholder"
+          />
+          <img
+            *ngIf="dynamicForm.get(field.name)?.value"
+            [src]="dynamicForm.get(field.name)?.value"
+            class="max-h-40"
+          />
+        </div>
+      </td>
+    </tr>
+    </table>
+</form>

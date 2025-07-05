@@ -15,7 +15,7 @@ export class TodoServiceService{
   fromBin: boolean = false;
   public db$: Observable<IDBDatabase> =  new Observable<IDBDatabase>(
     (subscriber) => {
-          const request = indexedDB.open('todo_items_db', 1);
+          const request = indexedDB.open('todo_items_db', 2335);
 
           request.onerror = (error) => {
             subscriber.error(error);
@@ -28,10 +28,12 @@ export class TodoServiceService{
             const todoItemsStore = db.createObjectStore('todo_items', { keyPath: 'id', autoIncrement: true });
             const deletedTodoItemsStore = db.createObjectStore('deleted_todo_items', { keyPath: 'id', autoIncrement: true });
             const tagsTodoItemStroe = db.createObjectStore('tags_todo_items', { keyPath: 'name' });
+            const customItemStroe = db.createObjectStore('custom_items', {keyPath: 'tag'});
 
             todoItemsStore.createIndex('subjectIndex', 'subject', { unique: true});
             deletedTodoItemsStore.createIndex('subjectIndex', 'subject', { unique: true });
             tagsTodoItemStroe.createIndex('tagName','name', {unique: true});
+            customItemStroe.createIndex('tagIndex', 'tag', {unique: true});
           }
 
           request.onsuccess = (event) => {
@@ -96,9 +98,25 @@ export class TodoServiceService{
       console.error('error adding todo item: ', e);
     }
   }
+
+  addCustom(tag: string, item: any){
+    try{
+      this.addService.addCustom(this.db$, tag, item);
+      this.toaster.success('saved '+tag);
+    }catch(e){
+      this.toaster.error('error saving '+tag);
+      console.error('error adding custom item', e);
+    }
+  }
+
   getItemById(id: number): Observable<TodoItem>{
     return this.getService.getItemById(this.db$, id);
   }
+
+  getCustom(tag: string): Observable<any>{
+   return this.getService.getCustom(this.db$, tag); 
+  }
+
   updateItem(item:TodoItem): void{
     try{
       this.updateService.updateItem(this.db$, item).add(()=>{
@@ -110,6 +128,17 @@ export class TodoServiceService{
       console.error('error updating todo item: ', e);
     }
   }
+
+  updateCustom(tag: string, item: any): void{
+    try{
+      this.updateService.updateCustom(this.db$, tag, item);
+      this.toaster.success('updated '+tag);
+    }catch(e){
+      this.toaster.error('error updating '+tag);
+      console.error('error updating '+ tag, e);
+    }
+  }
+
   deleteItem(item: TodoItem): void{    
     try{
       this.deleteService.deleteItem(this.db$, item, this.fromBin);
@@ -156,7 +185,7 @@ export class TodoServiceService{
     })
   }
 
-  deserializeOneFromJson(xmlString: string):TodoItem{
+  deserializeOneFromJson(jsonString: string):TodoItem{
     let item:TodoItem = {
       id: Number.MIN_VALUE,
       subject: '',
@@ -170,13 +199,13 @@ export class TodoServiceService{
       eventEnd: '',
       eventFullDay: false,
       deleted: false,
-      userDefined:{name:'', content:null}
+      userDefined: {tag:'', formControlSchema: {}, data: null},
     };
     try{
-      item = JSON.parse(xmlString);
+      item = JSON.parse(jsonString);
     }catch(e){
-      console.error('error deserializing xml string to todo item', e);
-      this.toaster.error('error deserializing xml string to todo item ');
+      console.error('error deserializing json string to todo item', e);
+      this.toaster.error('error deserializing json string to todo item ');
     }
     return item;
   }
@@ -188,8 +217,8 @@ export class TodoServiceService{
         let result = JSON.parse(xmlString);
         items = result.items;
       }catch(e){
-        console.error('error deserializing xml string to todo item', e);
-        this.toaster.error('error deserializing xml string to todo item ');
+        console.error('error deserializing json string to todo item', e);
+        this.toaster.error('error deserializing json string to todo item ');
       }
       Subscriber.next(items);
     });

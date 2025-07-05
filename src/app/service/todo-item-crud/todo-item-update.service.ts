@@ -52,4 +52,17 @@ export class TodoItemUpdateService {
         }
       );
     }
+
+    updateCustom(db$: Observable<IDBDatabase>, tag: string, item: any): Subscription {
+      return db$.subscribe((db)=>{
+        let request = this.todoItemUtils.getObjectStoreRW(db, 'custom_items').get(tag);
+        if(request){
+          request.onsuccess = (event)=>{
+            let target = event.target as IDBRequest<TodoItem>;
+            this.todoItemUtils.getObjectStoreRW(db, 'custom_items').put(item);
+          }
+        }
+      });
+    }
+
 }

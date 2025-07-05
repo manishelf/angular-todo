@@ -1,4 +1,7 @@
+import { FormSchema } from "./FormSchema";
+
 export interface UserDefinedType {
-    name : string,
-    content : any,
+    tag : string,
+    formControlSchema : FormSchema,
+    data : Map<string, string> | null,
 }

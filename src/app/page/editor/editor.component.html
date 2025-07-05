@@ -1,25 +1,9 @@
-<div class="h-full m-4 p-4">
-  <div class="flex flex-row flex-wrap justify-between p-4">
-    <div class="flex flex-row">
-      <div
-        class="flex flex-row h-5 m-1"
-        *ngFor="let customType of customTypes"
-      >
-        <input type="text" class="bg-white rounded" />
-        <span class="content-center text-white text-nowrap">&nbsp;->&nbsp;</span>
-        <input type="number" placeholder="0.0" class="bg-white rounded" />
-      </div> 
-      <div
-        class="flex flex-row h-5 m-1"
-        *ngFor="let customType of customTypes"
-      >
-        <input type="text" class="bg-white rounded" />
-        <span class="content-center text-white text-nowrap">&nbsp;->&nbsp;</span>
-        <input type="number" placeholder="0.0" class="bg-white rounded" />
-      </div>
-
+<div class="h-full m-4 p-4 overflow-auto">
+  <div class="flex flex-row flex-nowrap justify-between p-4">
+    <div>
+        <app-user-form #userForm [data]="todoItem.userDefined?.data" [schema]="todoItem.userDefined?.formControlSchema!"></app-user-form>
     </div>
-    <div class="flex justify-end space-x-2">
+    <div class="right-0 flex justify-evenly space-x-2">
       <button
         (click)="onOptionClick()"
         class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
@@ -53,7 +37,7 @@
           !todoItem.completionStatus ? "timelapse" : "done_all"
         }}</mat-icon>
       </button>
-      <div class="relative">
+      <div class="flex justify-center content-center">
         <button
           (click)="onClickTags()"
           title="Tags"
@@ -64,23 +48,21 @@
         <textarea
           [ngClass]="showTags?'':'hidden'"
           placeholder="Add tags here like t1 , t2"
-          class="absolute top-10 right-0 bg-white border rounded p-2 shadow-md focus:outline-none"
+          class="bg-white border rounded p-2 shadow-md focus:outline-none"
           [value]="tagNameList"
           (input)="onUpdateTags($event)"
           rows="1"
           height="auto"
         ></textarea>
       </div>
-      <div class="relative">
-        <button
-          (click)="onClickUserTypeAdd()"
-          title="add custom type"
+      <button
+          (click)="onClickUserFormAdd($event)"
+          title="add custom form"
           class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 w-full h-full rounded"
         >
           <mat-icon>queue-add</mat-icon>
-        </button>
+      </button>
       </div>
-    </div>
   </div>
   <div class="bg-white rounded-lg shadow-md p-4">
     <div *ngIf="option !== 'Editor'">

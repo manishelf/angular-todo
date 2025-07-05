@@ -33,6 +33,22 @@ export class TodoItemGetService {
     );
   }
 
+  getCustom(db$: Observable<IDBDatabase>, tag: string): Observable<any[]>{
+    return db$.pipe(
+      switchMap((db) => {
+        const store = this.todoItemUtils.getObjectStoreRO(db, 'custom_items');
+        const request = store.get(tag);
+        return this.todoItemUtils.createObservable<any>(request).pipe(
+          switchMap((item) => {
+            console.log(item);
+            
+            return from([item.item])
+          }),
+        );
+      })
+    );
+  }
+
   searchTodosByQuery(
     db$: Observable<IDBDatabase>,
     subjectQuery: string,

@@ -27,4 +27,16 @@ export class TodoItemAddService {
         }
     })
   }
+  addCustom(db$: Observable<IDBDatabase>, tag: string, item: any): void {
+    db$.subscribe(
+      (db)=>{
+        let request = this.todoItemUtils.getObjectStoreRW(db, 'custom_items').add({tag, item});         
+        if(request){
+          request.onerror = (error)=>{
+            console.error("error saving to custom_items - ", error);
+          }
+        }
+      }
+    );
+  }
 }
