@@ -26,17 +26,25 @@ export class NavbarComponent implements AfterViewInit{
     
     let searchQuery = inputValue;
     let tagList: string[] = [];
+    let input = [];
+    let filter = false;
 
-    let input: string[] =inputValue.split('!T:');
+    filter = !inputValue.startsWith('!ALL:');
+    input = inputValue.split('!F:');
+    let searchTerms:string[] = [];
+    if(input.length==2){
+      searchQuery = input[0];
+      searchTerms = input[1].split(' ');
+    }
+    
+    input =inputValue.split('!T:');
     if(input.length==2){
       searchQuery = input[0];
       tagList = input[1].split(',');
       tagList = tagList.map((tag)=>tag.trim());
     }
     
-    let url = this.router.url;
-    url = url.substring(url.indexOf('/'),url.indexOf('?'))
-    this.router.navigate([],{queryParams: {search: searchQuery.trim(),tag:tagList }});
+    this.router.navigate([],{queryParams: {filter:filter, search: searchQuery.trim(),tag:tagList , has: searchTerms}});
   }
 
   syncNotes(): void{

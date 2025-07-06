@@ -209,6 +209,8 @@ export class EditorComponent implements AfterViewInit {
         this.todoItem.tags.push({ name: tag });
         this.tagNameList = this.todoItem.tags.map((tag) => tag.name).join(',');
         this.todoServie.addCustom(tag, formSchema.formControlSchema);
+        
+        this.customFormSchema?.fields?.push(...formSchema.formControlSchema.fields);
         this.todoItem.description = localStorage['tempTodoDescription'];
         this.schemaEditingInProgress = false;
         return;
@@ -268,9 +270,9 @@ export class EditorComponent implements AfterViewInit {
   loadCustomSchemaFromDb(tags: string[]) {
     this.customFormSchema = this.todoItem.userDefined?.formControlSchema;
       
-    this.todoServie.getAllCustom(tags).subscribe((res) =>
-      res.forEach((res) => {
-        let schema = res.item;
+    this.todoServie.getAllCustom(tags).subscribe((resultArray) =>
+        resultArray.forEach((res) => {
+        let schema = res?.item;
         if (!schema) return;
         try {
           schema.fields?.forEach((field: FormFields) => {

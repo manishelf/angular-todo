@@ -86,7 +86,7 @@ export class UserFormComponent implements OnChanges {
           minLength,
           min,
           max,
-          regexMatch,
+          pattern,
         }: FormFieldValidation = { ...this.schema.fields[i].validation };
         const fieldName: string = this.schema.fields[i].name;
         if (require) {
@@ -98,8 +98,8 @@ export class UserFormComponent implements OnChanges {
         if (minLength) {
           validators.push(Validators.minLength(minLength));
         }
-        if (regexMatch) {
-          validators.push(Validators.pattern(regexMatch));
+        if (pattern) {
+          validators.push(Validators.pattern(pattern));
         }
         if(max){
           validators.push(Validators.max(Number.parseInt(max)));

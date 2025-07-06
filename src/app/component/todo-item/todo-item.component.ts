@@ -31,12 +31,12 @@ export class TodoItemComponent implements OnInit, AfterViewInit {
   toolTipString: string = '';
   parsedMD: string = '';
   fromBin: boolean;
-  minimized: boolean = true;
   bgColour: string = 'bg-gray-600 border-2 border-amber-400';
   tagNameList: string[] = [];
-
+  
   @Input() optionsDisplayed: boolean = false;
   @Input() showTags:boolean = false;
+  @Input() minimized: boolean = true;
 
   constructor(private todoService: TodoServiceService, private cdr: ChangeDetectorRef, private router: Router) {
     let url = this.router.url;
