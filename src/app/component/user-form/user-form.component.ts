@@ -70,11 +70,13 @@ export class UserFormComponent implements OnChanges {
   }
 
   createForm(): void {
-    console.log(this.schema);
-    
     const formControls: { [key: string]: FormControl } = {};
     
     if (this.schema && this.schema.fields) {
+      /**
+       * TODO: PLEASE FIX THIS AT SOURSE NO DuPLICATES SHOULD REACHE HERE AND REMOVE THE FN below.
+       */
+      //this.filterDuplicateFields(); 
       for (let i = 0; i < this.schema.fields.length; i++) {
         const validators = [];
         const type = this.schema.fields[i].type;
@@ -115,5 +117,18 @@ export class UserFormComponent implements OnChanges {
       }
     }
     this.dynamicForm = this.formBuilder.group(formControls);
+  }
+
+  filterDuplicateFields(){
+    if(!this.schema || !this.schema.fields) return;
+    console.log(this.schema.fields);
+    (this.schema.fields)
+    let uniqueFields = new Map<string, FormFields>();
+    for(const f of this.schema.fields){
+      uniqueFields.set(f.name, f);
+    }
+    this.schema.fields = Array.from(uniqueFields.values());
+    console.log(this.schema.fields);
+    
   }
 }

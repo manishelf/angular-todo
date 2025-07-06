@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, from, BehaviorSubject, throwError, switchMap, tap } from 'rxjs';
+import { Observable, from, BehaviorSubject, throwError, switchMap, tap, mergeMap, toArray } from 'rxjs';
 import { TodoItem } from '../../models/todo-item';
 import { TodoItemUtils } from './todo-item-utils';
 
@@ -33,20 +33,29 @@ export class TodoItemGetService {
     );
   }
 
-  getCustom(db$: Observable<IDBDatabase>, tag: string): Observable<any[]>{
+  getCustom(db$: Observable<IDBDatabase>, tag: string): Observable<any>{
     return db$.pipe(
       switchMap((db) => {
         const store = this.todoItemUtils.getObjectStoreRO(db, 'custom_items');
         const request = store.get(tag);
-        return this.todoItemUtils.createObservable<any>(request).pipe(
-          switchMap((item) => {
-            return from([item?.item])
+        return this.todoItemUtils.createObservable<any>(request);
+      })
+    );
+  }
+  getAllCustom(db$: Observable<IDBDatabase>, tags: string[]):Observable<any[]>{
+    return db$.pipe(
+      switchMap((db)=>{
+        const store = this.todoItemUtils.getObjectStoreRO(db, 'custom_items');
+        return from(tags).pipe(
+          mergeMap(tag=>{
+            const request = store.get(tag);
+            return this.todoItemUtils.createObservable<any>(request);
           }),
+          toArray()
         );
       })
     );
   }
-
   searchTodosByQuery(
     db$: Observable<IDBDatabase>,
     subjectQuery: string,

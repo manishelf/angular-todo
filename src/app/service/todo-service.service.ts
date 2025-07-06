@@ -117,6 +117,10 @@ export class TodoServiceService{
    return this.getService.getCustom(this.db$, tag); 
   }
 
+  getAllCustom(tags: string[]):Observable<any[]>{
+    return this.getService.getAllCustom(this.db$, tags); 
+  }
+
   updateItem(item:TodoItem): void{
     try{
       this.updateService.updateItem(this.db$, item).add(()=>{
