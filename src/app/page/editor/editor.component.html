@@ -1,9 +1,9 @@
 <div class="h-full m-4 p-4 overflow-auto">
-  <div class="flex flex-row flex-nowrap justify-between p-4">
-    <div>
+  <div class="flex flex-row flex-wrap justify-center md:justify-between p-4">
+    <div class="m-2">
         <app-user-form #userForm [data]="todoItem.userDefined?.data" [schema]="customFormSchema"></app-user-form>
     </div>
-    <div class="right-0 flex justify-evenly space-x-2">
+    <div class="flex justify-evenly space-x-2">
       <button
         (click)="onOptionClick()"
         class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
