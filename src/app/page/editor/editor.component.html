@@ -1,7 +1,7 @@
 <div class="h-full m-4 p-4 overflow-auto">
   <div class="flex flex-row flex-nowrap justify-between p-4">
     <div>
-        <app-user-form #userForm [data]="todoItem.userDefined?.data" [schema]="todoItem.userDefined?.formControlSchema!"></app-user-form>
+        <app-user-form #userForm [data]="todoItem.userDefined?.data" [schema]="customFormSchema"></app-user-form>
     </div>
     <div class="right-0 flex justify-evenly space-x-2">
       <button

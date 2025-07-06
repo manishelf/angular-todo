@@ -130,8 +130,12 @@ export class EditorComponent implements AfterViewInit {
       });
       return;
     }
-    if(this.todoItem.userDefined){
-      this.todoItem.userDefined.data = this.userForm?.state();
+    if(this.customFormSchema){
+      this.todoItem.userDefined = {
+        tag: this.todoItem.tags.filter(tag=>tag.name.startsWith('form-')).toString(),
+        formControlSchema: this.customFormSchema,
+        data: this.userForm.state(),
+      };
     }
     if (this.forEdit !== -1) {
       this.todoServie.updateItem({ id: this.forEdit, ...this.todoItem });
@@ -148,7 +152,7 @@ export class EditorComponent implements AfterViewInit {
       (name) => {
         name = name.trim();
         if(name === '') return;
-        
+
         if(name.startsWith('form-')){
           this.loadCustomSchemaFromDb(name);
         }
@@ -171,12 +175,7 @@ export class EditorComponent implements AfterViewInit {
 
         let tag = 'form-'+formSchema.tag;
         this.todoItem.tags.push({name:tag});
-        this.tagNameList = this.todoItem.tags.map(tag=>tag.name).join(',');
-        this.todoItem.userDefined = {
-          tag: tag,
-          formControlSchema: formSchema.formControlSchema,
-          data: formSchema.data,
-        };
+        this.tagNameList = this.todoItem.tags.map(tag=>tag.name).join(','); 
         this.todoServie.addCustom(tag, formSchema.formControlSchema);
         this.todoItem.description = localStorage['tempTodoDescription'];
         this.schemaEditingInProgress = false;
@@ -236,6 +235,8 @@ export class EditorComponent implements AfterViewInit {
 
   loadCustomSchemaFromDb(tag: string){
     this.todoServie.getCustom(tag).subscribe((schema)=>{
+      if(!schema) return;
+
       try{
         schema.fields?.forEach((field: FormFields)=>{
           let data= this.todoItem.userDefined?.data;
@@ -248,11 +249,11 @@ export class EditorComponent implements AfterViewInit {
           }
         });
         
-        if(this.userForm.schema?.fields){
-          this.userForm.schema?.fields?.push(...schema.fields!);
+        if(this.customFormSchema){
+          this.customFormSchema.fields?.push(...schema.fields!);
         }
         else{
-         this.userForm.schema!.fields = schema.fields;
+         this.customFormSchema = schema;
         }
       }catch(e){
         console.error('failed to load schema '+tag, schema, e);

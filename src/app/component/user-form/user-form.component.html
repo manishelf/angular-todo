@@ -3,7 +3,8 @@
     <tr
       *ngFor="let field of schema?.fields"
       class="text-white flex flex-row justify-between rounded"
-    >
+      [title]="field.name"
+      >
       <td class="w-4/12 text-center">
         <label [for]="field.name" class="p-1">{{ field.label }}</label>
       </td>

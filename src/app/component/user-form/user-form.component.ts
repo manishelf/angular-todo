@@ -28,7 +28,7 @@ import { inputTagTypes } from './../../models/FormSchema';
   templateUrl: './user-form.component.html',
   styleUrl: './user-form.component.css',
 })
-export class UserFormComponent implements OnInit {
+export class UserFormComponent implements OnChanges {
   inputTagTypes: (string | undefined)[];
 
   @Input() schema: FormSchema | undefined;
@@ -58,7 +58,7 @@ export class UserFormComponent implements OnInit {
     this.inputTagTypes = inputTagTypes;
   }
 
-  ngOnInit(): void {
+  ngOnChanges(): void {
     if(this.data){
       let data = new Map(Object.entries(this.data));
       this.schema?.fields?.forEach(field=>{
@@ -70,7 +70,10 @@ export class UserFormComponent implements OnInit {
   }
 
   createForm(): void {
+    console.log(this.schema);
+    
     const formControls: { [key: string]: FormControl } = {};
+    
     if (this.schema && this.schema.fields) {
       for (let i = 0; i < this.schema.fields.length; i++) {
         const validators = [];
