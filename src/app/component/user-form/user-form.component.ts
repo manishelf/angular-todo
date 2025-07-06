@@ -77,6 +77,7 @@ export class UserFormComponent implements OnChanges {
     if (this.schema && this.schema.fields) {
       for (let i = 0; i < this.schema.fields.length; i++) {
         const validators = [];
+        const type = this.schema.fields[i].type;
         const {
           require,
           maxLength,
@@ -97,6 +98,15 @@ export class UserFormComponent implements OnChanges {
         }
         if (regexMatch) {
           validators.push(Validators.pattern(regexMatch));
+        }
+        if(max){
+          validators.push(Validators.max(Number.parseInt(max)));
+        }
+        if(min){
+          validators.push(Validators.min(Number.parseInt(min)));
+        }
+        if(type === 'EMAIL'){
+          validators.push(Validators.email)
         }
         formControls[fieldName] = new FormControl(
           this.schema.fields[i].default,
