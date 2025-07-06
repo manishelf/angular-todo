@@ -160,7 +160,8 @@ export class TodoServiceService{
   }
 
   serializeOneToJson(item:TodoItem): string{
-    return `{
+    return `
+    {
       "id": ${item.id?item.id:null},
       "subject": "${item.subject.replace(/\"/g,"&quot;")}",
       "description": "${item.description.replace(/\"/g,"&quot;").replace(/\n/g,"<br>")}",
@@ -175,7 +176,7 @@ export class TodoServiceService{
       "eventEnd": ${item.eventEnd?"\""+item.eventEnd+"\"":null},
       "eventFullDay": ${item.eventFullDay?item.eventFullDay:false},
       "deleted": ${item.deleted?item.deleted:false},
-      "userDefined": ${JSON.stringify(item.userDefined)},
+      "userDefined": ${JSON.stringify(item.userDefined)}
     }`;
   }
 
@@ -184,8 +185,7 @@ export class TodoServiceService{
       subscriber.next( `{ "items": [
         ${
           items.map(item=>this.serializeOneToJson(item)+'\n')
-        }]
-        }`);
+        }]}`);
     })
   }
 

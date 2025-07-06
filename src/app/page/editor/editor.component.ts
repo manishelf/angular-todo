@@ -164,9 +164,8 @@ export class EditorComponent implements AfterViewInit {
     }
     if (this.customFormSchema) {
       this.todoItem.userDefined = {
-        tag: this.todoItem.tags
-          .filter((tag) => tag.name.startsWith('form-'))
-          .toString(),
+        tag: JSON.stringify(this.todoItem.tags
+                              .filter((tag) => tag.name.startsWith('form-'))),
         formControlSchema: this.customFormSchema,
         data: this.userForm.state(),
       };
