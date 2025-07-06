@@ -40,9 +40,7 @@ export class TodoItemGetService {
         const request = store.get(tag);
         return this.todoItemUtils.createObservable<any>(request).pipe(
           switchMap((item) => {
-            console.log(item);
-            
-            return from([item.item])
+            return from([item?.item])
           }),
         );
       })
