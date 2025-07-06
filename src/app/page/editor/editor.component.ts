@@ -27,7 +27,7 @@ export class EditorComponent implements AfterViewInit {
 
   convertedMarkdown: string = '';
   option: string = 'MD Preview';
-  tagNameList: string[] = [];
+  tagNameList: string = '';
   forEdit: number = -1;
   showTags: boolean = false;
   schemaEditingInProgress: boolean = false;
@@ -56,7 +56,7 @@ export class EditorComponent implements AfterViewInit {
         this.forEdit = itemForUpdate.id;
         this.todoItem = itemForUpdate;
         this.todoItem.description = this.todoItem.description.replace(/<br>/g, '\n');
-        this.tagNameList = this.todoItem.tags.map(tag => tag.name);
+        this.tagNameList = this.todoItem.tags.map(tag => tag.name).join(',');
         this.customFormSchema = this.todoItem.userDefined?.formControlSchema;
       } else {
         router.navigate(['/home']);
@@ -146,6 +146,9 @@ export class EditorComponent implements AfterViewInit {
     this.todoItem.tags = [];
     inputValue.split(',').forEach(
       (name) => {
+        name = name.trim();
+        if(name === '') return;
+        
         if(name.startsWith('form-')){
           this.loadCustomSchemaFromDb(name);
         }
@@ -154,6 +157,7 @@ export class EditorComponent implements AfterViewInit {
         )
       }
     )
+    this.tagNameList = this.todoItem.tags.map(tag=>tag.name).join(',');
   }
   
   onClickUserFormAdd(event: Event){
@@ -167,7 +171,7 @@ export class EditorComponent implements AfterViewInit {
 
         let tag = 'form-'+formSchema.tag;
         this.todoItem.tags.push({name:tag});
-        this.tagNameList.push(tag);
+        this.tagNameList = this.todoItem.tags.map(tag=>tag.name).join(',');
         this.todoItem.userDefined = {
           tag: tag,
           formControlSchema: formSchema.formControlSchema,
@@ -216,6 +220,9 @@ export class EditorComponent implements AfterViewInit {
       *   },
       *   "data" : Map<string, string> | null
       * }
+      * 
+      * sample - 
+      *   {"tag":"sample", "formControlSchema": {"fields": [{"name":"sample", "label":"sample text", "type":"TEXT"}]}, "data":[["sample", "current value"]]}
       */\n\n\n
       `;
     if(this.todoItem.userDefined){
