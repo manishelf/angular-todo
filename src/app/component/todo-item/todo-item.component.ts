@@ -119,7 +119,13 @@ export class TodoItemComponent implements OnInit, AfterViewInit {
   }
 
   onClickDuplicate(){
-    this.item.subject+='-duplicate';
+    this.item.subject+='-'+Intl.DateTimeFormat([],{
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    }).format(new Date());
     let duplicateItem: Omit<TodoItem,'id'> = {
       subject: this.item.subject,
       description: this.item.description,

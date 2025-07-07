@@ -29,11 +29,11 @@ import { inputTagTypes } from './../../models/FormSchema';
   templateUrl: './user-form.component.html',
   styleUrl: './user-form.component.css',
 })
-export class UserFormComponent implements OnChanges{
+export class UserFormComponent implements OnChanges {
   inputTagTypes: (string | undefined)[];
 
   @Input() schema: FormSchema | undefined;
-  @Input() data: any; 
+  @Input() data: any;
 
   isValid: boolean = false;
   state(): Map<string, any> {
@@ -60,12 +60,12 @@ export class UserFormComponent implements OnChanges{
   }
 
   ngOnChanges(): void {
-    if(this.data){
+    if (this.data) {
       let data = new Map(Object.entries(this.data));
-      this.schema?.fields?.forEach(field=>{
-        if(data.has(field.name))
+      this.schema?.fields?.forEach((field) => {
+        if (data.has(field.name))
           field.default = data.get(field.name) as string;
-        });
+      });
     }
     this.createForm();
   }
@@ -75,7 +75,7 @@ export class UserFormComponent implements OnChanges{
     if (this.schema && this.schema.fields) {
       for (let i = 0; i < this.schema.fields.length; i++) {
         const validators = [];
-        const field : FormField = this.schema.fields[i];
+        const field: FormField = this.schema.fields[i];
         const type = field.type;
         const {
           require,
@@ -98,48 +98,56 @@ export class UserFormComponent implements OnChanges{
         if (pattern) {
           validators.push(Validators.pattern(pattern));
         }
-        if(max){
+        if (max) {
           validators.push(Validators.max(Number.parseInt(max)));
         }
-        if(min){
+        if (min) {
           validators.push(Validators.min(Number.parseInt(min)));
         }
-        if(type === 'email'){
-          validators.push(Validators.email)
+        if (type === 'email') {
+          validators.push(Validators.email);
         }
-        if(type === 'timestamp'){
-          if(!field.default){
+        if (type === 'timestamp') {
+          if (!field.default) {
             field.default = '';
           }
-          field.default += ' ,\n '+Date();
+          field.default +=
+            ' ,\n ' +
+            Intl.DateTimeFormat([], {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit',
+            }).format(new Date());
         }
-        if(type==='history'){
-          if(!field.default){
+        if (type === 'history') {
+          if (!field.default) {
             field.default = '';
           }
-          field.default += JSON.stringify({timestamp:Date(),
-            subject:
-              JSON.stringify(document.getElementById('editor-subject-input')?.innerHTML),
-            description:
-              JSON.stringify(document.getElementById('editor-description-input')?.innerHTML),
-            formData:JSON.stringify(this.state())
+          field.default += JSON.stringify({
+            timestamp: Date(),
+            subject: JSON.stringify(
+              document.getElementById('editor-subject-input')?.innerHTML
+            ),
+            description: JSON.stringify(
+              document.getElementById('editor-description-input')?.innerHTML
+            ),
+            formData: JSON.stringify(this.state()),
           });
-        } 
-        formControls[fieldName] = new FormControl(
-          field.default,
-          validators
-        );
+        }
+        formControls[fieldName] = new FormControl(field.default, validators);
       }
     }
     this.dynamicForm = this.formBuilder.group(formControls);
   }
 
-  filterDuplicateFields(){
-    if(!this.schema || !this.schema.fields) return;
+  filterDuplicateFields() {
+    if (!this.schema || !this.schema.fields) return;
     console.log(this.schema.fields);
-    (this.schema.fields)
+    this.schema.fields;
     let uniqueFields = new Map<string, FormField>();
-    for(const f of this.schema.fields){
+    for (const f of this.schema.fields) {
       uniqueFields.set(f.name, f);
     }
     this.schema.fields = Array.from(uniqueFields.values());
