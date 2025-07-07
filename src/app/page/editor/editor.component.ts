@@ -19,7 +19,7 @@ import Prism from 'prismjs';
 import { UserDefinedType } from '../../models/userdefined-type';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { UserFormComponent } from '../../component/user-form/user-form.component';
-import { FormFields, FormSchema } from '../../models/FormSchema';
+import { FormField, FormSchema } from '../../models/FormSchema';
 import { ToastService } from 'angular-toastify';
 
 @Component({
@@ -240,9 +240,9 @@ export class EditorComponent implements AfterViewInit {
       *        {
       *         "name" : string,
       *         "label" : string,
-      *         "type" : 'TEXT' | 'TEXTAREA' | 'EMAIL' | 'PASSWORD' 
-      *                  | 'NUMBER' | 'DATE' | 'SELECT' | 'BOOLEAN' | 'IMAGE' 
-      *                  | 'COLOR' | 'RANGE' | 'MONTH' | 'DATE' | 'TIME' | 'DATETIME-LOCAL',
+      *         "type" : 'text' | 'textarea' | 'email' | 'password' 
+      *                  | 'number' | 'date' | 'select' | 'boolean' | 'image' 
+      *                  | 'color' | 'range' | 'month' | 'date' | 'time' | 'datetime-local' | 'timestamp' | 'history',
       *         "placeholder"?: string,
       *         "validation"?: {
       *             "require"? : boolean,
@@ -262,7 +262,7 @@ export class EditorComponent implements AfterViewInit {
       * }
       * 
       * sample - 
-      *   {"tag":"sample", "formControlSchema": {"fields": [{"name":"sample", "label":"sample text", "type":"TEXT"}]}, "data":[["sample", "current value"]]}
+      *   {"tag":"sample", "formControlSchema": {"fields": [{"name":"sample", "label":"sample text", "type":"text"}]}, "data":[["sample", "current value"]]}
       */\n\n\n
       `;
     if (this.todoItem.userDefined) {
@@ -282,7 +282,7 @@ export class EditorComponent implements AfterViewInit {
         let schema = res?.item;
         if (!schema) return;
         try {
-          schema.fields?.forEach((field: FormFields) => {
+          schema.fields?.forEach((field: FormField) => {
             let data = this.todoItem.userDefined?.data;
             if (data) {
               data = new Map(Object.entries(data));

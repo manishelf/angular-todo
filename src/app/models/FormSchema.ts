@@ -1,13 +1,14 @@
 export interface FormSchema {
-    fields? : FormFields[],
+    fields? : FormField[],
 }
 
-export interface FormFields {
+export interface FormField {
     name : string,
     label : string,
-    type : 'TEXT' | 'TEXTAREA' | 'EMAIL' | 'PASSWORD' 
-            | 'NUMBER' | 'DATE' | 'SELECT' | 'BOOLEAN' | 'IMAGE' | 'URL'
-            | 'COLOR' | 'RANGE' | 'MONTH' | 'DATE' | 'TIME' | 'DATETIME-LOCAL',
+    type : 'text' | 'textarea' | 'email' | 'password' 
+            | 'number' | 'date' | 'select' | 'boolean' | 'image' | 'url'
+            | 'color' | 'range' | 'month' | 'date' | 'time' | 'datetime-local' | 'history'
+            | 'timestamp',
     placeholder?: string,
     validation?: FormFieldValidation,
     default?: string,
@@ -15,9 +16,9 @@ export interface FormFields {
 }
 
 export const inputTagTypes = [
-     'TEXT', 'EMAIL' , 'PASSWORD' 
-            , 'NUMBER' , 'DATE' , 'URL'
-            , 'COLOUR' , 'COLOR' , 'RANGE' , 'MONTH' , 'DATE' , 'TIME' , 'DATETIME-LOCAL',
+     'text', 'email' , 'password' 
+            , 'number' , 'date' , 'url'
+            , 'COLOUR' , 'color' , 'range' , 'month' , 'date' , 'time' , 'datetime-local'
 ];
 
 export interface FormFieldValidation{

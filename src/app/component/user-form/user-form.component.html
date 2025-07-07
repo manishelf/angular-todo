@@ -20,28 +20,28 @@
           [step]="field.validation?.step"
           class="w-full outline-1 p-2 m-1"
         />
-        <a *ngIf="field.type === 'URL'"
+        <a *ngIf="field.type === 'url'"
           [href]="dynamicForm.get(field.name)?.value"
           [formControlName]="field.name" 
           [title]="field.name">
           {{field.label}}
         </a>
         <textarea
-          *ngIf="field.type === 'TEXTAREA'"
+          *ngIf="field.type === 'textarea' || field.type === 'timestamp' "
           [id]="field.name"
           [formControlName]="field.name"
           [placeholder]="field.placeholder || ''"
           class="w-full"
         ></textarea>
         <select
-          *ngIf="field.type === 'SELECT'"
+          *ngIf="field.type === 'select'"
           class="bg-black w-full"
           [id]="field.name"
           [formControlName]="field.name"
         >
           <option *ngFor="let option of field.options">{{ option }}</option>
         </select>
-        <div *ngIf="field.type === 'BOOLEAN'" [id]="field.name">
+        <div *ngIf="field.type === 'boolean'" [id]="field.name">
           false:<input
             [formControlName]="field.name"
             type="radio"
@@ -57,7 +57,7 @@
           />
         </div>
         <div
-          *ngIf="field.type === 'IMAGE'"
+          *ngIf="field.type === 'image'"
           [title]="field.label"
         >
           <input

@@ -1,4 +1,5 @@
 import {
+  AfterViewInit,
   Component,
   Input,
   OnChanges,
@@ -17,7 +18,7 @@ import {
 } from '@angular/forms';
 import {
   FormSchema,
-  FormFields,
+  FormField,
   FormFieldValidation,
 } from '../../models/FormSchema';
 import { CommonModule } from '@angular/common';
@@ -28,7 +29,7 @@ import { inputTagTypes } from './../../models/FormSchema';
   templateUrl: './user-form.component.html',
   styleUrl: './user-form.component.css',
 })
-export class UserFormComponent implements OnChanges {
+export class UserFormComponent implements OnChanges{
   inputTagTypes: (string | undefined)[];
 
   @Input() schema: FormSchema | undefined;
@@ -71,15 +72,11 @@ export class UserFormComponent implements OnChanges {
 
   createForm(): void {
     const formControls: { [key: string]: FormControl } = {};
-    
     if (this.schema && this.schema.fields) {
-      /**
-       * TODO: PLEASE FIX THIS AT SOURSE NO DuPLICATES SHOULD REACHE HERE AND REMOVE THE FN below.
-       */
-      //this.filterDuplicateFields(); 
       for (let i = 0; i < this.schema.fields.length; i++) {
         const validators = [];
-        const type = this.schema.fields[i].type;
+        const field : FormField = this.schema.fields[i];
+        const type = field.type;
         const {
           require,
           maxLength,
@@ -87,8 +84,8 @@ export class UserFormComponent implements OnChanges {
           min,
           max,
           pattern,
-        }: FormFieldValidation = { ...this.schema.fields[i].validation };
-        const fieldName: string = this.schema.fields[i].name;
+        }: FormFieldValidation = { ...field.validation };
+        const fieldName: string = field.name;
         if (require) {
           validators.push(Validators.required);
         }
@@ -107,11 +104,29 @@ export class UserFormComponent implements OnChanges {
         if(min){
           validators.push(Validators.min(Number.parseInt(min)));
         }
-        if(type === 'EMAIL'){
+        if(type === 'email'){
           validators.push(Validators.email)
         }
+        if(type === 'timestamp'){
+          if(!field.default){
+            field.default = '';
+          }
+          field.default += ' ,\n '+Date();
+        }
+        if(type==='history'){
+          if(!field.default){
+            field.default = '';
+          }
+          field.default += JSON.stringify({timestamp:Date(),
+            subject:
+              JSON.stringify(document.getElementById('editor-subject-input')?.innerHTML),
+            description:
+              JSON.stringify(document.getElementById('editor-description-input')?.innerHTML),
+            formData:JSON.stringify(this.state())
+          });
+        } 
         formControls[fieldName] = new FormControl(
-          this.schema.fields[i].default,
+          field.default,
           validators
         );
       }
@@ -123,12 +138,10 @@ export class UserFormComponent implements OnChanges {
     if(!this.schema || !this.schema.fields) return;
     console.log(this.schema.fields);
     (this.schema.fields)
-    let uniqueFields = new Map<string, FormFields>();
+    let uniqueFields = new Map<string, FormField>();
     for(const f of this.schema.fields){
       uniqueFields.set(f.name, f);
     }
     this.schema.fields = Array.from(uniqueFields.values());
-    console.log(this.schema.fields);
-    
   }
 }

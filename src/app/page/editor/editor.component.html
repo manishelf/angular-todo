@@ -70,10 +70,12 @@
         type="text"
         #subjectTxt
         class="w-full p-3 border rounded-lg text-lg focus:outline-none focus:ring focus:border-blue-300"
+        id="editor-subject-input"
         [(ngModel)]="todoItem.subject"
         placeholder="Enter a title for your note (must be unique)"
       />
       <textarea
+        id="editor-description-input"
         [(ngModel)]="todoItem.description"
         placeholder="Enter your note here (supports markdown)"
         class="w-full p-3 border rounded-lg mt-2 resize-vertical focus:outline-none focus:ring focus:border-blue-300 overflow-hidden"
