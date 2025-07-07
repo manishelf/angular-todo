@@ -1,9 +1,9 @@
-<div  [class]="`${bgColour} text-white rounded-2xl p-3 hover:outline-2 hover:shadow-xl shadow-gray-50 outline-offset-2 outline-white transition-all`" [title]="toolTipString">
+<div  [class]="`${bgColour} max-w-full text-white rounded-2xl p-3 hover:outline-2 hover:shadow-xl shadow-gray-50 outline-offset-2 outline-white transition-all`" [title]="toolTipString">
     <div class="flex flex-row justify-between">
-        <div class="text-3xl max-w-full overflow-clip overflow-ellipsis hover:scale-110 cursor-pointer transition-all" (click)="onItemClick()" title="edit">
-            <u>{{item.subject}}</u>
+        <div class="flex-grow-1 text-3xl overflow-hidden overflow-ellipsis cursor-pointer" (click)="onItemClick()" title="edit">
+            {{item.subject}}
         </div>
-        <div *ngIf="!optionsDisplayed && !fromBin">
+        <div *ngIf="!optionsDisplayed" class="flex flex-shrink-0">
             <mat-icon (click)="optionsDisplayed=!optionsDisplayed" class="cursor-pointer hover:scale-120" title="options">
               more_horiz
             </mat-icon>
@@ -14,7 +14,7 @@
               unfold_more
             </mat-icon>
         </div>
-        <div *ngIf="optionsDisplayed || fromBin" class="flex flex-row">
+        <div *ngIf="optionsDisplayed" class="flex flex-row">
             <div *ngIf="!fromBin">
                 <textarea type="text" *ngIf="showTags" placeholder="add tags here ',' seperated"
                 class="border-b-2 border-b-blue-500 text-white text-center focus:outline-0" [value]="tagNameList" (input)="onUpdateTags($event)" rows="1"></textarea>
