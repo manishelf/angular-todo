@@ -5,10 +5,10 @@
       class="text-white flex flex-row justify-between rounded"
       [title]="field.name"
       >
-      <td class="w-4/12 text-center">
-        <label [for]="field.name" class="p-1">{{ field.label }}</label>
+      <td class="w-3/12">
+        <label [for]="field.name">{{ field.label }}</label>
       </td>
-      <td class="flex content-center justify-center w-8/12">
+      <td class="flex content-center justify-center w-9/12">
         <input
           *ngIf="inputTagTypes.includes(field.type)"
           [type]="field.type"
@@ -18,9 +18,12 @@
           [min]="field.validation?.min"
           [max]="field.validation?.max"
           [step]="field.validation?.step"
-          class="w-full"
+          class="w-full outline-1 p-2 m-1"
         />
-        <a *ngIf="field.type === 'URL'" href="dynamicForm.get(field.name)?.value" [formControlName]="field.name" title="field.name">
+        <a *ngIf="field.type === 'URL'"
+          [href]="dynamicForm.get(field.name)?.value"
+          [formControlName]="field.name" 
+          [title]="field.name">
           {{field.label}}
         </a>
         <textarea

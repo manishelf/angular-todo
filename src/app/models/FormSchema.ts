@@ -16,7 +16,7 @@ export interface FormFields {
 
 export const inputTagTypes = [
      'TEXT', 'EMAIL' , 'PASSWORD' 
-            , 'NUMBER' , 'DATE' , 
+            , 'NUMBER' , 'DATE' , 'URL'
             , 'COLOUR' , 'COLOR' , 'RANGE' , 'MONTH' , 'DATE' , 'TIME' , 'DATETIME-LOCAL',
 ];
 
