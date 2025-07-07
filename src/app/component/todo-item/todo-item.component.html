@@ -27,6 +27,9 @@
                 <button class="cursor-pointer m-0.5 hover:scale-120" (click)="onClickCompletionStatus()" [title]="!item.completionStatus?'status: pending':'status: done'">
                 <mat-icon>{{!item.completionStatus?'timelapse':'done_all'}}</mat-icon>
                 </button>
+                <button class="cursor-pointer m-0.5 hover:scale-120" (click)="onClickDuplicate()" title="duplicate this item">
+                <mat-icon>file_copy</mat-icon>
+                </button>
             </div>
             <button type="button" class="cursor-pointer m-0.5 hover:scale-120" title="move to recycle bin" (click)="onClickDelete()">
                 <mat-icon>delete</mat-icon>

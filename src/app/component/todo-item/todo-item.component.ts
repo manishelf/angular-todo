@@ -110,11 +110,27 @@ export class TodoItemComponent implements OnInit, AfterViewInit {
       }
     )
   }
+
   onClickTags(){
     this.showTags = !this.showTags;
     if(this.showTags==false){
       this.updateSave();
     }
+  }
+
+  onClickDuplicate(){
+    this.item.subject+='-duplicate';
+    let duplicateItem: Omit<TodoItem,'id'> = {
+      subject: this.item.subject,
+      description: this.item.description,
+      tags: this.item.tags,
+      completionStatus: this.item.completionStatus,
+      setForReminder: this.item.setForReminder,
+      creationTimestamp: Date.now().toString(),
+      updationTimestamp: Date.now().toString(),
+      userDefined: this.item.userDefined,
+    };
+    this.todoService.addItem(duplicateItem);
   }
 
   @HostListener('keydown',['$event'])
