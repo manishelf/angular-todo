@@ -210,7 +210,14 @@ export class EditorComponent implements AfterViewInit {
         this.tagNameList = this.todoItem.tags.map((tag) => tag.name).join(',');
         this.todoServie.addCustom(tag, formSchema.formControlSchema);
         
-        this.customFormSchema?.fields?.push(...formSchema.formControlSchema.fields);
+        if (this.customFormSchema && this.customFormSchema.fields) {
+          this.customFormSchema = {
+          fields: [...this.customFormSchema.fields, ...formSchema.formControlSchema.fields],
+          };
+        } else {
+          this.customFormSchema = formSchema.formControlSchema;
+        }
+        
         this.todoItem.description = localStorage['tempTodoDescription'];
         this.schemaEditingInProgress = false;
         return;

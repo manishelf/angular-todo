@@ -20,6 +20,9 @@
           [step]="field.validation?.step"
           class="w-full"
         />
+        <a *ngIf="field.type === 'URL'" href="dynamicForm.get(field.name)?.value" [formControlName]="field.name" title="field.name">
+          {{field.label}}
+        </a>
         <textarea
           *ngIf="field.type === 'TEXTAREA'"
           [id]="field.name"

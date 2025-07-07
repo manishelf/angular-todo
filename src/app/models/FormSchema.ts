@@ -6,7 +6,7 @@ export interface FormFields {
     name : string,
     label : string,
     type : 'TEXT' | 'TEXTAREA' | 'EMAIL' | 'PASSWORD' 
-            | 'NUMBER' | 'DATE' | 'SELECT' | 'BOOLEAN' | 'IMAGE' 
+            | 'NUMBER' | 'DATE' | 'SELECT' | 'BOOLEAN' | 'IMAGE' | 'URL'
             | 'COLOR' | 'RANGE' | 'MONTH' | 'DATE' | 'TIME' | 'DATETIME-LOCAL',
     placeholder?: string,
     validation?: FormFieldValidation,
