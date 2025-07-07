@@ -1,7 +1,7 @@
-<div  [class]="`${bgColour} max-w-full text-white rounded-2xl p-3 hover:outline-2 hover:shadow-xl shadow-gray-50 outline-offset-2 outline-white transition-all`" [title]="toolTipString">
-    <div class="flex flex-row justify-between">
-        <div class="flex-grow-1 text-3xl overflow-hidden overflow-ellipsis cursor-pointer" (click)="onItemClick()" title="edit">
-            {{item.subject}}
+<div tabindex="0" [class]="`${bgColour} max-w-full text-white rounded-2xl focus:outline-2 hover:outline-2 hover:shadow-md shadow-gray-50 outline-offset-2 outline-white transition-all`" [title]="toolTipString">
+    <div class="flex flex-row justify-between p-2">
+        <div class="flex-grow-1 text-2xl overflow-hidden overflow-ellipsis cursor-pointer" (click)="onClickItem()" title="edit">
+            <div class="border border-0 border-b-1 w-fit">{{item.subject}}</div> 
         </div>
         <div *ngIf="!optionsDisplayed" class="flex flex-shrink-0">
             <mat-icon (click)="optionsDisplayed=!optionsDisplayed" class="cursor-pointer hover:scale-120" title="options">

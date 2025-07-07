@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ChangeDetectorRef, AfterViewInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectorRef, AfterViewInit, HostListener, ViewChild, ElementRef } from '@angular/core';
 import { TodoItem } from '../../models/todo-item';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
@@ -71,11 +71,10 @@ export class TodoItemComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     setTimeout(()=>{Prism.highlightAll(); 
-           }, 100);
+           }, 1000);
   }
 
-
-  onItemClick(){
+  onClickItem(){
     let extra : NavigationExtras = {
       state: this.item
     };
@@ -118,4 +117,10 @@ export class TodoItemComponent implements OnInit, AfterViewInit {
     }
   }
 
+  @HostListener('keydown',['$event'])
+  onKeyDown(event: KeyboardEvent){
+    if(event.key==='Enter'){
+      this.onClickItem();
+    }
+  }
 }
