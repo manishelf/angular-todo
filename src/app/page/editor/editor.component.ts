@@ -111,7 +111,7 @@ export class EditorComponent implements AfterViewInit {
       this.onAddClick();
     }
   }
-  
+
   @HostListener('focusin', ['$event'])
   onEventForResize(event: Event): void {
     const target = event.target as HTMLTextAreaElement;
@@ -263,7 +263,7 @@ export class EditorComponent implements AfterViewInit {
       `;
     if (this.todoItem.userDefined) {
       if (this.todoItem.userDefined.formControlSchema.fields) {
-        this.todoItem.description += JSON.stringify(this.todoItem.userDefined);
+        this.todoItem.description += JSON.stringify(this.todoItem.userDefined, null, 4);
       }
     }
     this.onEventForResize(event);

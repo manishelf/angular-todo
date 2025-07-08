@@ -163,8 +163,8 @@ export class TodoServiceService{
     return `
     {
       "id": ${item.id?item.id:null},
-      "subject": "${item.subject.replace(/\"/g,"&quot;")}",
-      "description": "${item.description.replace(/\"/g,"&quot;").replace(/\n/g,"<br>")}",
+      "subject": ${JSON.stringify(item.subject)},
+      "description": ${JSON.stringify(item.description)},
       "tags": [${
         item.tags.map(tag => `{"id": ${tag.id?tag.id:null}, "name": "${tag.name.replace(/\"/g,"&quot;")}"}`)
       }],
@@ -214,11 +214,11 @@ export class TodoServiceService{
     return item;
   }
 
-  deserializeManyFromJson(xmlString: string): Observable<TodoItem[]>{
+  deserializeManyFromJson(jsonString: string): Observable<TodoItem[]>{
     return new Observable<TodoItem[]>((Subscriber)=>{
       let items: TodoItem[] = [];
       try{
-        let result = JSON.parse(xmlString);
+        let result = JSON.parse(jsonString);
         items = result.items;
       }catch(e){
         console.error('error deserializing json string to todo item', e);
