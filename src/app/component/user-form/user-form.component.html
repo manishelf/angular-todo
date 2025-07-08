@@ -39,7 +39,7 @@
           [id]="field.name"
           [formControlName]="field.name"
         >
-          <option *ngFor="let option of field.options">{{ option }}</option>
+          <option *ngFor="let option of field.options" [value]="option">{{ option }}</option>
         </select>
         <div *ngIf="field.type === 'boolean'" [id]="field.name">
           false:<input
