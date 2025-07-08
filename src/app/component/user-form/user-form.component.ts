@@ -39,12 +39,12 @@ export class UserFormComponent implements OnChanges {
   state(): Map<string, any> {
     if (!this.schema?.fields) return new Map();
 
-    if (this.dynamicForm.valid) {
+    if (this.dynamicForm?.valid) {
       return this.dynamicForm.value;
     } else {
       let errors = new Map();
       for (let i = 0; i < this.schema.fields.length; i++) {
-        let control = this.dynamicForm.get(this.schema.fields[i].name);
+        let control = this.dynamicForm?.get(this.schema.fields[i].name);
         if (control) {
           errors.set(this.schema.fields[i].name, control.errors);
         }

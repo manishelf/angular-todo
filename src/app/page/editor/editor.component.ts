@@ -111,6 +111,7 @@ export class EditorComponent implements AfterViewInit {
       this.onAddClick();
     }
   }
+  
   @HostListener('focusin', ['$event'])
   onEventForResize(event: Event): void {
     const target = event.target as HTMLTextAreaElement;
@@ -226,7 +227,7 @@ export class EditorComponent implements AfterViewInit {
     }
     localStorage['tempTodoDescription'] = this.todoItem.description;
     this.todoItem.description = `/* Please add your json schema for desired custom form here - 
-      * Remove this commented part before save; Dont wory your description will be back once you save the schema by clicking the same 'add custom form' button
+      * Remove this commented part before save; Dont worry your description will be back once you save the schema by clicking the same 'add custom form' button
       * the format is - 
       * {
       *   "tag" : string, 

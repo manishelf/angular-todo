@@ -31,7 +31,8 @@ export class TodoItemComponent implements OnInit, AfterViewInit {
   toolTipString: string = '';
   parsedMD: string = '';
   fromBin: boolean;
-  bgColour: string = 'bg-gray-600 border-2 border-amber-400';
+  
+  bgColour: string = 'bg-gray-600 border-1 border-e-2 border-s-2 ';
   tagNameList: string[] = [];
   
   @Input() optionsDisplayed: boolean = false;
@@ -45,12 +46,15 @@ export class TodoItemComponent implements OnInit, AfterViewInit {
     Prism.plugins['autoloader'].languages_path = 'https://cdn.jsdelivr.net/npm/prismjs@1.14.0/components/';
   }
   ngOnInit(): void {
+    this.bgColour += 'border-amber-300';
     if (this.item.setForReminder) {
-      this.bgColour = 'bg-gray-600 border-2 border-red-600'
+      this.bgColour += ' '+'border-rose-500';
     }
     if (this.item.completionStatus) {
-      this.bgColour = 'bg-gray-600 border-2 border-green-700'
+      this.bgColour += ' '+'border-lime-500';
     }
+
+
     this.parsedMD = marked.parse(this.item.description).toString();
     this.parsedMD = this.parsedMD.replace(/\n/g, '<br>');
     let code = this.parsedMD.match(/<code class="language-(\w+)">([\s\S]*?)<\/code>/g) || this.parsedMD.match(/<code>([\s\S]*?)<\/code>/);
