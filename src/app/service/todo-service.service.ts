@@ -40,7 +40,6 @@ export class TodoServiceService{
             let db = (event.target as IDBOpenDBRequest).result;
             db.onerror = (err) => {
               console.error('local db err: ',err);
-              this.toaster.error('local db error: '+err.type);
             };
             subscriber.next(db);
             subscriber.complete();
@@ -230,7 +229,8 @@ export class TodoServiceService{
 
   addMany(items: TodoItem[]): void{
     try{
-      items.forEach(item=>{
+      for(let i = 0; i<items?.length; i++){
+        let item = items[i];
         try{
           this.addItem(item);
         }catch(e){
@@ -257,7 +257,8 @@ export class TodoServiceService{
           }
           console.log('error adding todo item', e);
         }
-      });
+
+      }
       this.initializeItems();  
     }catch(e){
       this.toaster.error('error adding todo items');

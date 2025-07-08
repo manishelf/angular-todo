@@ -37,6 +37,20 @@ export class HomeComponent implements OnInit, OnDestroy {
     } else if (url === '/home/clear') {
       todoService.fromBin = false;
       todoService.deleteAll();
+    } else if(url === '/demo'){
+      let confirm = prompt('Download sample todo items? [Y|N]');
+      if(confirm==='Y'){
+         fetch('/todo-demo-items.json') 
+          .then(response => {
+              if (!response.ok) {
+                console.error('failed to load the demo items', response);
+              }
+              return response.json();
+            })
+            .then(data => {
+              this.todoService.addMany(data.items);
+            });
+      }
     }
     this.fromBin = url.substring(0, 5) !== '/home';
     this.todoService.fromBin = this.fromBin;
