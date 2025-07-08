@@ -5,10 +5,10 @@
       class="text-white flex flex-row justify-between rounded"
       [title]="field.name"
       >
-      <td class="w-3/12">
+      <td class="">
         <label [for]="field.name">{{ field.label }}</label>
       </td>
-      <td class="flex content-center justify-center w-9/12">
+      <td class="flex content-center justify-center w-full">
         <input
           *ngIf="inputTagTypes.includes(field.type)"
           [type]="field.type"
