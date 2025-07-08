@@ -105,7 +105,7 @@ export class TodoItemComponent implements OnInit, AfterViewInit {
     inputValue.split(',').forEach(
       (name)=>{
         this.item.tags.push(
-          {name: name}
+          {name: name.trim()}
         )
       }
     )

@@ -84,8 +84,8 @@ export class TodoServiceService{
       console.error('error deleting all items: ', e);
     }
   }
-  searchTodos(subjectQuery: string, tagFilter: string[] = [], searchTerms: string[] = [], filter = false): Observable<TodoItem[]> {
-    return this.getService.searchTodos(this.db$, subjectQuery, tagFilter, searchTerms, this.fromBin, filter);
+  searchTodos(subjectQuery: string, tagFilter: string[] = [], searchTerms: string[] = [], exact = false): Observable<TodoItem[]> {
+    return this.getService.searchTodos(this.db$, subjectQuery, tagFilter, searchTerms, this.fromBin, exact);
   }
 
   addItem(item: Omit<TodoItem, 'id'>): void{

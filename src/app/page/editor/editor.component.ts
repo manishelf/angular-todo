@@ -183,12 +183,7 @@ export class EditorComponent implements AfterViewInit {
     this.todoItem.tags = [];
     let tags = inputValue.split(',');
     tags.forEach((name) => {
-      name = name.trim();
-      if (name === '') return;
-
-      if (name.startsWith('form-')) {
-      }
-      this.todoItem.tags.push({ name: name });
+      this.todoItem.tags.push({ name: name.trim() });
     });
     this.loadCustomSchemaFromDb(tags);
     this.tagNameList = this.todoItem.tags.map((tag) => tag.name).join(',');

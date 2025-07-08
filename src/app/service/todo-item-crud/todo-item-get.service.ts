@@ -93,7 +93,7 @@ export class TodoItemGetService {
     db$: Observable<IDBDatabase>,
     tagsFilter: string[],
     fromBin: boolean,
-    filter = true,
+    exact = true,
   ): Observable<Set<TodoItem>> { // returns ids based on tags if unfiltered | items otherwise
     const storeNames = ['tags_todo_items', fromBin ? 'deleted_todo_items' : 'todo_items'];
     return db$.pipe(
@@ -135,7 +135,7 @@ export class TodoItemGetService {
               }
               Promise.all(itemsPromises).then((items)=>{
                 for(let item of items){
-                  if(filter){
+                  if(exact){
                     let isResult = true;
                     for(let tag of tagsFilter){
                       let tagList = item.tags.map(tag=>tag.name);
@@ -149,9 +149,9 @@ export class TodoItemGetService {
                     uniqueTodoItems.add(item);
                   }
                 }
+                observer.next(uniqueTodoItems);
+                observer.complete();
               });
-              observer.next(uniqueTodoItems);
-              observer.complete();
             }
           };
           request.onerror = (event) => {
@@ -168,7 +168,7 @@ export class TodoItemGetService {
     tagsFilter: string[],
     searchTerms: string[],
     fromBin: boolean,
-    filter: boolean = true,
+    exact: boolean = true,
   ): Observable<TodoItem[]> {
     if (subjectQuery === '!ALL:' && tagsFilter.length === 0 && searchTerms.length === 0) {
       return this.getAllItems(db$, fromBin);
@@ -188,7 +188,7 @@ export class TodoItemGetService {
       if (tagsFilter.length > 0) {
         promises.push(
           new Promise((resolve) => {
-            this.searchTodosByTags(db$, tagsFilter, fromBin, filter).subscribe((result) => resolve(result));
+            this.searchTodosByTags(db$, tagsFilter, fromBin, exact).subscribe((result) => resolve(result));
           })
         );
       }
@@ -199,7 +199,7 @@ export class TodoItemGetService {
             this.getAllItems(db$, fromBin).subscribe(
               (items)=>{
                 const escapedTokens = searchTerms.map((term)=>term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
-                const pattern = new RegExp(`\\b(${filter?escapedTokens:escapedTokens.join('|')})\\b`, 'i');
+                const pattern = new RegExp(`\\b(${exact?escapedTokens:escapedTokens.join('|')})\\b`, 'i');
                 let result = new Set<TodoItem>();
                 
                 for(let i = 0; i<items.length; i++){
@@ -218,11 +218,11 @@ export class TodoItemGetService {
       }
 
       Promise.all(promises).then((results) => {
-        if(!filter){ // cumulate results
+        if(!exact){ // cumulate results
           const combinedResults = results.reduce((acc, curr) => new Set([...acc, ...curr]), new Set()); 
           observer.next(Array.from(combinedResults));
           observer.complete();
-        }else{ //filter results
+        }else{ //exact results
           let filteredResults:TodoItem[] = [];
           let flatList = [];
           let maxListSize = 0;
