@@ -1,14 +1,28 @@
 # AngularTodo
 
-<ul class="text-lg text-left mt-6 p-6 bg-white rounded-4xl shadow-md w-fit mx-auto">
+<div class="h-full scroll-auto overflow-scroll justify-center">
+    <div class="w-full flex flex-col justify-center">
+        <div class="mb-8">
+            <span class="block text-center text-4xl font-semibold text-emerald-600">
+                <ul class="text-lg text-left mt-6 p-6 bg-white rounded-4xl shadow-md w-fit mx-auto">
                     <div class="text-center text-xl font-semibold mb-4">Features of this app</div>
                     <li class="mb-2"><span class="font-medium">Frontend:</span> Angular</li>
-                    <li class="mb-2"><span class="font-medium">Backend:</span> Spring Boot</li>
-                    <li class="mb-2"><span class="font-medium">Database:</span> Uses IndexedDB API when offline,<br>MySql when connected with backend</li>
-                    <li class="mb-2"><span class="font-medium">Perk:</span> Item description supports Markdown formatting</li>
-                    <li class="mb-2"><span class="font-medium">Search:</span> Prefix matching when offline,<br>Fast MySQL Fulltext</li>
-                    <li><span class="font-medium">Filtering:</span> Advanced Grouping with tags (searchQuery !Tags: tag1,tag2)</li>
+                    <li class="mb-2"><span class="font-medium">Database:</span> Uses IndexedDB API when offline,</li>
+                    <li class="mb-2"><span class="font-medium">Markdown:</span> Item description supports Markdown formatting</li>
+                    <li class="mb-2"><span class="font-medium">Search:</span> Prefix matching normally or full text with !F:, Cumulative with !ALL: or exact match otherwise</li>
+                    <li class="mb-2"><span class="font-medium">Filtering:</span>Advanced Grouping with tags<br> !T: with prefix '+':include, '-':exclude</li>
+                    <ul class="text-lg text-left mt-6 p-6 bg-white rounded-4xl shadow-md w-fit mx-auto">
+                        <li>!ALL: any that match (default - that matches all)</li>
+                        <li>!F: full text search (default - subject prefix)</li>
+                        <li>!T: tag based search with +,- modifier prefix</li>
+                    </ul>
+                    <li class="mb-2">
+                        <span class="font-medium">Custom Fields:</span> Add Custom fields to the todo item [very handy for visualization] with your json schema,
+                        <br> this uses angular's reactiveforms and you can add validations
+                    </li>
+					<li><span class="font-medium">Backup:</span> Download your notes as a json file and load notes from it as backup</li>
                 </ul>
-
-## Live Demo 
-https://manishelf-todo.vercel.app
+            </span>
+        </div>
+    </div>
+</div>    
