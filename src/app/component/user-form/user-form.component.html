@@ -41,6 +41,18 @@
         >
           <option *ngFor="let option of field.options" [value]="option">{{ option }}</option>
         </select>
+        <div *ngIf="field.type === 'radio'" class="flex flex-wrap" [id]="field.name">
+          <div *ngFor="let option of field.options;" class="flex-shrink-0 m-1" [title]="field.name+'-'+option">
+            <label [for]="field.name+'-'+option">{{option}}:</label>
+            <input type="radio" [id]="field.name+'-'+option" [value]="option" [name]="field.name" [formControlName]="field.name">
+          </div>
+        </div>
+        <div *ngIf="field.type === 'checkbox'" class="flex flex-wrap" [id]="field.name">
+          <div *ngFor="let option of field.options;let i = index" class="flex-shrink-0 m-1" [title]="field.name+'-'+option" [formArrayName]="field.name">
+            <label [for]="field.name+'-'+option">{{option}}:</label>
+            <input type="checkbox" [id]="field.name+'-'+option" [value]="option" [name]="field.name" [formControlName]="i">
+          </div>
+        </div>
         <div *ngIf="field.type === 'boolean'" [id]="field.name">
           false:<input
             [formControlName]="field.name"

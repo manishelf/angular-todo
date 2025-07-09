@@ -171,11 +171,13 @@ export class EditorComponent implements AfterViewInit {
         data: this.userForm.state(),
       };
     }
+    console.log(this.todoItem.userDefined?.data);
+    
     if (this.forEdit !== -1) {
-      this.todoServie.updateItem({ id: this.forEdit, ...this.todoItem });
-    } else {
-      this.todoServie.addItem(this.todoItem);
-    }
+       this.todoServie.updateItem({ id: this.forEdit, ...this.todoItem });
+     } else {
+       this.todoServie.addItem(this.todoItem);
+     }
     this.router.navigate(['/home']);
   }
 
@@ -188,6 +190,42 @@ export class EditorComponent implements AfterViewInit {
     });
     this.loadCustomSchemaFromDb(tags);
     this.tagNameList = this.todoItem.tags.map((tag) => tag.name).join(',');
+  }
+
+  loadCustomSchemaFromDb(tags: string[]) {
+    tags = tags.filter(tag=>tag.startsWith('form-'));
+    if(tags.length === 0) return;
+
+    this.customFormSchema = this.todoItem.userDefined?.formControlSchema;
+    
+    this.todoServie.getAllCustom(tags).subscribe((resultArray) =>
+        resultArray.forEach((res) => {
+        let schema = res?.item;
+        if (!schema) return;
+        try {
+          schema.fields?.forEach((field: FormField) => {
+            let data = this.todoItem.userDefined?.data;
+            if (data) {
+              data = new Map(Object.entries(data));
+              let value = data.get(field.name);
+              if (value) {
+                field.default = value;
+              }
+            }
+          });
+
+          if (this.customFormSchema && this.customFormSchema.fields) {
+            this.customFormSchema = {
+              fields: [...this.customFormSchema.fields, ...schema.fields],
+            };
+          } else {
+            this.customFormSchema = schema;
+          }
+        } catch (e) {
+          console.error('failed to load schema ' + tags, schema, e);
+        }
+      })
+    );
   }
 
   onClickUserFormAdd(event: Event) {
@@ -237,7 +275,7 @@ export class EditorComponent implements AfterViewInit {
       *         "name" : string,
       *         "label" : string,
       *         "type" : 'text' | 'textarea' | 'email' | 'password' 
-      *                  | 'number' | 'date' | 'select' | 'boolean' | 'image' 
+      *                  | 'number' | 'date' | 'select' | 'checkbox' | 'radio' | 'boolean' | 'image' 
       *                  | 'color' | 'range' | 'month' | 'date' | 'time' | 'datetime-local' | 'timestamp' | 'history',
       *         "placeholder"?: string,
       *         "validation"?: {
@@ -266,42 +304,12 @@ export class EditorComponent implements AfterViewInit {
         this.todoItem.description += JSON.stringify(this.todoItem.userDefined, null, 4);
       }
     }
+
     this.onEventForResize(event);
     this.schemaEditingInProgress = true;
   }
 
-  loadCustomSchemaFromDb(tags: string[]) {
-    this.customFormSchema = this.todoItem.userDefined?.formControlSchema;
-      
-    this.todoServie.getAllCustom(tags).subscribe((resultArray) =>
-        resultArray.forEach((res) => {
-        let schema = res?.item;
-        if (!schema) return;
-        try {
-          schema.fields?.forEach((field: FormField) => {
-            let data = this.todoItem.userDefined?.data;
-            if (data) {
-              data = new Map(Object.entries(data));
-              let value = data.get(field.name);
-              if (value) {
-                field.default = value;
-              }
-            }
-          });
-
-          if (this.customFormSchema && this.customFormSchema.fields) {
-            this.customFormSchema = {
-              fields: [...this.customFormSchema.fields, ...schema.fields],
-            };
-          } else {
-            this.customFormSchema = schema;
-          }
-        } catch (e) {
-          console.error('failed to load schema ' + tags, schema, e);
-        }
-      })
-    );
-  }
+  
 
   onClickTags() {
     this.showTags = !this.showTags;

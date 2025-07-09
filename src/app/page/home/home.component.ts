@@ -49,10 +49,11 @@ export class HomeComponent implements OnInit, OnDestroy {
             })
             .then(data => {
               this.todoService.addMany(data.items);
+              this.router.navigate(['/home']);
             });
       }
     }
-    this.fromBin = url.substring(0, 4) === '/bin';
+    this.fromBin = (url.substring(0, 4) === '/bin');
     this.todoService.fromBin = this.fromBin;
   }
 
@@ -81,7 +82,7 @@ export class HomeComponent implements OnInit, OnDestroy {
               }
             );
         } else {
-          this.router.navigate(['/home']); // no re-render here. only url is changed. nothing else happens
+          this.router.navigate([]);
           this.fromSearch=false;
           this.todoItemsSubscription = this.todoService.todoItems$.subscribe(
             (itemList) => {

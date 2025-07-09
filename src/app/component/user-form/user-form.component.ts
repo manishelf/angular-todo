@@ -9,6 +9,7 @@ import {
 } from '@angular/core';
 import { Tag } from '../../models/tag';
 import {
+  FormArray,
   FormBuilder,
   FormControl,
   FormGroup,
@@ -71,7 +72,7 @@ export class UserFormComponent implements OnChanges {
   }
 
   createForm(): void {
-    const formControls: { [key: string]: FormControl } = {};
+    const formControls: { [key: string]: FormControl | FormArray} = {};
     if (this.schema && this.schema.fields) {
       for (let i = 0; i < this.schema.fields.length; i++) {
         const validators = [];
@@ -136,7 +137,15 @@ export class UserFormComponent implements OnChanges {
             formData: JSON.stringify(this.state()),
           });
         }
-        formControls[fieldName] = new FormControl(field.default, validators);
+        if(type === 'checkbox' && field.options){
+          let checkboxCtrls = field.options.map(option=>{
+            const checked = (field.default || ['']).includes(option);
+            return this.formBuilder.control(checked);
+          });
+          formControls[fieldName] = this.formBuilder.array(checkboxCtrls);
+        }else {
+          formControls[fieldName] = this.formBuilder.control(field.default, validators);
+        }
       }
     }
     this.dynamicForm = this.formBuilder.group(formControls);
