@@ -52,7 +52,7 @@ export class HomeComponent implements OnInit, OnDestroy {
             });
       }
     }
-    this.fromBin = url.substring(0, 5) === '/bin';
+    this.fromBin = url.substring(0, 4) === '/bin';
     this.todoService.fromBin = this.fromBin;
   }
 
