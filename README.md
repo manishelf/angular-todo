@@ -29,4 +29,4 @@
 
 ---
 
-# Demo at [QTodo](https://manishelf-qtodo.vercel.app/demo)
+# Live at [QTodo](https://manishelf-qtodo.vercel.app/demo)
