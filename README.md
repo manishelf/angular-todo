@@ -5,7 +5,7 @@
         <div class="mb-8">
             <span class="block text-center text-4xl font-semibold text-emerald-600">
                 <ul class="text-lg text-left mt-6 p-6 bg-white rounded-4xl shadow-md w-fit mx-auto">
-                    <div class="text-center text-xl font-semibold mb-4">Features of this app</div>
+                    <h2 class="text-center text-xl font-semibold mb-4">Features of this app</h2>
                     <li class="mb-2"><span class="font-medium">Frontend:</span> Angular</li>
                     <li class="mb-2"><span class="font-medium">Database:</span> Uses IndexedDB API when offline,</li>
                     <li class="mb-2"><span class="font-medium">Markdown:</span> Item description supports Markdown formatting</li>
@@ -26,3 +26,6 @@
         </div>
     </div>
 </div>    
+
+
+demo at [QTodo](https://manishelf-qtodo.vercel.app/demo)
