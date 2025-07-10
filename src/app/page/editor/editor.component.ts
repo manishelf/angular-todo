@@ -85,7 +85,9 @@ export class EditorComponent implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.subjectTxt.nativeElement.focus();
+    setTimeout(()=>{
+      this.subjectTxt.nativeElement.focus();
+    }, 300);
   }
 
   @HostListener('keydown', ['$event'])

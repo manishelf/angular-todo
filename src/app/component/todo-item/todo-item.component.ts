@@ -30,7 +30,7 @@ export class TodoItemComponent implements OnInit, AfterViewInit {
 
   toolTipString: string = '';
   parsedMD: string = '';
-  fromBin: boolean;
+  @Input('fromBin') fromBin: boolean = false;
   
   bgColour: string = 'bg-gray-600 border-1 border-e-2 border-s-2 ';
   tagNameList: string[] = [];
@@ -40,8 +40,6 @@ export class TodoItemComponent implements OnInit, AfterViewInit {
   @Input() minimized: boolean = true;
 
   constructor(private todoService: TodoServiceService, private route:ActivatedRoute, private router: Router) {
-    let url = this.router.url;
-    this.fromBin = (url.substring(0,5) !== '/home');
     this.todoService.fromBin = this.fromBin;
     Prism.plugins['autoloader'].languages_path = 'https://cdn.jsdelivr.net/npm/prismjs@1.14.0/components/';
   }
@@ -59,10 +57,10 @@ export class TodoItemComponent implements OnInit, AfterViewInit {
     this.parsedMD = this.parsedMD.replace(/\n/g, '<br>');
     let code = this.parsedMD.match(/<code class="language-(\w+)">([\s\S]*?)<\/code>/g) || this.parsedMD.match(/<code>([\s\S]*?)<\/code>/);
     if (code) {
-     for (let i = 0; i < code.length; i++) {
-      let snippet = code[i];
-      this.parsedMD = this.parsedMD.replace(snippet,  snippet.replace(/<br>/g,'\n').replace(/&lt;br&gt;/g, '<br>'));
-    }
+      for (let i = 0; i < code.length; i++) {
+        let snippet = code[i];
+        this.parsedMD = this.parsedMD.replace(snippet,  snippet.replace(/<br>/g,'\n').replace(/&lt;br&gt;/g, '<br>'));
+      }
     }
 
     this.item.tags.forEach((tag)=>{
@@ -76,16 +74,7 @@ export class TodoItemComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     setTimeout(()=>{Prism.highlightAll(); 
            }, 1000);
-  }
-
-  onClickItem(){
-    this.route.queryParams.subscribe((query, todoItem = this)=>{
-      let extra : NavigationExtras = {
-        state: {item:todoItem.item, query},
-      };
-      todoItem.router.navigate(['/edit'], extra);
-    });
-  }
+  } 
 
   onClickDelete(){
     this.todoService.deleteItem(this.item);
@@ -143,12 +132,5 @@ export class TodoItemComponent implements OnInit, AfterViewInit {
       userDefined: this.item.userDefined,
     };
     this.todoService.addItem(duplicateItem);
-  }
-
-  @HostListener('keydown',['$event'])
-  onKeyDown(event: KeyboardEvent){
-    if(event.key==='Enter'){
-      this.onClickItem();
-    }
   }
 }

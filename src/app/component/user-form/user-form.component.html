@@ -1,5 +1,5 @@
 <form [formGroup]="dynamicForm" autocomplete="on">
-  <table class="border border-collapse border-1 border-white">
+  <table class="border border-collapse border-1 border-white" >
     <tr
       *ngFor="let field of schema?.fields"
       class="text-white flex flex-row justify-between rounded"
@@ -73,9 +73,10 @@
         <div
           *ngIf="field.type === 'image'"
           [title]="field.label"
+          class="w-2/3 overflow-scroll"
         >
           <input
-            class=""
+            class="w-full"
             style="mix-blend-mode: difference"
             [value]="dynamicForm.get(field.name)?.value"
             type="text"
@@ -85,7 +86,6 @@
           <img
             *ngIf="dynamicForm.get(field.name)?.value"
             [src]="dynamicForm.get(field.name)?.value"
-            class="max-h-40"
           />
         </div>
       </td>

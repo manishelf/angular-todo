@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { TodoItemComponent } from './../../component/todo-item/todo-item.component';
 import {
   ActivatedRoute,
+  NavigationExtras,
   Params,
   Router,
   RouterLink,
@@ -99,6 +100,84 @@ export class HomeComponent implements OnInit, OnDestroy {
         }
       }
     );
+  }
+
+  onClickTodoItem(event: Event, id: number){
+    let targetItem = event.target as HTMLElement;
+    console.log(targetItem);
+     
+    if(targetItem.classList.contains('option')){
+      return;
+    } 
+
+    this.route.queryParams.subscribe((query, todoItem = this)=>{
+      let item = this.itemList[id];
+      if(item){
+        this.router.navigate(['/edit'],{
+          state: {
+          item: item,
+          query: query
+          } 
+        });
+      }
+    });
+  }
+
+  
+  private verticalFocusTravel(targetItem: HTMLElement,down:boolean = false){
+    let parentWidth = (targetItem.parentElement?.getBoundingClientRect().width || 0);
+    let parentLeft =  (targetItem.parentElement?.getBoundingClientRect().left || 0);
+    let targetLeft = targetItem.getBoundingClientRect().left;
+    let targetRight = targetItem.getBoundingClientRect().right;
+
+    let count = 0;
+    let width = down?targetLeft:targetRight;
+    let curr = targetItem;
+    while(count<10000){ // true could and did go to infinity
+      width += down?curr?.clientWidth:(-1)*curr?.clientWidth;
+      curr = (down?curr?.nextElementSibling:curr?.previousElementSibling) as HTMLElement;
+      count++;
+      if(curr === null){
+        if(down){
+          let first = targetItem.parentElement?.firstElementChild as HTMLElement;
+          first?.focus();
+        }else{
+          let last = targetItem.parentElement?.lastElementChild as HTMLElement;
+          last?.focus();
+        }  
+      }
+      if(down && width>=parentWidth) break;
+      if(!down && width<=parentLeft) break;
+    }
+    let nextEle = targetItem;
+    for(let i = 0; i<count; i++){
+      nextEle = (down?nextEle.nextElementSibling:nextEle.previousElementSibling) as HTMLElement;
+    }
+    nextEle?.focus();
+    nextEle?.scrollIntoView({behavior:'smooth', block:'center'});
+  }
+
+  onKeyDownTodoItem(event : KeyboardEvent){
+    let leftDirKey = ['ArrowLeft', 'a', 'h'];
+    let rightDirKey = ['ArrowRight', 'd', 'l'];
+    let upDirKey = ['ArrowUp', 'w','j'];
+    let downDirKey = ['ArrowDown', 's', 'k'];
+
+    let targetItem = event.target as HTMLElement;  
+
+    if(leftDirKey.includes(event.key)){
+      if(targetItem.previousElementSibling)
+      (targetItem.previousElementSibling as HTMLElement).focus();
+    }else if(rightDirKey.includes(event.key)){
+      if(targetItem.nextElementSibling)
+      (targetItem.nextElementSibling as HTMLElement).focus();
+    }else if(upDirKey.includes(event.key)){
+      this.verticalFocusTravel(targetItem, false);
+    }else if(downDirKey.includes(event.key)){
+      this.verticalFocusTravel(targetItem, true);
+    }else if(event.key === 'Enter'){
+      this.onClickTodoItem(event, Number.parseInt(targetItem.id));  
+    }   
   }
   ngOnDestroy(): void {
     if (this.todoItemsSubscription) {

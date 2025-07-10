@@ -1,9 +1,10 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ToastService } from 'angular-toastify';
 import { TodoServiceService } from '../../service/todo-service.service';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-navbar',
@@ -15,7 +16,13 @@ export class NavbarComponent implements AfterViewInit{
   accessToken:string | null = null;
   @ViewChild ('searchBox') searchBox! : ElementRef;
 
-  constructor(private router: Router, private toaster: ToastService, private todoService: TodoServiceService) { }
+  constructor(private router: Router, private toaster: ToastService, private todoService: TodoServiceService) {
+    this.router.events.pipe(filter(e=>e instanceof NavigationEnd)).subscribe((event)=>{
+      setTimeout(()=>{
+        this.searchBox.nativeElement.focus();
+      }, 200); 
+      });
+   }
 
   ngAfterViewInit(): void {
     this.searchBox.nativeElement.focus();
