@@ -166,11 +166,18 @@ export class HomeComponent implements OnInit, OnDestroy {
     let targetItem = event.target as HTMLElement;  
 
     if(leftDirKey.includes(event.key)){
-      if(targetItem.previousElementSibling)
-      (targetItem.previousElementSibling as HTMLElement).focus();
+      if(targetItem.previousElementSibling){
+        (targetItem.previousElementSibling as HTMLElement).focus();
+      }else{
+        (targetItem.parentElement?.lastChild as HTMLElement)?.focus();
+      }
     }else if(rightDirKey.includes(event.key)){
-      if(targetItem.nextElementSibling)
-      (targetItem.nextElementSibling as HTMLElement).focus();
+      if(targetItem.nextElementSibling){
+        (targetItem.nextElementSibling as HTMLElement).focus();
+      }
+      else{
+        (targetItem.parentElement?.firstChild as HTMLElement)?.focus();
+      }
     }else if(upDirKey.includes(event.key)){
       this.verticalFocusTravel(targetItem, false);
     }else if(downDirKey.includes(event.key)){
