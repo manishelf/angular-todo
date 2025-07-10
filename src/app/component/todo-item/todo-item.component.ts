@@ -4,7 +4,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import * as marked from 'marked';
 import { TodoServiceService } from '../../service/todo-service.service';
-import { NavigationExtras, Router } from '@angular/router';
+import { ActivatedRoute, NavigationExtras, Route, Router } from '@angular/router';
 
 import Prism from 'prismjs';
 import 'prismjs/plugins/autoloader/prism-autoloader';
@@ -39,7 +39,7 @@ export class TodoItemComponent implements OnInit, AfterViewInit {
   @Input() showTags:boolean = false;
   @Input() minimized: boolean = true;
 
-  constructor(private todoService: TodoServiceService, private cdr: ChangeDetectorRef, private router: Router) {
+  constructor(private todoService: TodoServiceService, private route:ActivatedRoute, private router: Router) {
     let url = this.router.url;
     this.fromBin = (url.substring(0,5) !== '/home');
     this.todoService.fromBin = this.fromBin;
@@ -79,10 +79,12 @@ export class TodoItemComponent implements OnInit, AfterViewInit {
   }
 
   onClickItem(){
-    let extra : NavigationExtras = {
-      state: this.item
-    };
-    this.router.navigate(['/edit'],extra);
+    this.route.queryParams.subscribe((query, todoItem = this)=>{
+      let extra : NavigationExtras = {
+        state: {item:todoItem.item, query},
+      };
+      todoItem.router.navigate(['/edit'], extra);
+    });
   }
 
   onClickDelete(){

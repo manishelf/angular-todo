@@ -32,6 +32,8 @@ export class EditorComponent implements AfterViewInit {
   @ViewChild('subjectTxt') subjectTxt!: ElementRef;
   @ViewChild('userForm') userForm!: UserFormComponent;
 
+  queryParams = {};
+
   convertedMarkdown: string = '';
   option: string = 'MD Preview';
   tagNameList: string = '';
@@ -63,8 +65,9 @@ export class EditorComponent implements AfterViewInit {
   ) {
     if (router.url === '/edit') {
       const navigation = this.router.getCurrentNavigation();
-      if (navigation && navigation.extras && navigation.extras.state) {
-        let itemForUpdate = navigation.extras.state as TodoItem;
+      if (navigation && navigation.extras && navigation.extras.state && navigation.extras.state) {
+        let itemForUpdate = navigation.extras.state['item'] as TodoItem;
+        this.queryParams = navigation.extras.state['query'];
         this.forEdit = itemForUpdate.id;
         this.todoItem = itemForUpdate;
         this.todoItem.description = this.todoItem.description.replace(
@@ -74,7 +77,7 @@ export class EditorComponent implements AfterViewInit {
         this.tagNameList = this.todoItem.tags.map((tag) => tag.name).join(',');
         this.customFormSchema = this.todoItem.userDefined?.formControlSchema;
       } else {
-        router.navigate(['/home']);
+        router.navigate(['/home'], {queryParamsHandling:'merge'});
       }
     }
     Prism.plugins['autoloader'].languages_path =
@@ -178,7 +181,7 @@ export class EditorComponent implements AfterViewInit {
      } else {
        this.todoServie.addItem(this.todoItem);
      }
-    this.router.navigate(['/home']);
+    this.router.navigate(['/home'],{queryParams:this.queryParams});
   }
 
   onUpdateTags(event: Event) {
