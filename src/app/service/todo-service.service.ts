@@ -175,7 +175,7 @@ export class TodoServiceService{
       "eventEnd": ${item.eventEnd?"\""+item.eventEnd+"\"":null},
       "eventFullDay": ${item.eventFullDay?item.eventFullDay:false},
       "deleted": ${item.deleted?item.deleted:false},
-      "userDefined": ${JSON.stringify(item.userDefined)}
+      "userDefined": ${JSON.stringify(item.userDefined, null, 2)}
     }`;
   }
 

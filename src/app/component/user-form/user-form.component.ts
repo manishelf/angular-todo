@@ -129,12 +129,12 @@ export class UserFormComponent implements OnChanges {
           field.default += JSON.stringify({
             timestamp: Date(),
             subject: JSON.stringify(
-              document.getElementById('editor-subject-input')?.innerHTML
+              (document.getElementById('editor-subject-input') as HTMLInputElement)?.value
             ),
             description: JSON.stringify(
-              document.getElementById('editor-description-input')?.innerHTML
+              (document.getElementById('editor-description-input') as HTMLTextAreaElement)?.value
             ),
-            formData: JSON.stringify(this.state()),
+            formData: JSON.stringify(this.data),
           });
         }
         if(type === 'checkbox' && field.options){

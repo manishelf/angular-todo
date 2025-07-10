@@ -5,10 +5,10 @@
       class="text-white flex flex-row justify-between rounded"
       [title]="field.name"
       >
-      <td class="">
+      <td class="w-1/3">
         <label [for]="field.name">{{ field.label }}</label>
       </td>
-      <td class="flex content-center justify-center w-full">
+      <td class="flex w-2/3 content-center justify-center">
         <input
           *ngIf="inputTagTypes.includes(field.type)"
           [type]="field.type"
@@ -21,7 +21,9 @@
           class="w-full outline-1 p-2 m-1"
         />
         <a *ngIf="field.type === 'url'"
-          [href]="dynamicForm.get(field.name)?.value"
+          [href]="field.validation?.pattern?
+          field.validation?.pattern?.replace('{key}',dynamicForm.get(field.name)?.value.trim())
+          :dynamicForm.get(field.name)?.value"
           [formControlName]="field.name" 
           [title]="field.name">
           {{field.label}}
@@ -54,18 +56,18 @@
           </div>
         </div>
         <div *ngIf="field.type === 'boolean'" [id]="field.name">
-          false:<input
-            [formControlName]="field.name"
-            type="radio"
-            [name]="field.name"
-            value="false"
-          />
-          &nbsp;
-          true:<input
+          YES:<input
             [formControlName]="field.name"
             type="radio"
             [name]="field.name"
             value="true"
+          />
+          &nbsp;
+          NO:<input
+            [formControlName]="field.name"
+            type="radio"
+            [name]="field.name"
+            value="false"
           />
         </div>
         <div

@@ -282,7 +282,7 @@ export class EditorComponent implements AfterViewInit {
       *             "require"? : boolean,
       *             "minLength"?: number,
       *             maxLength"?: number,
-      *             regexMatch"? : string,
+      *             pattern"? : string,
       *             "min"? : string,
       *             "max"? : string,
       *             "step"? : string
