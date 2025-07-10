@@ -96,8 +96,9 @@ export class UserFormComponent implements OnChanges {
         if (minLength) {
           validators.push(Validators.minLength(minLength));
         }
-        if (pattern) {
-          validators.push(Validators.pattern(pattern));
+        if (pattern && type !== 'url') {
+ 
+ validators.push(Validators.pattern(pattern));
         }
         if (max) {
           validators.push(Validators.max(Number.parseInt(max)));
