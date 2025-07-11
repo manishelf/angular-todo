@@ -176,9 +176,9 @@ export class EditorComponent implements AfterViewInit {
         data: this.userForm.state(),
       };
     }
-    console.log(this.todoItem.userDefined?.data);
     
     if (this.forEdit !== -1) {
+       this.todoItem.updationTimestamp = new Date(Date.now()).toISOString();
        this.todoServie.updateItem({ id: this.forEdit, ...this.todoItem });
      } else {
        this.todoServie.addItem(this.todoItem);
