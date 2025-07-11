@@ -11,7 +11,7 @@ import {
   RouterLink,
   RouterLinkActive,
 } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { last, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-home',
@@ -121,6 +121,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       }
     });
   }
+
   private findNextItemInVerticalDirection(targetItem: HTMLElement, goingDown: boolean): HTMLElement | null {
     const parent = targetItem.parentElement;
     if (!parent) return null;
@@ -238,18 +239,19 @@ export class HomeComponent implements OnInit, OnDestroy {
     let nextEle = targetItem;
     
     while(count<10000){ // while true could and did go to infinity
-      width += down?curr?.clientWidth:(-1)*curr?.clientWidth;
+      let currWidth = curr?.getBoundingClientRect().width;
+      width += down?currWidth:(-1)*currWidth;
       curr = (down?curr?.nextElementSibling:curr?.previousElementSibling) as HTMLElement;
       count++;
       if(curr === null){
         if(down){
           let first = targetItem.parentElement?.firstElementChild as HTMLElement;
-          nextEle?.focus();
-          nextEle?.scrollIntoView({behavior:'smooth', block:'center'});
+          first?.focus();
+          first?.scrollIntoView({behavior:'smooth', block:'center'});
         }else{
           let last = targetItem.parentElement?.lastElementChild as HTMLElement;
-          nextEle?.focus();
-          nextEle?.scrollIntoView({behavior:'smooth', block:'center'});
+          last?.focus();
+          last?.scrollIntoView({behavior:'smooth', block:'center'});
         }  
       }
 
@@ -279,14 +281,14 @@ export class HomeComponent implements OnInit, OnDestroy {
       if(targetItem.previousElementSibling){
         (targetItem.previousElementSibling as HTMLElement).focus();
       }else{
-        (targetItem.parentElement?.lastChild as HTMLElement)?.focus();
+        (targetItem.parentElement?.lastElementChild as HTMLElement)?.focus();
       }
     }else if(rightDirKey.includes(event.key)){
       if(targetItem.nextElementSibling){
         (targetItem.nextElementSibling as HTMLElement).focus();
       }
       else{
-        (targetItem.parentElement?.firstChild as HTMLElement)?.focus();
+        (targetItem.parentElement?.firstElementChild as HTMLElement)?.focus();
       }
     }else if(upDirKey.includes(event.key)){
       this.verticalFocusTravel(targetItem, false);
