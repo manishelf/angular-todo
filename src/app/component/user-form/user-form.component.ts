@@ -154,7 +154,6 @@ export class UserFormComponent implements OnChanges {
 
   filterDuplicateFields() {
     if (!this.schema || !this.schema.fields) return;
-    console.log(this.schema.fields);
     this.schema.fields;
     let uniqueFields = new Map<string, FormField>();
     for (const f of this.schema.fields) {

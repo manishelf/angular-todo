@@ -220,6 +220,7 @@ export class EditorComponent implements AfterViewInit {
           });
 
           if (this.customFormSchema && this.customFormSchema.fields) {
+            // have to do this instead of push as push is not tracked
             this.customFormSchema = {
               fields: [...this.customFormSchema.fields, ...schema.fields],
             };

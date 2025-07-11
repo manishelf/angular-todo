@@ -127,8 +127,8 @@ export class TodoItemComponent implements OnInit, AfterViewInit {
       tags: this.item.tags,
       completionStatus: this.item.completionStatus,
       setForReminder: this.item.setForReminder,
-      creationTimestamp: Date.now().toString(),
-      updationTimestamp: Date.now().toString(),
+      creationTimestamp: new Date(Date.now()).toISOString(),
+      updationTimestamp: new Date(Date.now()).toISOString(),
       userDefined: this.item.userDefined,
     };
     this.todoService.addItem(duplicateItem);
