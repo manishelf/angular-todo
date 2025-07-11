@@ -91,6 +91,7 @@ export class TodoItemComponent implements OnInit, AfterViewInit {
   }
 
   private updateSave(){
+    this.item.updationTimestamp = Date.now().toString();
     this.todoService.updateItem(this.item);
   }
 
