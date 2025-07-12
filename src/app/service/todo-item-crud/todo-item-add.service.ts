@@ -21,29 +21,22 @@ export class TodoItemAddService {
     private updateService: TodoItemUpdateService
   ) {}
 
-  addItem(
-    db$: Observable<IDBDatabase>,
-    todoItem: Omit<TodoItem, 'id'>
-  ): Observable<number> {
-    return new Observable<number>((subscriber) => {
-      db$.subscribe((db) => {
-        let request = this.todoItemUtils
-          .getObjectStoreRW(db, 'todo_items')
-          .add(todoItem);
-        if (request) {
-          request.onsuccess = (event) => {
-            let target = event.target as IDBRequest;
-            let id = target.result;
-            let todoItemSaved: TodoItem = {
-              id: id,
-              ...todoItem,
-            };
-            this.updateService.updateTags(db$, todoItemSaved);
-            subscriber.next(id);
-            subscriber.complete();
+  addItem(db$: Observable<IDBDatabase>, todoItem: Omit<TodoItem, 'id'>) {
+    db$.subscribe((db) => {
+      let request = this.todoItemUtils
+        .getObjectStoreRW(db, 'todo_items')
+        .add(todoItem);
+      if (request) {
+        request.onsuccess = (event) => {
+          let target = event.target as IDBRequest;
+          let id = target.result;
+          let todoItemSaved: TodoItem = {
+            id: id,
+            ...todoItem,
           };
-        }
-      });
+          this.updateService.updateTags(db$, todoItemSaved);
+        };
+      }
     });
   }
   addCustom(db$: Observable<IDBDatabase>, tag: string, item: any): void {

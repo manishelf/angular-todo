@@ -117,9 +117,10 @@ export class CalendarComponent {
         tags: [{ name: 'calendar event' }],
         eventFullDay: selectInfo.allDay,
       };
-      this.todoService.addItem(newTodoItem).subscribe((id) => {
-        calendarApi.addEvent({
-          id: id.toString(),
+      this.todoService.addItem(newTodoItem)
+      this.todoService.searchTodos(newTodoItem.subject).subscribe((item) => {
+       calendarApi.addEvent({
+          id: item[0].id,
           title,
           start: start,
           end: end,
