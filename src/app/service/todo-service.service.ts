@@ -7,6 +7,7 @@ import { TodoItemDeleteService } from './todo-item-crud/todo-item-delete.service
 import { TodoItemGetService } from './todo-item-crud/todo-item-get.service';
 import { Params } from '@angular/router';
 import { ToastService } from 'angular-toastify';
+import { SortService } from './sort/sort.service';
 
 @Injectable({
   providedIn: 'root'
@@ -55,6 +56,7 @@ export class TodoServiceService{
     private updateService: TodoItemUpdateService,
     private deleteService: TodoItemDeleteService,
     private getService: TodoItemGetService,
+    private sortService: SortService,
     private toaster : ToastService
   ) {
   }
@@ -85,6 +87,9 @@ export class TodoServiceService{
   }
   searchTodos(subjectQuery: string, tagFilter: string[] = [], searchTerms: string[] = [], exact = false): Observable<TodoItem[]> {
     return this.getService.searchTodos(this.db$, subjectQuery, tagFilter, searchTerms, this.fromBin, exact);
+  }
+  sortTodoItems(order: string[], items: TodoItem[]): Observable<TodoItem[]>{
+    return this.sortService.sortItems(order, items);
   }
 
   addItem(item: Omit<TodoItem, 'id'>): void{
