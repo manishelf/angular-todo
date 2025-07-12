@@ -24,8 +24,8 @@
                 <button type="button" class="cursor-pointer m-0.5 hover:scale-120" (click)="onClickSetReminder()" [title]="!item.setForReminder?'set reminder':'clear reminder'">
                     <mat-icon class="option">{{!item.setForReminder?'alarm_add':'alarm_off'}}</mat-icon>
                 </button>
-                <button class="cursor-pointer m-0.5 hover:scale-120" (click)="onClickCompletionStatus()" [title]="!item.completionStatus?'status: pending':'status: done'">
-                <mat-icon class="option">{{!item.completionStatus?'timelapse':'done_all'}}</mat-icon>
+                <button class="cursor-pointer m-0.5 hover:scale-120" (click)="onClickCompletionStatus()" [title]="!item.completionStatus?'mark done':'mark pending'">
+                <mat-icon class="option">{{!item.completionStatus?'done_all':'timelapse'}}</mat-icon>
                 </button>
                 <button class="cursor-pointer m-0.5 hover:scale-120" (click)="onClickDuplicate()" title="duplicate this item">
                 <mat-icon class="option">file_copy</mat-icon>
