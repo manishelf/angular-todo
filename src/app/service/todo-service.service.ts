@@ -94,9 +94,10 @@ export class TodoServiceService{
 
   addItem(item: Omit<TodoItem, 'id'>): Observable<number>{
     try{
-      return this.addService.addItem(this.db$, item);
+      let result = this.addService.addItem(this.db$, item);
       this.initializeItems();
       this.toaster.success('todo item added');
+      return result;
     }catch(e){
       this.toaster.error('error adding todo item: ');
       console.error('error adding todo item: ', e);
@@ -236,6 +237,8 @@ export class TodoServiceService{
   addMany(items: TodoItem[]): void{
     try{
       for(let i = 0; i<items?.length; i++){
+        console.log(items[i]);
+        
         let item = items[i];
         try{
           this.addItem(item);
