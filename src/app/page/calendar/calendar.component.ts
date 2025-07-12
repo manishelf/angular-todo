@@ -137,13 +137,6 @@ export class CalendarComponent {
           this.router.navigate(['/edit'], { state: { item } });
         }
       });
-    if (
-      prompt(
-        `Do you want to delete the event '${clickInfo.event.title}' [Y|N]`
-      )==='Y'
-    ) {
-      clickInfo.event.remove();
-    }
   }
 
 
