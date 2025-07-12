@@ -92,15 +92,16 @@ export class TodoServiceService{
     return this.sortService.sortItems(order, items);
   }
 
-  addItem(item: Omit<TodoItem, 'id'>): void{
+  addItem(item: Omit<TodoItem, 'id'>): Observable<number>{
     try{
-      this.addService.addItem(this.db$, item);
+      return this.addService.addItem(this.db$, item);
       this.initializeItems();
       this.toaster.success('todo item added');
     }catch(e){
       this.toaster.error('error adding todo item: ');
       console.error('error adding todo item: ', e);
     }
+    return from([-1]);
   }
 
   addCustom(tag: string, item: any){
