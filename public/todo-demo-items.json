@@ -101,7 +101,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"social-impact\"}]",
+  "tag": "social-impact",
   "formControlSchema": {
     "fields": [
       {
@@ -175,7 +175,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"investor-relations\"}]",
+  "tag": "investor-relations",
   "formControlSchema": {
     "fields": [
       {
@@ -242,7 +242,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"it-governance\"}]",
+  "tag": "it-governance",
   "formControlSchema": {
     "fields": [
       {
@@ -309,7 +309,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"employee-wellbeing\"}]",
+  "tag": "employee-wellbeing",
   "formControlSchema": {
     "fields": [
       {
@@ -379,7 +379,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"search-engine-marketing\"}]",
+  "tag": "search-engine-marketing",
   "formControlSchema": {
     "fields": [
       {
@@ -460,7 +460,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"user-research\"}]",
+  "tag": "user-research",
   "formControlSchema": {
     "fields": [
       {
@@ -536,7 +536,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"supply-chain-management\"}]",
+  "tag": "supply-chain-management",
   "formControlSchema": {
     "fields": [
       {
@@ -612,7 +612,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"employee-rewards\"}]",
+  "tag": "employee-rewards",
   "formControlSchema": {
     "fields": [
       {
@@ -670,7 +670,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"financial-analysis\"}]",
+  "tag": "financial-analysis",
   "formControlSchema": {
     "fields": [
       {
@@ -734,7 +734,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"server-ops\"}]",
+  "tag": "server-ops",
   "formControlSchema": {
     "fields": [
       {
@@ -811,7 +811,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"portfolio-management\"}]",
+  "tag": "portfolio-management",
   "formControlSchema": {
     "fields": [
       {
@@ -883,7 +883,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"hr-tech\"}]",
+  "tag": "hr-tech",
   "formControlSchema": {
     "fields": [
       {
@@ -964,7 +964,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"packaging-design\"}]",
+  "tag": "packaging-design",
   "formControlSchema": {
     "fields": [
       {
@@ -1029,7 +1029,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"corporate-governance\"}]",
+  "tag": "corporate-governance",
   "formControlSchema": {
     "fields": [
       {
@@ -1092,7 +1092,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"financial-tech\"}]",
+  "tag": "financial-tech",
   "formControlSchema": {
     "fields": [
       {
@@ -1163,7 +1163,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"business-intelligence\"}]",
+  "tag": "business-intelligence",
   "formControlSchema": {
     "fields": [
       {
@@ -1248,7 +1248,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"learning-development\"}]",
+  "tag": "learning-development",
   "formControlSchema": {
     "fields": [
       {
@@ -1389,7 +1389,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"devops\"}]",
+  "tag": "devops",
   "formControlSchema": {
     "fields": [
       {
@@ -1470,7 +1470,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"workplace-culture\"}]",
+  "tag": "workplace-culture",
   "formControlSchema": {
     "fields": [
       {
@@ -1536,7 +1536,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"tool-adoption\"}]",
+  "tag": "tool-adoption",
   "formControlSchema": {
     "fields": [
       {
@@ -1603,7 +1603,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"data-privacy\"}]",
+  "tag": "data-privacy",
   "formControlSchema": {
     "fields": [
       {
@@ -1666,7 +1666,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"lms-content\"}]",
+  "tag": "lms-content",
   "formControlSchema": {
     "fields": [
       {
@@ -1734,7 +1734,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"customer-engagement\"}]",
+  "tag": "customer-engagement",
   "formControlSchema": {
     "fields": [
       {
@@ -1793,7 +1793,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"software-adoption\"}]",
+  "tag": "software-adoption",
   "formControlSchema": {
     "fields": [
       {
@@ -1853,7 +1853,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"infosec\"}]",
+  "tag": "infosec",
   "formControlSchema": {
     "fields": [
       {
@@ -1918,7 +1918,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"business-strategy\"}]",
+  "tag": "business-strategy",
   "formControlSchema": {
     "fields": [
       {
@@ -1987,7 +1987,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"digital-analytics\"}]",
+  "tag": "digital-analytics",
   "formControlSchema": {
     "fields": [
       {
@@ -2058,7 +2058,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"employee-development\"}]",
+  "tag": "employee-development",
   "formControlSchema": {
     "fields": [
       {
@@ -2123,7 +2123,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"cyber-governance\"}]",
+  "tag": "cyber-governance",
   "formControlSchema": {
     "fields": [
       {
@@ -2195,7 +2195,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"total-rewards\"}]",
+  "tag": "total-rewards",
   "formControlSchema": {
     "fields": [
       {
@@ -2255,7 +2255,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"content-marketing\"}]",
+  "tag": "content-marketing",
   "formControlSchema": {
     "fields": [
       {
@@ -2318,7 +2318,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"business-continuity\"}]",
+  "tag": "business-continuity",
   "formControlSchema": {
     "fields": [
       {
@@ -2444,7 +2444,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"sales-analytics\"}]",
+  "tag": "sales-analytics",
   "formControlSchema": {
     "fields": [
       {
@@ -2504,7 +2504,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"version-control\"}]",
+  "tag": "version-control",
   "formControlSchema": {
     "fields": [
       {
@@ -2576,7 +2576,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"brand-management\"}]",
+  "tag": "brand-management",
   "formControlSchema": {
     "fields": [
       {
@@ -2729,7 +2729,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"performance-optimization\"}]",
+  "tag": "performance-optimization",
   "formControlSchema": {
     "fields": [
       {
@@ -2814,7 +2814,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"employee-experience\"}]",
+  "tag": "employee-experience",
   "formControlSchema": {
     "fields": [
       {
@@ -2886,7 +2886,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"legal-operations\"}]",
+  "tag": "legal-operations",
   "formControlSchema": {
     "fields": [
       {
@@ -2958,7 +2958,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"supply-chain-security\"}]",
+  "tag": "supply-chain-security",
   "formControlSchema": {
     "fields": [
       {
@@ -3026,7 +3026,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"product-planning\"}]",
+  "tag": "product-planning",
   "formControlSchema": {
     "fields": [
       {
@@ -3086,7 +3086,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"conversion-optimization\"}]",
+  "tag": "conversion-optimization",
   "formControlSchema": {
     "fields": [
       {
@@ -3159,7 +3159,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"employee-security\"}]",
+  "tag": "employee-security",
   "formControlSchema": {
     "fields": [
       {
@@ -3223,7 +3223,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"competitive-analysis\"}]",
+  "tag": "competitive-analysis",
   "formControlSchema": {
     "fields": [
       {
@@ -3291,7 +3291,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"corporate-social\"}]",
+  "tag": "corporate-social",
   "formControlSchema": {
     "fields": [
       {
@@ -3356,7 +3356,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"support-quality\"}]",
+  "tag": "support-quality",
   "formControlSchema": {
     "fields": [
       {
@@ -3416,7 +3416,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"tech-writing\"}]",
+  "tag": "tech-writing",
   "formControlSchema": {
     "fields": [
       {
@@ -3484,7 +3484,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"web-standards\"}]",
+  "tag": "web-standards",
   "formControlSchema": {
     "fields": [
       {
@@ -3549,7 +3549,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"csr-initiatives\"}]",
+  "tag": "csr-initiatives",
   "formControlSchema": {
     "fields": [
       {
@@ -3618,7 +3618,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"cloud-management\"}]",
+  "tag": "cloud-management",
   "formControlSchema": {
     "fields": [
       {
@@ -3687,7 +3687,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"product-strategy\"}]",
+  "tag": "product-strategy",
   "formControlSchema": {
     "fields": [
       {
@@ -3767,7 +3767,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"product-design\"}]",
+  "tag": "product-design",
   "formControlSchema": {
     "fields": [
       {
@@ -3839,7 +3839,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"talent-acquisition\"}]",
+  "tag": "talent-acquisition",
   "formControlSchema": {
     "fields": [
       {
@@ -3905,7 +3905,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"cybersecurity\"}]",
+  "tag": "cybersecurity",
   "formControlSchema": {
     "fields": [
       {
@@ -3973,7 +3973,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"business-development\"}]",
+  "tag": "business-development",
   "formControlSchema": {
     "fields": [
       {
@@ -4039,7 +4039,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"workshop-planning\"}]",
+  "tag": "workshop-planning",
   "formControlSchema": {
     "fields": [
       {
@@ -4120,7 +4120,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"cloud-ops\"}]",
+  "tag": "cloud-ops",
   "formControlSchema": {
     "fields": [
       {
@@ -4189,7 +4189,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"knowledge-management\"}]",
+  "tag": "knowledge-management",
   "formControlSchema": {
     "fields": [
       {
@@ -4258,7 +4258,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"tech-innovation\"}]",
+  "tag": "tech-innovation",
   "formControlSchema": {
     "fields": [
       {
@@ -4330,7 +4330,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"web-analytics\"}]",
+  "tag": "web-analytics",
   "formControlSchema": {
     "fields": [
       {
@@ -4406,7 +4406,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"public-relations\"}]",
+  "tag": "public-relations",
   "formControlSchema": {
     "fields": [
       {
@@ -4465,7 +4465,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"developer-ops\"}]",
+  "tag": "developer-ops",
   "formControlSchema": {
     "fields": [
       {
@@ -4526,7 +4526,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"employee-engagement\"}]",
+  "tag": "employee-engagement",
   "formControlSchema": {
     "fields": [
       {
@@ -4584,7 +4584,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"regulatory-compliance\"}]",
+  "tag": "regulatory-compliance",
   "formControlSchema": {
     "fields": [
       {
@@ -4903,7 +4903,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"name\":\"crm-implementation\"}]",
+  "tag": "crm-implementation",
   "formControlSchema": {
     "fields": [
       {
@@ -5602,7 +5602,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"id\":null,\"name\":\"form-cooking\"}]",
+  "tag": "[{\"id\":null,\"name\":\"form-cooking",
   "formControlSchema": {
     "fields": [
       {
@@ -5909,7 +5909,7 @@
       "eventFullDay": false,
       "deleted": false,
       "userDefined": {
-  "tag": "[{\"id\":null,\"name\":\"form-fitness\"}]",
+  "tag": "[{\"id\":null,\"name\":\"form-fitness",
   "formControlSchema": {
     "fields": [
       {
