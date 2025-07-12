@@ -17,7 +17,7 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import listPlugin from '@fullcalendar/list';
 import { TodoServiceService } from './../../service/todo-service.service';
 import { TodoItem } from '../../models/todo-item';
-import { Router } from '@angular/router';
+import { Router, withDebugTracing } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 // example found at https://github.com/fullcalendar/fullcalendar-examples
@@ -64,13 +64,12 @@ export class CalendarComponent {
     selectMirror: true,
     dayMaxEvents: true,
     eventStartEditable: true,
-    longPressDelay: 500,
+    longPressDelay: 100,
 
     eventClick: this.handleEventClick.bind(this),
     eventsSet: this.handleEvents.bind(this),
     eventChange: this.handleEventChange.bind(this),
     eventRemove: this.handleEventRemove.bind(this),
-    //dateClick: this.handleDateSelect.bind(this),
     select: this.handleDateSelect.bind(this),
   });
   currentEvents = signal<EventApi[]>([]);
@@ -128,7 +127,6 @@ export class CalendarComponent {
       });
     }
   }
-
   handleEventClick(clickInfo: EventClickArg) {
     this.todoService
       .getItemById(Number.parseInt(clickInfo.event.id))
