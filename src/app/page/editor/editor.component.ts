@@ -134,7 +134,7 @@ export class EditorComponent implements AfterViewInit {
 
   @HostListener('paste', ['$event'])
   onPasteEvent(event: Event) {
-    const target = event.target as HTMLTextAreaElement;
+    const descArea = event.target as HTMLTextAreaElement;
     let clipBoardData = (event as ClipboardEvent).clipboardData;
     interface data {
       file: File;
@@ -160,9 +160,9 @@ export class EditorComponent implements AfterViewInit {
         if (target.result) {
           let field: FormField = {
             type: 'url',
-            name: data.file.name.replaceAll(/[.]/g,'_'),
+            name: data.file.name.replaceAll(/[.]/g, '_'),
             label: data.file.name,
-            default: 'file data'
+            default: 'file data',
           };
           if (data.file.type.startsWith('image')) {
             field.type = 'image';
@@ -177,11 +177,18 @@ export class EditorComponent implements AfterViewInit {
           }
           let formData: any = {};
           formData[field.name] = target.result;
-          this.customFormData={...this.customFormData, ...formData};
-          this.todoItem.description+='#Ref:'+field.label+' ';
+          this.customFormData = { ...this.customFormData, ...formData };
+          const cursorPosition = descArea.selectionStart;
+          this.todoItem.description =
+            this.todoItem.description.substring(0, cursorPosition) +
+            ' #Ref:' +
+            field.label +
+            ' ' +
+            this.todoItem.description.substring(cursorPosition);
         }
       };
     });
+    this.onEventForResize(event);
   }
 
   onOptionClick() {
@@ -234,7 +241,6 @@ export class EditorComponent implements AfterViewInit {
         ),
         formControlSchema: this.customFormSchema,
         data: this.userForm.state(),
-        
       };
     }
 
@@ -299,8 +305,10 @@ export class EditorComponent implements AfterViewInit {
     if (this.schemaEditingInProgress) {
       try {
         //first remove comments
-        this.todoItem.description = this.todoItem.description.replaceAll(/\/\*[\s\S]*?\*\//g,'').replaceAll(/\/\/.*$/gm,'');
-        
+        this.todoItem.description = this.todoItem.description
+          .replaceAll(/\/\*[\s\S]*?\*\//g, '')
+          .replaceAll(/\/\/.*$/gm, '');
+
         let formSchema = JSON.parse(this.todoItem.description);
         if (!formSchema.tag || !formSchema.formControlSchema) {
           this.toaster.error(
@@ -373,7 +381,10 @@ export class EditorComponent implements AfterViewInit {
     if (this.todoItem.userDefined) {
       if (this.todoItem.userDefined.formControlSchema.fields) {
         // undo the form- prefix for convienience
-        this.todoItem.userDefined.tag = this.todoItem.userDefined.tag.replace('form-','');
+        this.todoItem.userDefined.tag = this.todoItem.userDefined.tag.replace(
+          'form-',
+          ''
+        );
         this.todoItem.description += JSON.stringify(
           this.todoItem.userDefined,
           null,

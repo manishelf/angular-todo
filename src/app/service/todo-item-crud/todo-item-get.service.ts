@@ -203,10 +203,14 @@ export class TodoItemGetService {
                 let result = new Set<TodoItem>();
                 
                 for(let i = 0; i<items.length; i++){
-                  let matchSubject = pattern.test(items[i].subject);
-                  let matchDescription = pattern.test(items[i].description);
-                  let matchUserData = pattern.test(JSON.stringify(items[i].userDefined?.data));
-                  if(matchSubject || matchDescription || matchUserData){
+                  //let matchSubject = pattern.test(items[i].subject);
+                  //let matchDescription = pattern.test(items[i].description);
+                  //let matchUserData = pattern.test(JSON.stringify(items[i].userDefined?.data));
+                  //if(matchSubject || matchDescription || matchUserData){
+                  //result.add(items[i]);
+                  //}
+                  let matchSome = pattern.test(JSON.stringify(items[i]));
+                  if(matchSome){
                     result.add(items[i]);
                   }
                 }
