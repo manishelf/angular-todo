@@ -41,6 +41,7 @@ export class EditorComponent implements AfterViewInit {
   showTags: boolean = false;
   schemaEditingInProgress: boolean = false;
   customFormSchema: FormSchema | undefined;
+  customFormData: any;
 
   todoItem: Omit<TodoItem, 'id'> = {
     subject: '',
@@ -65,7 +66,12 @@ export class EditorComponent implements AfterViewInit {
   ) {
     if (router.url === '/edit') {
       const navigation = this.router.getCurrentNavigation();
-      if (navigation && navigation.extras && navigation.extras.state && navigation.extras.state) {
+      if (
+        navigation &&
+        navigation.extras &&
+        navigation.extras.state &&
+        navigation.extras.state
+      ) {
         let itemForUpdate = navigation.extras.state['item'] as TodoItem;
         this.queryParams = navigation.extras.state['query'];
         this.forEdit = itemForUpdate.id;
@@ -76,8 +82,9 @@ export class EditorComponent implements AfterViewInit {
         );
         this.tagNameList = this.todoItem.tags.map((tag) => tag.name).join(',');
         this.customFormSchema = this.todoItem.userDefined?.formControlSchema;
+        this.customFormData = this.todoItem.userDefined?.data;
       } else {
-        router.navigate(['/home'], {queryParamsHandling:'merge'});
+        router.navigate(['/home'], { queryParamsHandling: 'merge' });
       }
     }
     Prism.plugins['autoloader'].languages_path =
@@ -85,7 +92,7 @@ export class EditorComponent implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    setTimeout(()=>{
+    setTimeout(() => {
       this.subjectTxt.nativeElement.focus();
     }, 300);
   }
@@ -123,6 +130,58 @@ export class EditorComponent implements AfterViewInit {
     target.style.height = 'auto';
     target.style.height = target.scrollHeight + 'px';
     target.nextElementSibling?.scrollIntoView(true);
+  }
+
+  @HostListener('paste', ['$event'])
+  onPasteEvent(event: Event) {
+    const target = event.target as HTMLTextAreaElement;
+    let clipBoardData = (event as ClipboardEvent).clipboardData;
+    interface data {
+      file: File;
+      reader: FileReader;
+    }
+    let DecodeItem = new Promise<data>((resolve) => {
+      for (let item of clipBoardData?.items || []) {
+        if (item.kind.startsWith('file')) {
+          let blob = item.getAsFile();
+          let file = item.getAsFile();
+          if (blob && file) {
+            const reader = new FileReader();
+            reader.readAsDataURL(blob);
+            resolve({ file, reader });
+          }
+        }
+      }
+    });
+
+    DecodeItem.then((data) => {
+      data.reader.onload = (event: Event) => {
+        let target: any = event.target;
+        if (target.result) {
+          let field: FormField = {
+            type: 'url',
+            name: data.file.name.replaceAll(/[.]/g,'_'),
+            label: data.file.name,
+            default: 'file data'
+          };
+          if (data.file.type.startsWith('image')) {
+            field.type = 'image';
+          }
+          if (this.customFormSchema && this.customFormSchema.fields) {
+            this.customFormSchema.fields = [
+              ...this.customFormSchema.fields,
+              field,
+            ];
+          } else {
+            this.customFormSchema = { fields: [field] };
+          }
+          let formData: any = {};
+          formData[field.name] = target.result;
+          this.customFormData={...this.customFormData, ...formData};
+          this.todoItem.description+='#Ref:'+field.label+' ';
+        }
+      };
+    });
   }
 
   onOptionClick() {
@@ -170,20 +229,22 @@ export class EditorComponent implements AfterViewInit {
     }
     if (this.customFormSchema) {
       this.todoItem.userDefined = {
-        tag: JSON.stringify(this.todoItem.tags
-                              .filter((tag) => tag.name.startsWith('form-'))),
+        tag: JSON.stringify(
+          this.todoItem.tags.filter((tag) => tag.name.startsWith('form-'))
+        ),
         formControlSchema: this.customFormSchema,
         data: this.userForm.state(),
+        
       };
     }
-    
+
     if (this.forEdit !== -1) {
-       this.todoItem.updationTimestamp = new Date(Date.now()).toISOString();
-       this.todoServie.updateItem({ id: this.forEdit, ...this.todoItem });
-     } else {
-       this.todoServie.addItem(this.todoItem);
-     }
-    this.router.navigate(['/home'],{queryParams:this.queryParams});
+      this.todoItem.updationTimestamp = new Date(Date.now()).toISOString();
+      this.todoServie.updateItem({ id: this.forEdit, ...this.todoItem });
+    } else {
+      this.todoServie.addItem(this.todoItem);
+    }
+    this.router.navigate(['/home'], { queryParams: this.queryParams });
   }
 
   onUpdateTags(event: Event) {
@@ -198,18 +259,18 @@ export class EditorComponent implements AfterViewInit {
   }
 
   loadCustomSchemaFromDb(tags: string[]) {
-    tags = tags.filter(tag=>tag.startsWith('form-'));
-    if(tags.length === 0) return;
+    tags = tags.filter((tag) => tag.startsWith('form-'));
+    if (tags.length === 0) return;
 
     this.customFormSchema = this.todoItem.userDefined?.formControlSchema;
-    
+
     this.todoServie.getAllCustom(tags).subscribe((resultArray) =>
-        resultArray.forEach((res) => {
+      resultArray.forEach((res) => {
         let schema = res?.item;
         if (!schema) return;
         try {
           schema.fields?.forEach((field: FormField) => {
-            let data = this.todoItem.userDefined?.data;
+            let data = this.customFormData;
             if (data) {
               data = new Map(Object.entries(data));
               let value = data.get(field.name);
@@ -237,6 +298,9 @@ export class EditorComponent implements AfterViewInit {
   onClickUserFormAdd(event: Event) {
     if (this.schemaEditingInProgress) {
       try {
+        //first remove comments
+        this.todoItem.description = this.todoItem.description.replaceAll(/\/\*[\s\S]*?\*\//g,'').replaceAll(/\/\/.*$/gm,'');
+        
         let formSchema = JSON.parse(this.todoItem.description);
         if (!formSchema.tag || !formSchema.formControlSchema) {
           this.toaster.error(
@@ -249,15 +313,18 @@ export class EditorComponent implements AfterViewInit {
         this.todoItem.tags.push({ name: tag });
         this.tagNameList = this.todoItem.tags.map((tag) => tag.name).join(',');
         this.todoServie.addCustom(tag, formSchema.formControlSchema);
-        
+
         if (this.customFormSchema && this.customFormSchema.fields) {
           this.customFormSchema = {
-          fields: [...this.customFormSchema.fields, ...formSchema.formControlSchema.fields],
+            fields: [
+              ...this.customFormSchema.fields,
+              ...formSchema.formControlSchema.fields,
+            ],
           };
         } else {
           this.customFormSchema = formSchema.formControlSchema;
         }
-        
+
         this.todoItem.description = localStorage['tempTodoDescription'];
         this.schemaEditingInProgress = false;
         return;
@@ -302,20 +369,22 @@ export class EditorComponent implements AfterViewInit {
       * }
       * 
       * sample - 
-      *   {"tag":"sample", "formControlSchema": {"fields": [{"name":"sample", "label":"sample text", "type":"text"}]}, "data":[["sample", "current value"]]}
-      */\n\n\n
-      `;
+      *   {"tag":"sample", "formControlSchema": {"fields": [{"name":"sample", "label":"sample text", "type":"text"}]}, "data":[["sample", "current value"]]}\n*/\n\n\n`;
     if (this.todoItem.userDefined) {
       if (this.todoItem.userDefined.formControlSchema.fields) {
-        this.todoItem.description += JSON.stringify(this.todoItem.userDefined, null, 4);
+        // undo the form- prefix for convienience
+        this.todoItem.userDefined.tag = this.todoItem.userDefined.tag.replace('form-','');
+        this.todoItem.description += JSON.stringify(
+          this.todoItem.userDefined,
+          null,
+          4
+        );
       }
     }
 
     this.onEventForResize(event);
     this.schemaEditingInProgress = true;
   }
-
-  
 
   onClickTags() {
     this.showTags = !this.showTags;

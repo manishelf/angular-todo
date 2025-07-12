@@ -1,6 +1,7 @@
 import {
   AfterViewInit,
   Component,
+  HostListener,
   Input,
   OnChanges,
   OnInit,
@@ -71,8 +72,14 @@ export class UserFormComponent implements OnChanges {
     this.createForm();
   }
 
+  @HostListener('focusin', ['$event'])
+  onControlFocusIn(event: Event) {
+    let target: HTMLElement = event.target as HTMLElement;
+    target?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
   createForm(): void {
-    const formControls: { [key: string]: FormControl | FormArray} = {};
+    const formControls: { [key: string]: FormControl | FormArray } = {};
     if (this.schema && this.schema.fields) {
       for (let i = 0; i < this.schema.fields.length; i++) {
         const validators = [];
@@ -97,8 +104,7 @@ export class UserFormComponent implements OnChanges {
           validators.push(Validators.minLength(minLength));
         }
         if (pattern && type !== 'url') {
- 
- validators.push(Validators.pattern(pattern));
+          validators.push(Validators.pattern(pattern));
         }
         if (max) {
           validators.push(Validators.max(Number.parseInt(max)));
@@ -130,22 +136,33 @@ export class UserFormComponent implements OnChanges {
           field.default += JSON.stringify({
             timestamp: Date(),
             subject: JSON.stringify(
-              (document.getElementById('editor-subject-input') as HTMLInputElement)?.value
+              (
+                document.getElementById(
+                  'editor-subject-input'
+                ) as HTMLInputElement
+              )?.value
             ),
             description: JSON.stringify(
-              (document.getElementById('editor-description-input') as HTMLTextAreaElement)?.value
+              (
+                document.getElementById(
+                  'editor-description-input'
+                ) as HTMLTextAreaElement
+              )?.value
             ),
             formData: JSON.stringify(this.data),
           });
         }
-        if(type === 'checkbox' && field.options){
-          let checkboxCtrls = field.options.map(option=>{
+        if (type === 'checkbox' && field.options) {
+          let checkboxCtrls = field.options.map((option) => {
             const checked = (field.default || ['']).includes(option);
             return this.formBuilder.control(checked);
           });
           formControls[fieldName] = this.formBuilder.array(checkboxCtrls);
-        }else {
-          formControls[fieldName] = this.formBuilder.control(field.default, validators);
+        } else {
+          formControls[fieldName] = this.formBuilder.control(
+            field.default,
+            validators
+          );
         }
       }
     }

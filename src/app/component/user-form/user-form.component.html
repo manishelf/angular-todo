@@ -73,7 +73,7 @@
         <div
           *ngIf="field.type === 'image'"
           [title]="field.label"
-          class="w-2/3 overflow-scroll"
+          class="w-2/3"
         >
           <input
             class="w-full"
@@ -84,8 +84,8 @@
             [placeholder]="field.placeholder"
           />
           <img
-            *ngIf="dynamicForm.get(field.name)?.value"
             [src]="dynamicForm.get(field.name)?.value"
+            class="border border-1 w-full"
           />
         </div>
       </td>
