@@ -1,75 +1,88 @@
 /* You can add global styles to this file, and also import other style files */
-@import 'tailwindcss';
+@import "tailwindcss";
 
 /* manual styling as tailwind overrides*/
-h1, h2, h3, h4, h5, h6 {
-    @apply text-2xl font-bold;
-  }
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  @apply text-2xl font-bold;
+}
 
-  p {
-    @apply text-base;
-  }
+p {
+  @apply text-base;
+}
 
-  a {
-    @apply text-blue-500 underline;
-  }
+a {
+  @apply text-blue-500 underline;
+}
 
-  blockquote {
-    @apply border-l-4 border-gray-300 pl-4 italic;
-  }
+blockquote {
+  @apply border-l-4 border-gray-300 pl-4 italic;
+}
 
-  ul, ol {
-    @apply pl-5;
-  }
-  ul {
-    @apply list-disc;
-  }
-  ol {
-    @apply list-decimal;
-  }  
-  ol br, ul br{
-    display: none;
-  }
+ul,
+ol {
+  @apply pl-5;
+}
+ul {
+  @apply list-disc;
+}
+ol {
+  @apply list-decimal;
+}
+ol br,
+ul br {
+  display: none;
+}
 
-  code {
-    @apply bg-gray-700 text-green-600 px-2 py-1 rounded;
-  }
+code {
+  @apply bg-gray-700 text-green-600 px-2 py-1 rounded;
+}
 
-  /*pre {
-    @apply bg-gray-500 text-white p-4 rounded overflow-auto;
-  }*/
+pre {
+  @apply bg-gray-500 text-white p-4 rounded overflow-auto;
+}
 
-  img {
-    @apply max-w-full h-auto shadow-sm;
-  }
+img {
+  @apply max-w-full h-auto shadow-sm;
+}
 
-  table {
-    @apply w-full text-left border-collapse;
-  }
+table {
+  @apply w-full text-left border-collapse;
+}
 
-  th, td {
-    @apply border border-gray-300 px-4 py-2;
-  }
+th,
+td {
+  @apply border border-gray-300 px-4 py-2;
+}
 
-  hr {
-    @apply border-t-2 border-gray-300 my-4;
-  }
+hr {
+  @apply border-t-2 border-gray-300 my-4;
+}
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
-
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
 
 /* styles for FullCalendar buttons */
- .fc-button {
+.fc-button {
   background-color: rgba(102, 86, 86, 0.9) !important;
   color: white !important;
   border: 1px solid #ffffff !important;
   border-radius: 4px !important;
   cursor: pointer !important;
   margin: 2px !important;
-  @apply hover:scale-105 hover:shadow-2xs shadow-white transition-all
+  @apply hover:scale-105 hover:shadow-2xs shadow-white transition-all;
 }
-.fc-button-group{
+.fc-button-group {
   @media (width <= 40rem) {
     display: flex !important;
     flex-direction: column !important;
@@ -77,7 +90,135 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 }
 .fc-event:hover {
   box-shadow: 0px 0px 5px 3px rgb(255, 255, 255);
-  -webkit-box-shadow: 0px 0px 5px 3px rgba(18,18,18,0.20);
-  -moz-box-shadow: 0px 0px 5px 3px rgba(18,18,18,0.20);
+  -webkit-box-shadow: 0px 0px 5px 3px rgba(18, 18, 18, 0.2);
+  -moz-box-shadow: 0px 0px 5px 3px rgba(18, 18, 18, 0.2);
   @apply scale-105 transition-all;
 }
+.fc .fc-scrollgrid {
+  border-radius: 8px;
+}
+.fc .fc-daygrid-day {
+  padding: 1rem;
+  overflow: ellipsis;
+}
+.fc .fc-daygrid-day-top {
+  padding-bottom: 2px;
+}
+.fc .fc-daygrid-day-bottom {
+  display: flex;
+  justify-content: end;
+  padding-bottom: 2px;
+}
+
+.fc .fc-daygrid-day-number {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #e2e8f0; /* Light gray for date numbers (adjust to your theme) */
+  line-height: 1; /* Compact line height */
+  padding: 2px 4px; /* Small padding around the number itself */
+  background-color: rgba(0, 0, 0, 0.1); /* Subtle background for visibility */
+}
+.fc .fc-col-header-cell {
+  background-color: rgba(0, 0, 0, 0.1); /* Subtle background for visibility */
+}
+.fc-daygrid-day-events {
+  flex-grow: 1; /* Allows the event container to take up remaining vertical space */
+  display: flex;
+  flex-direction: column; /* Stack events vertically */
+  position: relative;
+  z-index: 0; /* Keep events below the date number */
+  padding-top: 2px; /* Space from the date number area */
+}
+
+.fc-event {
+  background-color: #273037; /* A distinct blue for events (adjust to your theme) */
+  color: white;
+  border: 1px solid #2b6cb0; /* Darker blue border */
+  border-radius: 6px; /* Rounded corners for event badges */
+  margin-bottom: 2px; /* Space between events to prevent visual overlap */
+  padding: 3px 6px; /* Padding inside the event badge */
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  overflow: hidden; /* Crucial for text truncation */
+  text-overflow: ellipsis; /* Add ellipsis for long text */
+  white-space: nowrap; /* Prevent text wrapping */
+  line-height: 1.2; /* Compact line height for event text */
+  overflow: scroll;
+}
+
+/* Media query for smaller screens to further reduce event text size */
+@media (max-width: 767px) {
+  .fc-event {
+    padding: 2px 4px; /* Reduce padding on small screens */
+    margin-bottom: 1px; /* Reduce margin on small screens */
+  }
+  .fc-event-title,
+  .fc-event-time {
+    font-size: 0.7em; /* Smaller font size for events on mobile */
+  }
+  .fc .fc-daygrid-day-number {
+    font-size: 0.8em; /* Slightly smaller date number on mobile */
+  }
+}
+
+/* Style for the "+X more" link */
+.fc-daygrid-more-link {
+  font-size: 0.8em;
+  color: #a0aec0; /* Lighter color for the link */
+  text-decoration: none; /* No underline by default */
+  font-weight: 500;
+  padding: 2px 4px;
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, 0.15); /* Subtle background */
+  display: inline-block; /* Ensures padding and margin work */
+  margin-top: 2px; /* Space from events above it */
+}
+
+.fc-event-main-frame {
+  display: flex;
+  flex-direction: column; /* Stack time and title vertically */
+  align-items: center; /* Center horizontally */
+  justify-content: center; /* Center vertically */
+  text-align: center;
+  overflow: scroll; /* Crucial for content within the template */
+}
+
+.fc-event-time {
+  font-weight: bold;
+}
+
+.fc-event-title {
+  font-style: italic;
+  overflow: scroll;
+  white-space: nowrap;
+  text-overflow: ellipsis; /* Ensures ellipsis for long titles */
+}
+
+.fc .fc-list-day-cushion{
+  background-color: rgba(255,255,255,1);
+  color:black;
+}
+.fc .fc-list-event{
+  background-color: rgba(0,0,0,0.1);
+}
+
+.fc .fc-list-event:hover{
+  background: #273037;
+  scale: 1.01;
+  transition: all;
+}
+
+.fc .fc-popover{
+  max-height: 50%;
+  max-width: 70%;
+  overflow: scroll;
+  border-radius: 8px;
+}
+.fc .fc-popover-header {
+  background-color: rgb(40, 46, 61);
+}
+
+.fc .fc-popover-body{
+  background-color: rgb(59, 64, 87);
+}
+

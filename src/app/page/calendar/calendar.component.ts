@@ -8,6 +8,7 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import listPlugin from '@fullcalendar/list';
 import { TodoServiceService } from './../../service/todo-service.service';
 import { TodoItem } from '../../models/todo-item';
+import { Router } from '@angular/router';
 
 // example found at https://github.com/fullcalendar/fullcalendar-examples
 @Component({
@@ -64,7 +65,7 @@ export class CalendarComponent {
   });
   currentEvents = signal<EventApi[]>([]);
 
-  constructor(private changeDetector: ChangeDetectorRef, private todoService: TodoServiceService) {
+  constructor(private changeDetector: ChangeDetectorRef, private todoService: TodoServiceService, private router: Router) {
     this.todoService.fromBin=false;
   }
 
@@ -110,7 +111,10 @@ export class CalendarComponent {
 
   
   handleEventClick(clickInfo: EventClickArg) {
-    if (confirm(`Are you sure you want to delete the event '${clickInfo.event.title}'`)) {
+    this.todoService.getItemById(Number.parseInt(clickInfo.event.id)).subscribe((item)=>{
+      this.router.navigate(['/edit'],{state:{item}});
+    })
+    if (confirm(`Do you sure you want to delete the event '${clickInfo.event.title}'`)) {
       clickInfo.event.remove();
     }
   }
