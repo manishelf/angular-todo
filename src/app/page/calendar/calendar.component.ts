@@ -71,6 +71,7 @@ export class CalendarComponent {
     eventChange: this.handleEventChange.bind(this),
     eventRemove: this.handleEventRemove.bind(this),
     select: this.handleDateSelect.bind(this),
+    // adding click improves behaviour for phones but creates two events on pc.
   });
   currentEvents = signal<EventApi[]>([]);
 
