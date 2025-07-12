@@ -43,7 +43,7 @@
     </div>
   </div>
   <div class='w-full rotate-180 flex-auto resize overflow-auto'> 
-    <full-calendar *ngIf='calendarVisible()' [options]='calendarOptions()' class="h-full md:h-screen p-2 md:p-7 rotate-180">
+    <full-calendar *ngIf='calendarVisible()' [options]='calendarOptions()' class="h-screen md:h-full p-2 md:p-7 rotate-180">
       <ng-template #eventContent let-arg>
         <div class="text-center">
           <b>{{ arg.timeText }}</b>
