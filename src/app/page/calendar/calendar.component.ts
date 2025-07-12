@@ -70,7 +70,7 @@ export class CalendarComponent {
     eventsSet: this.handleEvents.bind(this),
     eventChange: this.handleEventChange.bind(this),
     eventRemove: this.handleEventRemove.bind(this),
-    dateClick: this.handleDateSelect.bind(this),
+    //dateClick: this.handleDateSelect.bind(this),
     select: this.handleDateSelect.bind(this),
   });
   currentEvents = signal<EventApi[]>([]);
