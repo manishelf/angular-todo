@@ -36,9 +36,8 @@
             </button>
         </div>
     </div>
-    <div [ngClass]="minimized?'max-h-0 opacity-0 max-w-0':'max-h-[1000px] max-w-[1000px] opacity-100'"
-      class="m-1 overflow-clip overflow-ellipsis
-      transition-all duration-1000 ease-in-out"
+    <div [ngClass]="minimized?'max-h-0 opacity-0 max-w-0':'max-h-[500px] max-w-11/12 opacity-100' + ' overflow-scroll'"
+      class="m-1 overflow-clip overflow-ellipsis transition-all duration-1000 ease-in-out before:normal-nums"
       [innerHtml]="parsedMD">
     </div>
 </div>
