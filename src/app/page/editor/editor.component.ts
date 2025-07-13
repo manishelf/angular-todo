@@ -311,7 +311,6 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
         this.convertedMarkdown.match(
           /<code class="language-(\w+)">([\s\S]*?)<\/code>/g
         ) || this.convertedMarkdown.match(/<code>([\s\S]*?)<\/code>/);
-        console.log(code, this.convertedMarkdown);
         
       if (code) {
         for (let i = 0; i < code.length; i++) {
