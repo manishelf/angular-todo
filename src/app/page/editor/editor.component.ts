@@ -323,7 +323,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
         }
         setTimeout(() => {
           Prism.highlightAll();
-        }, 500); 
+        }, 200); 
       }
       if (this.todoItem.subject.trim().length != 0) {
         this.convertedMarkdown =
