@@ -160,8 +160,8 @@ export class EditorComponent implements AfterViewInit {
         if (target.result) {
           let field: FormField = {
             type: 'url',
-            name: data.file.name.replaceAll(/[.]/g, '_'),
-            label: data.file.name,
+            name: data.file.name.replaceAll(/[.]/g, '_')+new Date(data.file.lastModified).getSeconds(),
+            label: data.file.name+new Date(data.file.lastModified).getSeconds(),
             default: 'file data',
           };
           if (data.file.type.startsWith('image')) {
