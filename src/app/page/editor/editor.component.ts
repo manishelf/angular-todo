@@ -197,7 +197,7 @@ export class EditorComponent implements AfterViewInit {
       this.convertedMarkdown = marked
         .parse(this.todoItem.description)
         .toString();
-      this.convertedMarkdown = this.convertedMarkdown.replaceAll('\n', '<br>');
+      this.convertedMarkdown = this.convertedMarkdown.replaceAll('\n\n', '<br>');
 
       let code =
         this.convertedMarkdown.match(
