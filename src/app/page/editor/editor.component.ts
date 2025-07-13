@@ -46,7 +46,7 @@ export class EditorComponent implements AfterViewInit {
   todoItem: Omit<TodoItem, 'id'> = {
     subject: '',
     description: '',
-    tags: [],
+    tags: [{name:'QtodoQ'}], //if no tag is added for a item then search by tags does not work correctly
     completionStatus: false,
     setForReminder: false,
     creationTimestamp: new Date(Date.now()).toISOString(),
@@ -160,8 +160,8 @@ export class EditorComponent implements AfterViewInit {
         if (target.result) {
           let field: FormField = {
             type: 'url',
-            name: data.file.name.replaceAll(/[.]/g, '_')+new Date(data.file.lastModified).getSeconds(),
-            label: data.file.name+new Date(data.file.lastModified).getSeconds(),
+            name: data.file.name.replaceAll(/[.]/g, '_')+'/'+new Date(data.file.lastModified).getSeconds(),
+            label: data.file.name+'/'+new Date(data.file.lastModified).getSeconds(),
             default: 'file data',
           };
           if (data.file.type.startsWith('image')) {
