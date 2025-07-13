@@ -1,1 +1,18 @@
-  
+ /*https://dev.to/phuocng/display-the-line-numbers-in-a-text-area-46mk for the line numbers for the text area*/
+ .container {
+    display: flex;
+    border: 1px solid rgb(203 213 225);
+    border-radius: 0.5rem;
+}
+.container__textarea {
+    border: none;
+    outline: none;
+    width: 100%;
+}
+.container__lines {
+    border-right: 1px solid rgb(203 213 225);
+    color: rgb(7, 0, 144);
+    padding: 0.5rem;
+    text-align: right;
+    overflow: hidden;
+}

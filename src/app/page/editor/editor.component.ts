@@ -4,6 +4,7 @@ import {
   Component,
   ElementRef,
   HostListener,
+  OnChanges,
   ViewChild,
 } from '@angular/core';
 import * as marked from 'marked';
@@ -28,8 +29,10 @@ import { ToastService } from 'angular-toastify';
   styleUrls: ['./editor.component.css'],
   imports: [FormsModule, CommonModule, MatIconModule, UserFormComponent],
 })
-export class EditorComponent implements AfterViewInit {
+export class EditorComponent implements AfterViewChecked, AfterViewInit {
   @ViewChild('subjectTxt') subjectTxt!: ElementRef;
+  @ViewChild('descriptionArea') descriptionArea!: ElementRef;
+  @ViewChild('lineNumbers') lineNumbers! : ElementRef;
   @ViewChild('userForm') userForm!: UserFormComponent;
 
   queryParams = {};
@@ -42,6 +45,7 @@ export class EditorComponent implements AfterViewInit {
   schemaEditingInProgress: boolean = false;
   customFormSchema: FormSchema | undefined;
   customFormData: any;
+  editiorLinesLoaded:boolean =  false;
 
   todoItem: Omit<TodoItem, 'id'> = {
     subject: '',
@@ -91,10 +95,113 @@ export class EditorComponent implements AfterViewInit {
       'https://cdn.jsdelivr.net/npm/prismjs@1.14.0/components/';
   }
 
-  ngAfterViewInit(): void {
+  ngAfterViewInit(): void{
     setTimeout(() => {
       this.subjectTxt.nativeElement.focus();
     }, 300);
+  }
+
+  ngAfterViewChecked(): void {
+    // called each time a child is updated
+    // thankyou Phuoc Nguyen https://dev.to/phuocng/display-the-line-numbers-in-a-text-area-46mk
+    if(this.editiorLinesLoaded) return;
+    console.log('casl');
+    
+    const textarea = this.descriptionArea.nativeElement as HTMLTextAreaElement;
+    const lineNumbersEle = this.lineNumbers.nativeElement as HTMLElement;
+
+    const textareaStyles = window.getComputedStyle(textarea);
+    [
+        'fontFamily',
+        'fontSize',
+        'fontWeight',
+        'letterSpacing',
+        'lineHeight',
+        'padding',
+    ].forEach((property: any) => {
+        lineNumbersEle.style[property] = textareaStyles[property];
+    });
+
+    const parseValue = (v: any) => v.endsWith('px') ? parseInt(v.slice(0, -2), 10) : 0;
+
+    const font = `${textareaStyles.fontSize} ${textareaStyles.fontFamily}`;
+    const paddingLeft = parseValue(textareaStyles.paddingLeft);
+    const paddingRight = parseValue(textareaStyles.paddingRight);
+
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    if(context)
+    context.font = font;
+
+    const calculateNumLines = (str: string) => {
+        const textareaWidth = textarea.getBoundingClientRect().width - paddingLeft - paddingRight;
+        const words = str.split(' ');
+        let lineCount = 0;
+        let currentLine = '';
+        for (let i = 0; i < words.length; i++) {
+            const wordWidth = context?.measureText(words[i] + ' ').width || 0;
+            const lineWidth = context?.measureText(currentLine).width || 0;
+
+            if (lineWidth + wordWidth > textareaWidth) {
+                lineCount++;
+                currentLine = words[i] + ' ';
+            } else {
+                currentLine += words[i] + ' ';
+            }
+        }
+
+        if (currentLine.trim() !== '') {
+            lineCount++;
+        }
+
+        return lineCount;
+    };
+
+    const calculateLineNumbers = () => {
+        const lines = textarea.value.split('\n');
+        const numLines = lines.map((line) => calculateNumLines(line));
+
+        let lineNumbers = [];
+        let i = 1;
+        while (numLines.length > 0) {
+            const numLinesOfSentence = numLines.shift() || 0;
+            lineNumbers.push(i);
+            if (numLinesOfSentence > 1) {
+                Array(numLinesOfSentence - 1)
+                    .fill('')
+                    .forEach((_) => lineNumbers.push(''));
+            }
+            i++;
+        }
+
+        return lineNumbers;
+    };
+
+    const displayLineNumbers = () => {
+        const lineNumbers = calculateLineNumbers();
+        lineNumbersEle.innerHTML = Array.from({
+            length: lineNumbers.length
+        }, (_, i) => `<div>${lineNumbers[i] || '&nbsp;'}</div>`).join('');
+    };
+
+    textarea.addEventListener('input', () => {
+        displayLineNumbers();
+    });
+
+    displayLineNumbers();
+
+    const ro = new ResizeObserver(() => {
+        const rect = textarea.getBoundingClientRect();
+        lineNumbersEle.style.height = `${rect.height}px`;
+        displayLineNumbers();
+    });
+    ro.observe(textarea);
+
+    textarea.addEventListener('scroll', () => {
+        lineNumbersEle.scrollTop = textarea.scrollTop;
+    });
+
+    this.editiorLinesLoaded = true;
   }
 
   @HostListener('keydown', ['$event'])
