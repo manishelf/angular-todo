@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ChangeDetectorRef, AfterViewInit, HostListener, ViewChild, ElementRef } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectorRef, AfterViewInit, HostListener, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
 import { TodoItem } from '../../models/todo-item';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
@@ -6,9 +6,7 @@ import * as marked from 'marked';
 import { TodoServiceService } from '../../service/todo-service.service';
 import { ActivatedRoute, NavigationExtras, Route, Router } from '@angular/router';
 
-import Prism from 'prismjs';
-import 'prismjs/plugins/autoloader/prism-autoloader';
-import 'prismjs/themes/prism-tomorrow.css';
+declare var Prism : any;
 
 @Component({
   selector: 'app-todo-item',
@@ -16,7 +14,7 @@ import 'prismjs/themes/prism-tomorrow.css';
   templateUrl: './todo-item.component.html',
   styleUrl: './todo-item.component.css'
 })
-export class TodoItemComponent implements OnInit, AfterViewInit {
+export class TodoItemComponent implements OnInit, AfterViewChecked {
   @Input() item: TodoItem = {
     id:0,
     subject: "",
@@ -38,10 +36,11 @@ export class TodoItemComponent implements OnInit, AfterViewInit {
   @Input() optionsDisplayed: boolean = false;
   @Input() showTags:boolean = false;
   @Input() minimized: boolean = true;
+  markdownHighlighted: boolean = false;
+
 
   constructor(private todoService: TodoServiceService, private route:ActivatedRoute, private router: Router) {
     this.todoService.fromBin = this.fromBin;
-    Prism.plugins['autoloader'].languages_path = 'https://cdn.jsdelivr.net/npm/prismjs@1.14.0/components/';
   }
   ngOnInit(): void {
     this.bgColour += 'border-amber-300';
@@ -71,9 +70,11 @@ export class TodoItemComponent implements OnInit, AfterViewInit {
                                         'last updated on - ' + this.item.updationTimestamp;
   }
 
-  ngAfterViewInit() {
-    setTimeout(()=>{Prism.highlightAll(); 
-           }, 1000);
+  ngAfterViewChecked() {
+    if(!this.minimized && !this.markdownHighlighted){
+      setTimeout(()=>{Prism.highlightAll()},500);
+      this.markdownHighlighted = true;
+    } 
   } 
 
   onClickDelete(){

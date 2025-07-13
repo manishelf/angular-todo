@@ -63,6 +63,11 @@ hr {
   @apply border-t-2 border-gray-300 my-4;
 }
 
+/*prismjs*/
+.toolbar-item {
+  @apply p-2 text-2xl cursor-pointer
+}
+
 html,
 body {
   height: 100%;

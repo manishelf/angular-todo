@@ -16,12 +16,13 @@ import { TodoServiceService } from './../../service/todo-service.service';
 import { TodoItem } from '../../models/todo-item';
 import { Router } from '@angular/router';
 import { Tag } from '../../models/tag';
-import Prism from 'prismjs';
 import { UserDefinedType } from '../../models/userdefined-type';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { UserFormComponent } from '../../component/user-form/user-form.component';
 import { FormField, FormSchema } from '../../models/FormSchema';
 import { ToastService } from 'angular-toastify';
+
+declare var Prism: any;
 
 @Component({
   selector: 'app-markdown-editor',
@@ -91,8 +92,6 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
         router.navigate(['/home'], { queryParamsHandling: 'merge' });
       }
     }
-    Prism.plugins['autoloader'].languages_path =
-      'https://cdn.jsdelivr.net/npm/prismjs@1.14.0/components/';
   }
 
   ngAfterViewInit(): void{
@@ -301,6 +300,8 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
   onOptionClick() {
     this.option = this.option === 'MD Preview' ? 'Editor' : 'MD Preview';
     if (this.option === 'Editor') {
+      this.editiorLinesLoaded = false;
+
       this.convertedMarkdown = marked
         .parse(this.todoItem.description)
         .toString();
@@ -308,8 +309,10 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
 
       let code =
         this.convertedMarkdown.match(
-          /<code class='language-(\w+)'>([\s\S]*?)<\/code>/g
+          /<code class="language-(\w+)">([\s\S]*?)<\/code>/g
         ) || this.convertedMarkdown.match(/<code>([\s\S]*?)<\/code>/);
+        console.log(code, this.convertedMarkdown);
+        
       if (code) {
         for (let i = 0; i < code.length; i++) {
           let snippet = code[i];
@@ -320,7 +323,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
         }
         setTimeout(() => {
           Prism.highlightAll();
-        }, 100);
+        }, 500); 
       }
       if (this.todoItem.subject.trim().length != 0) {
         this.convertedMarkdown =
