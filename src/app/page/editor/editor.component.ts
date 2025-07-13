@@ -103,9 +103,9 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
 
   ngAfterViewChecked(): void {
     // called each time a child is updated
+    // i.e on every letter typed in the textarea so a flag is needed
     // thankyou Phuoc Nguyen https://dev.to/phuocng/display-the-line-numbers-in-a-text-area-46mk
     if(this.editiorLinesLoaded) return;
-    console.log('casl');
     
     const textarea = this.descriptionArea.nativeElement as HTMLTextAreaElement;
     const lineNumbersEle = this.lineNumbers.nativeElement as HTMLElement;
