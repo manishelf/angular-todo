@@ -86,9 +86,6 @@ importers:
       postcss:
         specifier: ^8.5.3
         version: 8.5.3
-      prismjs:
-        specifier: ^1.30.0
-        version: 1.30.0
       rxjs:
         specifier: ~7.8.2
         version: 7.8.2
@@ -117,9 +114,6 @@ importers:
       '@types/jasmine':
         specifier: ~5.1.0
         version: 5.1.7
-      '@types/prismjs':
-        specifier: ^1.26.5
-        version: 1.26.5
       jasmine-core:
         specifier: ~5.6.0
         version: 5.6.0
@@ -1958,9 +1952,6 @@ packages:
 
   '@types/node@22.13.9':
     resolution: {integrity: sha512-acBjXdRJ3A6Pb3tqnw9HZmyR3Fiol3aGxRCK1x3d+6CDAMjl7I649wpSd+yNURCjbOUGu9tqtLKnTGxmK6CyGw==}
-
-  '@types/prismjs@1.26.5':
-    resolution: {integrity: sha512-AUZTa7hQ2KY5L7AmtSiqxlhWxb4ina0yd8hNbl4TWuqnv/pFP0nDMb3YrfSBf4hJVGLh2YEIBfKaBW/9UEl6IQ==}
 
   '@types/qs@6.9.18':
     resolution: {integrity: sha512-kK7dgTYDyGqS+e2Q4aK9X3D7q234CIZ1Bv0q/7Z5IwRDoADNU81xXJK/YVyLbLTZCoIwUoDoffFeF+p/eIklAA==}
@@ -3852,10 +3843,6 @@ packages:
 
   preact@10.12.1:
     resolution: {integrity: sha512-l8386ixSsBdbreOAkqtrwqHwdvR35ID8c3rKPa8lCWuO86dBi32QWHV4vfsZK1utLLFMvw+Z5Ad4XLkZzchscg==}
-
-  prismjs@1.30.0:
-    resolution: {integrity: sha512-DEvV2ZF2r2/63V+tK8hQvrR2ZGn10srHbXviTlcv7Kpzw8jWiNTqbVgjO3IY8RxrrOUF8VPMQQFysYYYv0YZxw==}
-    engines: {node: '>=6'}
 
   proc-log@5.0.0:
     resolution: {integrity: sha512-Azwzvl90HaF0aCz1JrDdXQykFakSSNPaPoiZ9fm5qJIMHioDZEi7OAdRwSm6rSoPtY3Qutnm3L7ogmg3dc+wbQ==}
@@ -6485,8 +6472,6 @@ snapshots:
     dependencies:
       undici-types: 6.20.0
 
-  '@types/prismjs@1.26.5': {}
-
   '@types/qs@6.9.18': {}
 
   '@types/range-parser@1.2.7': {}
@@ -8519,8 +8504,6 @@ snapshots:
       source-map-js: 1.2.1
 
   preact@10.12.1: {}
-
-  prismjs@1.30.0: {}
 
   proc-log@5.0.0: {}
 
