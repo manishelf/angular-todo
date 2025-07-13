@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { NavigationEnd, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -21,6 +21,8 @@ export class NavbarComponent implements AfterViewInit {
     private toaster: ToastService,
     private todoService: TodoServiceService
   ) {
+
+    if(window.innerWidth>400){ // to avoid keyboards from poping upp on phones constantly 
     this.router.events
       .pipe(filter((e) => e instanceof NavigationEnd))
       .subscribe((event) => {
@@ -28,10 +30,21 @@ export class NavbarComponent implements AfterViewInit {
           this.searchBox.nativeElement.focus();
         }, 200);
       });
+    }
   }
 
   ngAfterViewInit(): void {
     this.searchBox.nativeElement.focus();
+  }
+  
+  @HostListener('keydown',['$event'])
+  onKeyDown(event: KeyboardEvent):void{
+    let target = event.target as HTMLElement;
+    if(target instanceof HTMLInputElement){
+      if(event.key === 'Enter'){
+        this.searchItems(event);
+      }
+    }
   }
 
   searchItems(event: Event): void {
