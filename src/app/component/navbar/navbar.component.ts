@@ -42,23 +42,24 @@ export class NavbarComponent implements AfterViewInit {
     let exact = false;
     let order = [];
 
-    input = searchQuery.split('!DESC:');
+    input = searchQuery.split('!LAT:');
     if (input.length == 2) {
-      order.push('!DESC:');
-    } else {
-      input = searchQuery.split('!ASC:');
-      if (input.length == 2) {
-        order.push('!ASC:');
-      }
+      order.push('latest');
+      searchQuery = input[1];
     }
+    input = searchQuery.split('!OLD:');
     if (input.length == 2) {
-      console.log(input);
-      let fields = input[1].substring(0, input[1].indexOf(';')).split(',');
-      fields.map((field) => field.trim());
-      order.push(fields);
-      searchQuery = input[1].substring(input[1].indexOf(';'));
+      order.push('oldest');
+      searchQuery = input[1];
     }
-    
+    //if (input.length == 2) {
+    //  console.log(input);
+    //  let fields = input[1].substring(0, input[1].indexOf(';')).split(',');
+    //  fields.map((field) => field.trim());
+    //  order.push(fields);
+    //  searchQuery = input[1].substring(input[1].indexOf(';'));
+    //}
+
     exact = !searchQuery.startsWith('!ALL:');
     if (!exact) {
       searchQuery = searchQuery.split('!ALL:')[1];

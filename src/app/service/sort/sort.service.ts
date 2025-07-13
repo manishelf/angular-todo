@@ -9,12 +9,17 @@ import { TodoItemUtils } from '../todo-item-crud/todo-item-utils';
 export class SortService {
   constructor(private todoItemUtils: TodoItemUtils) {}
   sortItems(order: string[], items: TodoItem[]): Observable<TodoItem[]> {
-    
     return new Observable<TodoItem[]>((subscriber) => {
       let sorted: TodoItem[] = items;
       
-      if (order[0] === '!ASC:') {
-      } else if (order[1] === '!DESC:') {
+      if (order.includes('oldest')) {
+        sorted = items.sort((x,y)=>{
+          return new Date(x.creationTimestamp).getTime() - new Date(y.creationTimestamp).getTime() // time since epoch
+        });
+      } else if (order.includes('latest')) {
+        sorted = items.sort((x,y)=>{
+          return new Date(y.updationTimestamp).getTime() - new Date(x.updationTimestamp).getTime()
+        })
       } else {
         sorted = items.sort((x, y) => {
           if (x.setForReminder || y.completionStatus) return -1;

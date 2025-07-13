@@ -170,7 +170,7 @@ export class TodoItemGetService {
     fromBin: boolean,
     exact: boolean = true,
   ): Observable<TodoItem[]> {
-    if (subjectQuery === '!ALL:' && tagsFilter.length === 0 && searchTerms.length === 0) {
+    if ((subjectQuery === '!ALL:' || subjectQuery === '') && tagsFilter.length === 0 && searchTerms.length === 0) {
       return this.getAllItems(db$, fromBin);
     }
 

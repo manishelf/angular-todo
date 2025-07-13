@@ -68,7 +68,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         let searchQuery = params['search'] ? params['search'] : '';
         let tags = params['tag'] ? params['tag'] : [];
         let searchTerms = params['has'] ? params['has'] : [];
-        if (searchQuery !== '' || tags.length > 0 || searchTerms.length > 0) {
+        if (order.length != 0 || searchQuery !== '' || tags.length > 0 || searchTerms.length > 0) {
           this.todoService
             .searchTodos(searchQuery, tags, searchTerms, exact)
             .subscribe(
