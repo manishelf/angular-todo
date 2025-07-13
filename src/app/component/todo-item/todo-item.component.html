@@ -1,9 +1,9 @@
-<div [class]="`${bgColour} max-w-full text-white rounded-2xl`" [title]="toolTipString">
-    <div class="flex flex-row justify-between p-2">
+<div class="max-w-full text-white rounded-2xl" [title]="toolTipString">
+    <div [class]="`${bgColour} flex flex-row rounded-2xl justify-between p-2`">
         <div class="flex-grow-1 text-2xl overflow-hidden overflow-ellipsis cursor-pointer" title="edit">
             <div class="border border-0 border-b-1 w-fit">{{item.subject}}</div> 
         </div>
-        <div *ngIf="!optionsDisplayed" class="flex flex-shrink-0">
+        <div class="flex flex-shrink-0">
             <mat-icon (click)="optionsDisplayed=!optionsDisplayed" class="cursor-pointer hover:scale-120 option" title="options">
               more_horiz
             </mat-icon>
@@ -36,8 +36,8 @@
             </button>
         </div>
     </div>
-    <div [ngClass]="minimized?'max-h-0 opacity-0 max-w-0':'max-h-[500px] max-w-11/12 opacity-100' + ' overflow-scroll'"
-      class="m-1 overflow-clip overflow-ellipsis transition-all duration-1000 ease-in-out before:normal-nums"
+    <div [ngClass]="minimized?'max-h-0 opacity-0 max-w-0 ':'max-h-[500px] max-w-29/30 opacity-100 overflow-scroll'"
+      class="px-2 overflow-clip overflow-ellipsis transition-all duration-1000 ease-in-out"
       [innerHtml]="parsedMD">
     </div>
 </div>

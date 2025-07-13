@@ -54,7 +54,7 @@ export class TodoItemComponent implements OnInit, AfterViewInit {
 
 
     this.parsedMD = marked.parse(this.item.description).toString();
-    this.parsedMD = this.parsedMD.replace(/\n/g, '<br>');
+    this.parsedMD = this.parsedMD.replace(/\n\n/g, '<br>');
     let code = this.parsedMD.match(/<code class="language-(\w+)">([\s\S]*?)<\/code>/g) || this.parsedMD.match(/<code>([\s\S]*?)<\/code>/);
     if (code) {
       for (let i = 0; i < code.length; i++) {
