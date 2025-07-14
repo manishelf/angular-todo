@@ -36,8 +36,8 @@
             </button>
         </div>
     </div>
-    <div [ngClass]="minimized?'max-h-0 opacity-0 max-w-0 ':'max-h-[500px] max-w-29/30 opacity-100 overflow-scroll'"
-      class="px-2 overflow-clip overflow-ellipsis transition-all duration-1000 ease-in-out"
+    <div [ngClass]="minimized?'max-h-0 opacity-0 max-w-0 ':'max-h-[500px] max-w-29/30 opacity-100 overflow-auto'"
+      class="px-2 transition-all duration-1000 ease-in-out"
       [innerHtml]="parsedMD">
     </div>
 </div>
