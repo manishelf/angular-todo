@@ -242,6 +242,17 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
   onPasteEvent(event: Event) {
     const descArea = event.target as HTMLTextAreaElement;
     let clipBoardData = (event as ClipboardEvent).clipboardData;
+   
+    let text = clipBoardData?.getData('text');
+    
+    if(text?.toLocaleLowerCase().startsWith('http://') || text?.toLocaleLowerCase().startsWith('https://')){
+      let cursorPosition = descArea.selectionStart;
+      this.todoItem.description =
+        this.todoItem.description.substring(0, cursorPosition) +
+          `[link-${new Date().getSeconds()}](${text})`
+          this.todoItem.description.substring(cursorPosition);
+      event.preventDefault();
+    }
     interface data {
       file: File;
       reader: FileReader;
