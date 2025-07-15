@@ -23,10 +23,10 @@ export class AppComponent{
 
   @HostListener('keydown', ['$event'])
   onKeyDown(event: KeyboardEvent): void{
-    if(event.key === '}' && event.ctrlKey && event.shiftKey){
+    if(event.key === ']' && event.ctrlKey){
       event.preventDefault();
       this.router.navigate(['/create']);
-    }else if (event.key ==='{' && event.ctrlKey && event.shiftKey){
+    }else if (event.key ==='[' && event.ctrlKey){
       event.preventDefault();
       this.router.navigate(['/home']);
     }
