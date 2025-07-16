@@ -391,12 +391,13 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
 
   onUpdateTags(event: Event) {
     let inputValue = (event.target as HTMLInputElement).value;
+    let lastTags = this.tagNameList.split(',');
     this.todoItem.tags = [];
     let tags = inputValue.split(',');
     tags.forEach((name) => {
       this.todoItem.tags.push({ name: name.trim() });
     });
-    this.loadCustomSchemaFromDb(tags);
+    this.loadCustomSchemaFromDb(tags.filter(tag=>!lastTags.includes(tag)));
     this.loadPrimitiveFields(tags);
     this.tagNameList = this.todoItem.tags.map((tag) => tag.name).join(',');
   }
@@ -406,12 +407,12 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
     if (tags.length === 0) return;
     this.customFormSchema = this.todoItem.userDefined?.formControlSchema;
     let fields: FormField[] = [];
-    for(let tag of tags){
-      let tagType = tag.substring(5);
+    for(let i = 0; i<tags.length ; i++){
+      let tagType = tags[i].substring(5);
       if(inputTagTypes.includes(tagType)){
         fields.push({
-          name: tagType+'_'+ new Date().getSeconds(),
-          label: tagType+'_'+new Date().getSeconds(),
+          name: tagType+'_'+ i,
+          label: tagType+'_'+ i,
           type: tagType as FormField['type'],
           placeholder: '',
           default: '',
