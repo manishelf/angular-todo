@@ -45,16 +45,19 @@ export class SortService {
           return new Date(y.updationTimestamp).getTime() - new Date(x.updationTimestamp).getTime()
         }
       }
-      
       for(let prop of order){
+        if(prop === 'oldest' || prop === 'latest' || prop === ''){
+          continue;
+        }
         sortingFn = (x, y)=>{
           let val1 = (x as any)[prop];
           let val2 = (y as any)[prop];
-          if(!(val1 || val2)){
+          if((val1 && val2) && x.userDefined?.data && y.userDefined?.data){
             val1 = (x.userDefined?.data as any)[prop];
             val2 = (y.userDefined?.data as any)[prop];
+            return this.getComparatorForType(prop)(val1, val2)
           }
-          return this.getComparatorForType(prop)(val1, val2)
+          return 0;
         }
       }
 

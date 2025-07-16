@@ -106,9 +106,10 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
     // thankyou Phuoc Nguyen https://dev.to/phuocng/display-the-line-numbers-in-a-text-area-46mk
     if (this.editiorLinesLoaded) return;
 
-    const textarea = this.descriptionArea.nativeElement as HTMLTextAreaElement;
-    const lineNumbersEle = this.lineNumbers.nativeElement as HTMLElement;
-
+    const textarea = this.descriptionArea?.nativeElement as HTMLTextAreaElement;
+    const lineNumbersEle = this.lineNumbers?.nativeElement as HTMLElement;
+    if(!(textarea || lineNumbersEle)) return;
+    
     const textareaStyles = window.getComputedStyle(textarea);
     [
       'fontFamily',
