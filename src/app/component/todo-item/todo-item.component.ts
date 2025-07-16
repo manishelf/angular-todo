@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import * as marked from 'marked';
 import { TodoServiceService } from '../../service/todo-service.service';
 import { ActivatedRoute, NavigationExtras, Route, Router } from '@angular/router';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 declare var Prism : any;
 
@@ -27,7 +28,7 @@ export class TodoItemComponent implements OnInit, AfterViewChecked {
   };
 
   toolTipString: string = '';
-  parsedMD: string = '';
+  parsedMD: SafeHtml = '';
   @Input('fromBin') fromBin: boolean = false;
   
   bgColour: string = 'bg-gray-600 border-1 border-e-2 border-s-2 ';
@@ -39,7 +40,7 @@ export class TodoItemComponent implements OnInit, AfterViewChecked {
   markdownHighlighted: boolean = false;
 
 
-  constructor(private todoService: TodoServiceService, private route:ActivatedRoute, private router: Router) {
+  constructor(private todoService: TodoServiceService, private route:ActivatedRoute, private router: Router, private sanitizer: DomSanitizer) {
     this.todoService.fromBin = this.fromBin;
   }
   ngOnInit(): void {
@@ -51,16 +52,16 @@ export class TodoItemComponent implements OnInit, AfterViewChecked {
       this.bgColour += ' '+'border-lime-500';
     }
 
-
-    this.parsedMD = marked.parse(this.item.description).toString();
-    this.parsedMD = this.parsedMD.replace(/\n\n/g, '<br>');
-    let code = this.parsedMD.match(/<code class="language-(\w+)">([\s\S]*?)<\/code>/g) || this.parsedMD.match(/<code>([\s\S]*?)<\/code>/);
+    let markdown = marked.parse(this.item.description).toString();
+    markdown = markdown.replace(/\n\n/g, '<br>');
+    let code = markdown.match(/<code class="language-(\w+)">([\s\S]*?)<\/code>/g) || markdown.match(/<code>([\s\S]*?)<\/code>/);
     if (code) {
       for (let i = 0; i < code.length; i++) {
         let snippet = code[i];
-        this.parsedMD = this.parsedMD.replace(snippet,  snippet.replace(/<br>/g,'\n').replace(/&lt;br&gt;/g, '<br>'));
+        markdown = markdown.replace(snippet,  snippet.replace(/<br>/g,'\n').replace(/&lt;br&gt;/g, '<br>'));
       }
     }
+    this.parsedMD = this.sanitizer.bypassSecurityTrustHtml(markdown);
 
     this.item.tags.forEach((tag)=>{
       this.tagNameList.push(' '+tag.name+' ');

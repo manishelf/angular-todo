@@ -4,6 +4,7 @@ import {
   HostListener,
   Input,
   OnChanges,
+  OnDestroy,
   OnInit,
   Output,
   SimpleChanges,

@@ -17,7 +17,7 @@ import { TodoItem } from '../../models/todo-item';
 import { Router } from '@angular/router';
 import { Tag } from '../../models/tag';
 import { UserDefinedType } from '../../models/userdefined-type';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { DomSanitizer, SafeHtml, SafeResourceUrl } from '@angular/platform-browser';
 import { UserFormComponent } from '../../component/user-form/user-form.component';
 import { FormField, FormSchema, inputTagTypes } from '../../models/FormSchema';
 import { ToastService } from 'angular-toastify';
@@ -38,7 +38,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
 
   queryParams = {};
 
-  convertedMarkdown: string = '';
+  convertedMarkdown: SafeHtml = ''; 
   option: string = 'MD Preview';
   tagNameList: string = '';
   forEdit: number = -1;
@@ -325,24 +325,23 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
     this.option = this.option === 'MD Preview' ? 'Editor' : 'MD Preview';
     if (this.option === 'Editor') {
       this.editiorLinesLoaded = false;
-
-      this.convertedMarkdown = marked
+      let markdown = marked
         .parse(this.todoItem.description)
         .toString();
-      this.convertedMarkdown = this.convertedMarkdown.replaceAll(
+      
+      markdown = markdown.replaceAll(
         '\n\n',
         '<br>'
       );
 
-      let code =
-        this.convertedMarkdown.match(
+      let code = markdown.match(
           /<code class="language-(\w+)">([\s\S]*?)<\/code>/g
-        ) || this.convertedMarkdown.match(/<code>([\s\S]*?)<\/code>/);
+        ) || markdown.match(/<code>([\s\S]*?)<\/code>/);
 
       if (code) {
         for (let i = 0; i < code.length; i++) {
           let snippet = code[i];
-          this.convertedMarkdown = this.convertedMarkdown.replace(
+          markdown = markdown.replace(
             snippet,
             snippet.replace(/<br>/g, '\n')
           );
@@ -350,11 +349,13 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
         setTimeout(() => {
           Prism.highlightAll();
         }, 200);
-      }
+      }      
+      this.convertedMarkdown = this.domSanitizer.bypassSecurityTrustHtml(markdown);
       if (this.todoItem.subject.trim().length != 0) {
-        this.convertedMarkdown =
+        this.convertedMarkdown = this.domSanitizer.bypassSecurityTrustHtml(
           `<u class='text-3xl'>${this.todoItem.subject}</u><br>` +
-          this.convertedMarkdown;
+          markdown
+        );
       }
     }
   }
@@ -411,8 +412,8 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
       let tagType = tags[i].substring(5);
       if(inputTagTypes.includes(tagType)){
         fields.push({
-          name: tagType+'_'+ i,
-          label: tagType+'_'+ i,
+          name: tagType+'_'+ i+1,
+          label: tagType+'_'+ i+1,
           type: tagType as FormField['type'],
           placeholder: '',
           default: '',

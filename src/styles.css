@@ -2,14 +2,31 @@
 @import "tailwindcss";
 
 /* manual styling as tailwind overrides*/
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
+h1 {
+  @apply text-3xl font-bold;
+}
+
+h2 {
   @apply text-2xl font-bold;
 }
+
+h3 {
+  @apply text-xl font-bold;
+}
+
+h4 {
+  @apply text-lg font-bold;
+}
+
+h5 {
+  @apply text-base font-bold;
+}
+
+h6 {
+  @apply text-sm font-bold;
+}
+
+
 
 p {
   @apply text-base;
@@ -61,6 +78,17 @@ td {
 
 hr {
   @apply border-t-2 border-gray-300 my-4;
+}
+
+input[type="checkbox"]{
+  @apply w-4 h-4 rounded-sm m-1;
+}
+
+li:has(input[type="checkbox"]) {
+  list-style: none;
+  text-decoration: underline;
+  display: flex;
+  align-items: center;
 }
 
 /*prismjs*/
