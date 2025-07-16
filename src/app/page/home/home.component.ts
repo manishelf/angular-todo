@@ -63,9 +63,9 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.todoService.initializeItems();
     this.queryParamsSubscription = this.route.queryParams.subscribe(
       (params: Params) => {
-        let order = params['order'] ? params['order'] : [];
-        let exact = params['exact'] ? params['exact'] === 'true' : false;
-        let searchQuery = params['search'] ? params['search'] : '';
+        let order = params['ord'] ? params['ord'] : [];
+        let exact = params['abs'] ? params['abs'] === 'true' : false;
+        let searchQuery = params['q'] ? params['q'] : '';
         let tags = params['tag'] ? params['tag'] : [];
         let searchTerms = params['has'] ? params['has'] : [];
         if (order.length != 0 || searchQuery !== '' || tags.length > 0 || searchTerms.length > 0) {

@@ -240,7 +240,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
     const target = event.target as HTMLTextAreaElement;
     target.style.height = 'auto';
     target.style.height = target.scrollHeight + 'px';
-    target.nextElementSibling?.scrollIntoView(true);
+    //target.nextElementSibling?.scrollIntoView(true);
   }
 
   @HostListener('paste', ['$event'])

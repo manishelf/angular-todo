@@ -1,4 +1,10 @@
-import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  HostListener,
+  ViewChild,
+} from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { NavigationEnd, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -21,27 +27,27 @@ export class NavbarComponent implements AfterViewInit {
     private toaster: ToastService,
     private todoService: TodoServiceService
   ) {
-
-    if(window.innerWidth>400){ // to avoid keyboards from poping upp on phones constantly 
-    this.router.events
-      .pipe(filter((e) => e instanceof NavigationEnd))
-      .subscribe((event) => {
-        setTimeout(() => {
-          this.searchBox.nativeElement.focus();
-        }, 200);
-      });
+    if (window.innerWidth > 400) {
+      // to avoid keyboards from poping upp on phones constantly
+      this.router.events
+        .pipe(filter((e) => e instanceof NavigationEnd))
+        .subscribe((event) => {
+          setTimeout(() => {
+            this.searchBox.nativeElement.focus();
+          }, 200);
+        });
     }
   }
 
   ngAfterViewInit(): void {
     this.searchBox.nativeElement.focus();
   }
-  
-  @HostListener('keydown',['$event'])
-  onKeyDown(event: KeyboardEvent):void{
+
+  @HostListener('keydown', ['$event'])
+  onKeyDown(event: KeyboardEvent): void {
     let target = event.target as HTMLElement;
-    if(target instanceof HTMLInputElement){
-      if(event.key === 'Enter'){
+    if (target instanceof HTMLInputElement) {
+      if (event.key === 'Enter') {
         this.searchItems(event);
       }
     }
@@ -51,35 +57,48 @@ export class NavbarComponent implements AfterViewInit {
     let searchQuery = (event.target as HTMLInputElement).value;
 
     let tagList: string[] = [];
-    let input = [];
+    let input = [''];
     let exact = false;
     let order = [];
+
+    const populateFields = (x: string) => {
+      let fields = x?.substring(0, x?.indexOf(';'))?.split(',');
+      fields?.map((field) => field.trim()).filter((field) => field != '');
+      order.push(...fields);
+      searchQuery = input[1].substring(input[1]?.indexOf(';') + 1);
+    };
+
+    input = searchQuery.split('!ASC:');
+    if (input.length == 2) {
+      order.push('asc');
+      populateFields(input[1]);
+    } else {
+      input = searchQuery.split('!DESC:');
+      if (input.length == 2) {
+        order.push('desc');
+        populateFields(input[1]);
+      } else {
+        order.push('asc');
+      }
+    }
 
     input = searchQuery.split('!LAT:');
     if (input.length == 2) {
       order.push('latest');
-      searchQuery = input[1];
-      let fields = input[1].substring(0, input[1]?.indexOf(';'))?.split(',');
-      fields?.map((field) => field.trim());
-      order.push(...fields);
-      searchQuery = input[1].substring(input[1]?.indexOf(';'));
+      populateFields(input[1]);
     }
+
     input = searchQuery.split('!OLD:');
     if (input.length == 2) {
       order.push('oldest');
-      searchQuery = input[1];
-      let fields = input[1].substring(0, input[1]?.indexOf(';'))?.split(',');
-      fields?.map((field) => field.trim());
-      order.push(...fields);
-      searchQuery = input[1].substring(input[1]?.indexOf(';'));
+      populateFields(input[1]);
     }
-    
-    
 
     exact = !searchQuery.startsWith('!ALL:');
     if (!exact) {
       searchQuery = searchQuery.split('!ALL:')[1];
     }
+
     input = searchQuery.split('!F:');
     let searchTerms: string[] = [];
     if (input.length == 2) {
@@ -93,11 +112,12 @@ export class NavbarComponent implements AfterViewInit {
       tagList = input[1].split(',');
       tagList = tagList.map((tag) => tag.trim());
     }
+
     this.router.navigate([], {
       queryParams: {
-        order,
-        exact: exact,
-        search: searchQuery.trim(),
+        ord: order,
+        abs: exact,
+        q: searchQuery.trim(),
         tag: tagList,
         has: searchTerms,
       },
