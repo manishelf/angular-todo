@@ -59,19 +59,22 @@ export class NavbarComponent implements AfterViewInit {
     if (input.length == 2) {
       order.push('latest');
       searchQuery = input[1];
+      let fields = input[1].substring(0, input[1]?.indexOf(';'))?.split(',');
+      fields?.map((field) => field.trim());
+      order.push(...fields);
+      searchQuery = input[1].substring(input[1]?.indexOf(';'));
     }
     input = searchQuery.split('!OLD:');
     if (input.length == 2) {
       order.push('oldest');
       searchQuery = input[1];
+      let fields = input[1].substring(0, input[1]?.indexOf(';'))?.split(',');
+      fields?.map((field) => field.trim());
+      order.push(...fields);
+      searchQuery = input[1].substring(input[1]?.indexOf(';'));
     }
-    //if (input.length == 2) {
-    //  console.log(input);
-    //  let fields = input[1].substring(0, input[1].indexOf(';')).split(',');
-    //  fields.map((field) => field.trim());
-    //  order.push(fields);
-    //  searchQuery = input[1].substring(input[1].indexOf(';'));
-    //}
+    
+    
 
     exact = !searchQuery.startsWith('!ALL:');
     if (!exact) {

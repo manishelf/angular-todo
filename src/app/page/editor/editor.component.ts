@@ -8,7 +8,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import * as marked from 'marked';
-import { FormsModule } from '@angular/forms';
+import { FormControl, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { BeanItemComponent } from '../../component/bean-item/bean-item.component';
@@ -19,7 +19,7 @@ import { Tag } from '../../models/tag';
 import { UserDefinedType } from '../../models/userdefined-type';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { UserFormComponent } from '../../component/user-form/user-form.component';
-import { FormField, FormSchema } from '../../models/FormSchema';
+import { FormField, FormSchema, inputTagTypes } from '../../models/FormSchema';
 import { ToastService } from 'angular-toastify';
 
 declare var Prism: any;
@@ -33,7 +33,7 @@ declare var Prism: any;
 export class EditorComponent implements AfterViewChecked, AfterViewInit {
   @ViewChild('subjectTxt') subjectTxt!: ElementRef;
   @ViewChild('descriptionArea') descriptionArea!: ElementRef;
-  @ViewChild('lineNumbers') lineNumbers! : ElementRef;
+  @ViewChild('lineNumbers') lineNumbers!: ElementRef;
   @ViewChild('userForm') userForm!: UserFormComponent;
 
   queryParams = {};
@@ -46,12 +46,12 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
   schemaEditingInProgress: boolean = false;
   customFormSchema: FormSchema | undefined;
   customFormData: any;
-  editiorLinesLoaded:boolean =  false;
+  editiorLinesLoaded: boolean = false;
 
   todoItem: Omit<TodoItem, 'id'> = {
     subject: '',
     description: '',
-    tags: [{name:'QtodoQ'}], //if no tag is added for a item then search by tags does not work correctly
+    tags: [{ name: 'QtodoQ' }], //if no tag is added for a item then search by tags does not work correctly
     completionStatus: false,
     setForReminder: false,
     creationTimestamp: new Date(Date.now()).toISOString(),
@@ -94,7 +94,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
     }
   }
 
-  ngAfterViewInit(): void{
+  ngAfterViewInit(): void {
     setTimeout(() => {
       this.subjectTxt.nativeElement.focus();
     }, 300);
@@ -104,24 +104,25 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
     // called each time a child is updated
     // i.e on every letter typed in the textarea so a flag is needed
     // thankyou Phuoc Nguyen https://dev.to/phuocng/display-the-line-numbers-in-a-text-area-46mk
-    if(this.editiorLinesLoaded) return;
-    
+    if (this.editiorLinesLoaded) return;
+
     const textarea = this.descriptionArea.nativeElement as HTMLTextAreaElement;
     const lineNumbersEle = this.lineNumbers.nativeElement as HTMLElement;
 
     const textareaStyles = window.getComputedStyle(textarea);
     [
-        'fontFamily',
-        'fontSize',
-        'fontWeight',
-        'letterSpacing',
-        'lineHeight',
-        'padding',
+      'fontFamily',
+      'fontSize',
+      'fontWeight',
+      'letterSpacing',
+      'lineHeight',
+      'padding',
     ].forEach((property: any) => {
-        lineNumbersEle.style[property] = textareaStyles[property];
+      lineNumbersEle.style[property] = textareaStyles[property];
     });
 
-    const parseValue = (v: any) => v.endsWith('px') ? parseInt(v.slice(0, -2), 10) : 0;
+    const parseValue = (v: any) =>
+      v.endsWith('px') ? parseInt(v.slice(0, -2), 10) : 0;
 
     const font = `${textareaStyles.fontSize} ${textareaStyles.fontFamily}`;
     const paddingLeft = parseValue(textareaStyles.paddingLeft);
@@ -129,75 +130,78 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
 
     const canvas = document.createElement('canvas');
     const context = canvas.getContext('2d');
-    if(context)
-    context.font = font;
+    if (context) context.font = font;
 
     const calculateNumLines = (str: string) => {
-        const textareaWidth = textarea.getBoundingClientRect().width - paddingLeft - paddingRight;
-        const words = str.split(' ');
-        let lineCount = 0;
-        let currentLine = '';
-        for (let i = 0; i < words.length; i++) {
-            const wordWidth = context?.measureText(words[i] + ' ').width || 0;
-            const lineWidth = context?.measureText(currentLine).width || 0;
+      const textareaWidth =
+        textarea.getBoundingClientRect().width - paddingLeft - paddingRight;
+      const words = str.split(' ');
+      let lineCount = 0;
+      let currentLine = '';
+      for (let i = 0; i < words.length; i++) {
+        const wordWidth = context?.measureText(words[i] + ' ').width || 0;
+        const lineWidth = context?.measureText(currentLine).width || 0;
 
-            if (lineWidth + wordWidth > textareaWidth) {
-                lineCount++;
-                currentLine = words[i] + ' ';
-            } else {
-                currentLine += words[i] + ' ';
-            }
+        if (lineWidth + wordWidth > textareaWidth) {
+          lineCount++;
+          currentLine = words[i] + ' ';
+        } else {
+          currentLine += words[i] + ' ';
         }
+      }
 
-        if (currentLine.trim() !== '') {
-            lineCount++;
-        }
+      if (currentLine.trim() !== '') {
+        lineCount++;
+      }
 
-        return lineCount;
+      return lineCount;
     };
 
     const calculateLineNumbers = () => {
-        const lines = textarea.value.split('\n');
-        const numLines = lines.map((line) => calculateNumLines(line));
+      const lines = textarea.value.split('\n');
+      const numLines = lines.map((line) => calculateNumLines(line));
 
-        let lineNumbers = [];
-        let i = 1;
-        while (numLines.length > 0) {
-            const numLinesOfSentence = numLines.shift() || 0;
-            lineNumbers.push(i);
-            if (numLinesOfSentence > 1) {
-                Array(numLinesOfSentence - 1)
-                    .fill('')
-                    .forEach((_) => lineNumbers.push(''));
-            }
-            i++;
+      let lineNumbers = [];
+      let i = 1;
+      while (numLines.length > 0) {
+        const numLinesOfSentence = numLines.shift() || 0;
+        lineNumbers.push(i);
+        if (numLinesOfSentence > 1) {
+          Array(numLinesOfSentence - 1)
+            .fill('')
+            .forEach((_) => lineNumbers.push(''));
         }
+        i++;
+      }
 
-        return lineNumbers;
+      return lineNumbers;
     };
 
     const displayLineNumbers = () => {
-        const lineNumbers = calculateLineNumbers();
-        lineNumbersEle.innerHTML = Array.from({
-            length: lineNumbers.length
-        }, (_, i) => `<div>${lineNumbers[i] || '&nbsp;'}</div>`).join('');
+      const lineNumbers = calculateLineNumbers();
+      lineNumbersEle.innerHTML = Array.from(
+        {
+          length: lineNumbers.length,
+        },
+        (_, i) => `<div>${lineNumbers[i] || '&nbsp;'}</div>`
+      ).join('');
     };
 
     textarea.addEventListener('input', () => {
-        displayLineNumbers();
+      displayLineNumbers();
     });
 
     displayLineNumbers();
 
     const ro = new ResizeObserver(() => {
-        const rect = textarea.getBoundingClientRect();
-        lineNumbersEle.style.height = `${rect.height}px`;
-        displayLineNumbers();
+      const rect = textarea.getBoundingClientRect();
+      lineNumbersEle.style.height = `${rect.height}px`;
+      displayLineNumbers();
     });
     ro.observe(textarea);
 
     textarea.addEventListener('scroll', () => {
-        lineNumbersEle.scrollTop = textarea.scrollTop;
+      lineNumbersEle.scrollTop = textarea.scrollTop;
     });
 
     this.editiorLinesLoaded = true;
@@ -242,15 +246,17 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
   onPasteEvent(event: Event) {
     const descArea = event.target as HTMLTextAreaElement;
     let clipBoardData = (event as ClipboardEvent).clipboardData;
-   
     let text = clipBoardData?.getData('text');
-    
-    if(text?.toLocaleLowerCase().startsWith('http://') || text?.toLocaleLowerCase().startsWith('https://')){
+
+    if (
+      text?.toLocaleLowerCase().startsWith('http://') ||
+      text?.toLocaleLowerCase().startsWith('https://')
+    ) {
       let cursorPosition = descArea.selectionStart;
       this.todoItem.description =
         this.todoItem.description.substring(0, cursorPosition) +
-          `[link-${new Date().getSeconds()}](${text})`
-          this.todoItem.description.substring(cursorPosition);
+        `[link-${new Date().getSeconds()}](${text})`;
+      this.todoItem.description.substring(cursorPosition);
       event.preventDefault();
     }
     interface data {
@@ -277,8 +283,14 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
         if (target.result) {
           let field: FormField = {
             type: 'url',
-            name: data.file.name.replaceAll(/[.]/g, '_')+'/'+new Date(data.file.lastModified).getSeconds(),
-            label: data.file.name+'/'+new Date(data.file.lastModified).getSeconds(),
+            name:
+              data.file.name.replaceAll(/[.]/g, '_') +
+              '/' +
+              new Date(data.file.lastModified).getSeconds(),
+            label:
+              data.file.name +
+              '/' +
+              new Date(data.file.lastModified).getSeconds(),
             default: 'file data',
           };
           if (data.file.type.startsWith('image')) {
@@ -316,13 +328,16 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
       this.convertedMarkdown = marked
         .parse(this.todoItem.description)
         .toString();
-      this.convertedMarkdown = this.convertedMarkdown.replaceAll('\n\n', '<br>');
+      this.convertedMarkdown = this.convertedMarkdown.replaceAll(
+        '\n\n',
+        '<br>'
+      );
 
       let code =
         this.convertedMarkdown.match(
           /<code class="language-(\w+)">([\s\S]*?)<\/code>/g
         ) || this.convertedMarkdown.match(/<code>([\s\S]*?)<\/code>/);
-        
+
       if (code) {
         for (let i = 0; i < code.length; i++) {
           let snippet = code[i];
@@ -333,7 +348,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
         }
         setTimeout(() => {
           Prism.highlightAll();
-        }, 200); 
+        }, 200);
       }
       if (this.todoItem.subject.trim().length != 0) {
         this.convertedMarkdown =
@@ -381,8 +396,29 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
       this.todoItem.tags.push({ name: name.trim() });
     });
     this.loadCustomSchemaFromDb(tags);
+    this.loadPrimitiveFields(tags);
     this.tagNameList = this.todoItem.tags.map((tag) => tag.name).join(',');
   }
+
+  loadPrimitiveFields(tags: string[]) {
+    tags = tags.filter((tag) => tag.startsWith('form-'));
+    if (tags.length === 0) return;
+    this.customFormSchema = this.todoItem.userDefined?.formControlSchema;
+    let fields: FormField[] = [];
+    for(let tag of tags){
+      let tagType = tag.substring(5);
+      if(inputTagTypes.includes(tagType)){
+        fields.push({
+          name: tagType+'_'+ new Date().getSeconds(),
+          label: tagType+'_'+new Date().getSeconds(),
+          type: tagType as FormField['type'],
+          placeholder: '',
+          default: '',
+        });
+      }
+    }
+    this.appendCustomSchemaFields(fields);
+  } 
 
   loadCustomSchemaFromDb(tags: string[]) {
     tags = tags.filter((tag) => tag.startsWith('form-'));
@@ -405,20 +441,24 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
               }
             }
           });
-
-          if (this.customFormSchema && this.customFormSchema.fields) {
-            // have to do this instead of push as push is not tracked
-            this.customFormSchema = {
-              fields: [...this.customFormSchema.fields, ...schema.fields],
-            };
-          } else {
-            this.customFormSchema = schema;
-          }
+          this.appendCustomSchemaFields(schema.fields);
         } catch (e) {
           console.error('failed to load schema ' + tags, schema, e);
         }
       })
     );
+  }
+
+  appendCustomSchemaFields(fields: FormField[]){
+    if(!fields || fields.length == 0) return;
+    
+    if (this.customFormSchema && this.customFormSchema.fields) {
+      this.customFormSchema = {
+        fields: [...this.customFormSchema.fields, ...fields],
+      };
+    } else {
+      this.customFormSchema = {fields: fields};
+    } 
   }
 
   onClickUserFormAdd(event: Event) {

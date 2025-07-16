@@ -82,6 +82,7 @@ export class HomeComponent implements OnInit, OnDestroy {
             );
         } else {
           this.router.navigate([]);
+          this.todoService.initializeItems();
           this.fromSearch = false;
           this.todoItemsSubscription = this.todoService.todoItems$.subscribe(
             (itemList) => {

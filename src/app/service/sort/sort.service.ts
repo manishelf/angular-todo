@@ -7,27 +7,61 @@ import { TodoItemUtils } from '../todo-item-crud/todo-item-utils';
   providedIn: 'root',
 })
 export class SortService {
-  constructor(private todoItemUtils: TodoItemUtils) {}
+  constructor(private todoItemUtils: TodoItemUtils) {
+  }
+
+  getComparatorForType(type: any): ((x:any, y:any)=>number){
+    // all are in ascending order
+    switch(Object.getPrototypeOf(type)){
+      case Number.prototype : 
+        return (x: number, y:number)=> x-y
+      case String.prototype :
+        return (x:string, y:string)=> x.length - y.length
+      case Boolean.prototype :
+        return (x: boolean, y:boolean)=> x==y?0:x?1:0
+      case Date.prototype :
+        return (x: Date, y: Date)=> x.getTime()-y.getTime()
+      case Object.prototype:
+        return this.sortByReminderAndCompletionStatus;
+    }
+    return (x:any, y:any)=>{return 0;}
+  }
+
+  sortByReminderAndCompletionStatus(x:TodoItem, y:TodoItem): number{
+    if (x.setForReminder || y.completionStatus) return -1;
+    if (y.setForReminder || x.completionStatus) return 1;
+    return 0;
+  }
+
   sortItems(order: string[], items: TodoItem[]): Observable<TodoItem[]> {
     return new Observable<TodoItem[]>((subscriber) => {
-      let sorted: TodoItem[] = items;
-      
-      if (order.includes('oldest')) {
-        sorted = items.sort((x,y)=>{
+      let sortingFn = (x: TodoItem, y: TodoItem): number=>{return 0;};
+      if (order[0]==='oldest') {
+        sortingFn = (x, y)=>{
           return new Date(x.creationTimestamp).getTime() - new Date(y.creationTimestamp).getTime() // time since epoch
-        });
-      } else if (order.includes('latest')) {
-        sorted = items.sort((x,y)=>{
+        }
+      } else if (order[0] === 'latest') {
+        sortingFn = (x, y)=>{
           return new Date(y.updationTimestamp).getTime() - new Date(x.updationTimestamp).getTime()
-        })
-      } else {
-        sorted = items.sort((x, y) => {
-          if (x.setForReminder || y.completionStatus) return -1;
-          if (y.setForReminder || x.completionStatus) return 1;
-          return 0;
-        });
+        }
       }
-      subscriber.next(sorted);
+      
+      for(let prop of order){
+        sortingFn = (x, y)=>{
+          let val1 = (x as any)[prop];
+          let val2 = (y as any)[prop];
+          if(!(val1 || val2)){
+            val1 = (x.userDefined?.data as any)[prop];
+            val2 = (y.userDefined?.data as any)[prop];
+          }
+          return this.getComparatorForType(prop)(val1, val2)
+        }
+      }
+
+      if(order.length === 0) 
+        sortingFn = this.sortByReminderAndCompletionStatus;
+      
+      subscriber.next(items.sort(sortingFn));
       subscriber.complete();
     });
   }

@@ -18,7 +18,7 @@ export interface FormField {
 export const inputTagTypes = [
      'text', 'email' , 'password' 
             , 'number' , 'date' , 'url'
-            , 'COLOUR' , 'color' , 'range' , 'month' , 'date' , 'time' , 'datetime-local'
+            , 'color' , 'range' , 'month' , 'date' , 'time' , 'datetime-local'
 ];
 
 export interface FormFieldValidation{
