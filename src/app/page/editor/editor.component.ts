@@ -17,7 +17,11 @@ import { TodoItem } from '../../models/todo-item';
 import { Router } from '@angular/router';
 import { Tag } from '../../models/tag';
 import { UserDefinedType } from '../../models/userdefined-type';
-import { DomSanitizer, SafeHtml, SafeResourceUrl } from '@angular/platform-browser';
+import {
+  DomSanitizer,
+  SafeHtml,
+  SafeResourceUrl,
+} from '@angular/platform-browser';
 import { UserFormComponent } from '../../component/user-form/user-form.component';
 import { FormField, FormSchema, inputTagTypes } from '../../models/FormSchema';
 import { ToastService } from 'angular-toastify';
@@ -38,7 +42,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
 
   queryParams = {};
 
-  convertedMarkdown: SafeHtml = ''; 
+  convertedMarkdown: SafeHtml = '';
   option: string = 'MD Preview';
   tagNameList: string = '';
   forEdit: number = -1;
@@ -108,8 +112,8 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
 
     const textarea = this.descriptionArea?.nativeElement as HTMLTextAreaElement;
     const lineNumbersEle = this.lineNumbers?.nativeElement as HTMLElement;
-    if(!(textarea || lineNumbersEle)) return;
-    
+    if (!(textarea || lineNumbersEle)) return;
+
     const textareaStyles = window.getComputedStyle(textarea);
     [
       'fontFamily',
@@ -325,36 +329,28 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
     this.option = this.option === 'MD Preview' ? 'Editor' : 'MD Preview';
     if (this.option === 'Editor') {
       this.editiorLinesLoaded = false;
-      let markdown = marked
-        .parse(this.todoItem.description)
-        .toString();
-      
-      markdown = markdown.replaceAll(
-        '\n\n',
-        '<br>'
-      );
+      let markdown = marked.parse(this.todoItem.description).toString();
 
-      let code = markdown.match(
-          /<code class="language-(\w+)">([\s\S]*?)<\/code>/g
-        ) || markdown.match(/<code>([\s\S]*?)<\/code>/);
+      markdown = markdown.replaceAll('\n\n', '<br>');
+
+      let code =
+        markdown.match(/<code class="language-(\w+)">([\s\S]*?)<\/code>/g) ||
+        markdown.match(/<code>([\s\S]*?)<\/code>/);
 
       if (code) {
         for (let i = 0; i < code.length; i++) {
           let snippet = code[i];
-          markdown = markdown.replace(
-            snippet,
-            snippet.replace(/<br>/g, '\n')
-          );
+          markdown = markdown.replace(snippet, snippet.replace(/<br>/g, '\n'));
         }
         setTimeout(() => {
           Prism.highlightAll();
         }, 200);
-      }      
-      this.convertedMarkdown = this.domSanitizer.bypassSecurityTrustHtml(markdown);
+      }
+      this.convertedMarkdown =
+        this.domSanitizer.bypassSecurityTrustHtml(markdown);
       if (this.todoItem.subject.trim().length != 0) {
         this.convertedMarkdown = this.domSanitizer.bypassSecurityTrustHtml(
-          `<u class='text-3xl'>${this.todoItem.subject}</u><br>` +
-          markdown
+          `<u class='text-3xl'>${this.todoItem.subject}</u><br>` + markdown
         );
       }
     }
@@ -408,12 +404,12 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
     if (tags.length === 0) return;
     this.customFormSchema = this.todoItem.userDefined?.formControlSchema;
     let fields: FormField[] = [];
-    for(let i = 0; i<tags.length ; i++){
+    for (let i = 0; i < tags.length; i++) {
       let tagType = tags[i].substring(5);
-      if(inputTagTypes.includes(tagType)){
+      if (inputTagTypes.includes(tagType)) {
         fields.push({
-          name: tagType+'_'+ i+1,
-          label: tagType+'_'+ i+1,
+          name: tagType + '_' + i + 1,
+          label: tagType + '_' + i + 1,
           type: tagType as FormField['type'],
           placeholder: '',
           default: '',
@@ -421,7 +417,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
       }
     }
     this.appendCustomSchemaFields(fields);
-  } 
+  }
 
   loadCustomSchemaFromDb(tags: string[]) {
     tags = tags.filter((tag) => tag.startsWith('form-'));
@@ -452,16 +448,16 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
     );
   }
 
-  appendCustomSchemaFields(fields: FormField[]){
-    if(!fields || fields.length == 0) return;
-    
+  appendCustomSchemaFields(fields: FormField[]) {
+    if (!fields || fields.length == 0) return;
+
     if (this.customFormSchema && this.customFormSchema.fields) {
       this.customFormSchema = {
         fields: [...this.customFormSchema.fields, ...fields],
       };
     } else {
-      this.customFormSchema = {fields: fields};
-    } 
+      this.customFormSchema = { fields: fields };
+    }
   }
 
   onClickUserFormAdd(event: Event) {

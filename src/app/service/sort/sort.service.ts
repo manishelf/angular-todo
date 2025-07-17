@@ -16,8 +16,8 @@ export class SortService {
         case Number.prototype:
           return (x: number, y: number) => x - y;
         case String.prototype: 
-          let numCast = Number.parseInt(type) || Number.parseFloat(type);
-          if(numCast){
+          let numCast = Number.parseFloat(type);
+          if(!Number.isNaN(numCast)){
             return (x: number, y: number) => x - y; 
           }
           return (x: string, y: string) => x.length - y.length;
