@@ -398,7 +398,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
     tags.forEach((name) => {
       this.todoItem.tags.push({ name: name.trim() });
     });
-    this.loadCustomSchemaFromDb(tags.filter(tag=>!lastTags.includes(tag)));
+    this.loadCustomSchemaFromDb(tags);
     this.loadPrimitiveFields(tags);
     this.tagNameList = this.todoItem.tags.map((tag) => tag.name).join(',');
   }
