@@ -1,1 +1,18 @@
-<div></div>
+<div class="w-full p-3 overflow-auto">
+<table >
+  <thead>
+    <th *ngFor="let header of fields" class="text-blue-500 bg-gray-900 hover:text-white">
+        <button (click)="toggleSortIndividual($event, header)" class="cursor-pointer hover:text-white" title="click to sort">
+            {{ header }} 
+        </button>
+    </th>
+  </thead>
+  <tbody>
+    <tr *ngFor="let item of reducedItemFlat; let i = index" (click)="onItemIdClicked($event, i)" title="edit"  class="cursor-pointer hover:text-white transition-all">
+      <td *ngFor="let val of item[1]">
+        {{ val }}
+      </td>
+    </tr>
+  </tbody>
+</table>
+</div>

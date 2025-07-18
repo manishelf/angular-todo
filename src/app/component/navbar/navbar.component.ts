@@ -62,6 +62,8 @@ export class NavbarComponent implements AfterViewInit {
     let order = [];
 
     const populateFields = (x: string) => {
+      if(x.startsWith('!')) return; // incase a following tag is used
+
       let fields = x?.substring(0, x?.indexOf(';'))?.split(',');
       fields?.map((field) => field.trim()).filter((field) => field != '');
       order.push(...fields);

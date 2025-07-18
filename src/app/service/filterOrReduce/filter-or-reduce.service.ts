@@ -8,14 +8,18 @@ export class FilterOrReduceService {
 
   constructor() { }
 
-  getReducedItems(properties: string[], items: TodoItem[]): Map<number, any>{
-    let resultMap = new Map<number, string>();
+  getReducedItems(properties: string[], items: TodoItem[]): [number, any[]][]{
+    let resultMap:[number,any[]][] = [];
     for(let i =0; i<items.length; i++){
       let reducedObject:any = {};
       for(let prop of properties){
-        reducedObject[prop]= (items[i] as any)[prop] || undefined;
+        reducedObject[prop]= (items[i] as any)[prop];
+        if(reducedObject[prop] === undefined && items[i].userDefined?.data)
+          reducedObject[prop] = (items[i].userDefined?.data as any)[prop];
       }
-      resultMap.set(items[i].id, reducedObject);
+      let flatArr:any = [];
+      properties.forEach(field => flatArr.push(reducedObject[field]));
+      resultMap.push([items[i].id, flatArr]);
     }
     return resultMap;
   }

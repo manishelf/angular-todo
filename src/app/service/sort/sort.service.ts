@@ -42,6 +42,14 @@ export class SortService {
 
   sortItems(order: string[], items: TodoItem[]): Observable<TodoItem[]> {
     return new Observable<TodoItem[]>((subscriber) => {
+
+      if(!order || order.length == 0) {
+        items = items.sort(this.sortByReminderAndCompletionStatus);
+        subscriber.next(items);
+        subscriber.complete();
+        return;
+      }  
+      
       let sortingFn = (x: TodoItem, y: TodoItem): number => {
         return 1;
       };
@@ -50,18 +58,14 @@ export class SortService {
       let oldest = order[1] === 'oldest';
       if (oldest) {
         sortingFn = (x, y) => {
-          console.log(new Date(x.creationTimestamp).getTime(),new Date(x.creationTimestamp).getTime());
            return (
-            
             new Date(x.creationTimestamp).getTime() -
             new Date(y.creationTimestamp).getTime()
           ); // time since epoch
         };
       } else if (latest) {
         sortingFn = (x, y) => {
-          console.log(new Date(y.updationTimestamp).getTime(), new Date(y.updationTimestamp).getTime());
-          
-          return (
+            return (
             new Date(y.updationTimestamp).getTime() -
             new Date(x.updationTimestamp).getTime()
           );
@@ -89,7 +93,6 @@ export class SortService {
           }
           if(val1 && val2){
             let val =  prevSortingFn(x,y) * (ascending ? (1) : (-1)) * this.getComparatorForType(val1)(val1, val2);
-            console.log(prevSortingFn(x,y), ascending, this.getComparatorForType(val)(val1,val2));
             return val;
           }
           return 0;

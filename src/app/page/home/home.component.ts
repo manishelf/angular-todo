@@ -60,7 +60,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.todoService.initializeItems();
     this.queryParamsSubscription = this.route.queryParams.subscribe(
       (params: Params) => {
         let order = params['ord'] ? params['ord'] : [];
@@ -69,6 +68,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         let tags = params['tag'] ? params['tag'] : [];
         let searchTerms = params['has'] ? params['has'] : [];
         if (order.length != 0 || searchQuery !== '' || tags.length > 0 || searchTerms.length > 0) {
+          this.todoService.initializeItems();
           this.todoService
             .searchTodos(searchQuery, tags, searchTerms, exact)
             .subscribe(
@@ -115,117 +115,6 @@ export class HomeComponent implements OnInit, OnDestroy {
         });
       }
     });
-  }
-
-  private findNextItemInVerticalDirection(
-    targetItem: HTMLElement,
-    goingDown: boolean
-  ): HTMLElement | null {
-    const parent = targetItem.parentElement;
-    if (!parent) return null;
-
-    const allChildren = Array.from(parent.children) as HTMLElement[];
-    if (allChildren.length === 0) return null;
-
-    const targetRect = targetItem.getBoundingClientRect();
-    const parentRect = parent.getBoundingClientRect();
-
-    let candidates: HTMLElement[] = [];
-
-    if (goingDown) {
-      // Find elements that are below the current element
-      for (const child of allChildren) {
-        const childRect = child.getBoundingClientRect();
-        // Check if the child is below the current item's bottom edge
-        if (childRect.top > targetRect.bottom) {
-          candidates.push(child);
-        }
-      }
-      // Sort candidates by their top position (to process row by row)
-      candidates.sort(
-        (a, b) => a.getBoundingClientRect().top - b.getBoundingClientRect().top
-      );
-
-      // From the candidates in the next row(s), find the one horizontally closest
-      let nextRowCandidates: HTMLElement[] = [];
-      if (candidates.length > 0) {
-        const firstCandidateTop = candidates[0].getBoundingClientRect().top;
-        for (const candidate of candidates) {
-          if (candidate.getBoundingClientRect().top === firstCandidateTop) {
-            nextRowCandidates.push(candidate);
-          } else {
-            // We've moved to the next potential row
-            break;
-          }
-        }
-      }
-
-      if (nextRowCandidates.length > 0) {
-        // Find the closest horizontal match in the next row
-        let bestMatch: HTMLElement | null = null;
-        let minHorizontalDistance = Infinity;
-
-        for (const candidate of nextRowCandidates) {
-          const candidateRect = candidate.getBoundingClientRect();
-          // Calculate overlap or distance based on horizontal position
-          // A common strategy is to find the element whose center is closest to target's center
-          const targetCenterX = targetRect.left + targetRect.width / 2;
-          const candidateCenterX = candidateRect.left + candidateRect.width / 2;
-          const distance = Math.abs(targetCenterX - candidateCenterX);
-
-          if (distance < minHorizontalDistance) {
-            minHorizontalDistance = distance;
-            bestMatch = candidate;
-          }
-        }
-        return bestMatch;
-      }
-    } else {
-      // goingUp
-      // Find elements that are above the current element
-      for (const child of allChildren) {
-        const childRect = child.getBoundingClientRect();
-        if (childRect.bottom < targetRect.top) {
-          candidates.push(child);
-        }
-      }
-      // Sort candidates by their top position in descending order (to process row by row, backwards)
-      candidates.sort(
-        (a, b) => b.getBoundingClientRect().top - a.getBoundingClientRect().top
-      );
-
-      let previousRowCandidates: HTMLElement[] = [];
-      if (candidates.length > 0) {
-        const firstCandidateTop = candidates[0].getBoundingClientRect().top;
-        for (const candidate of candidates) {
-          if (candidate.getBoundingClientRect().top === firstCandidateTop) {
-            previousRowCandidates.push(candidate);
-          } else {
-            break;
-          }
-        }
-      }
-
-      if (previousRowCandidates.length > 0) {
-        let bestMatch: HTMLElement | null = null;
-        let minHorizontalDistance = Infinity;
-
-        for (const candidate of previousRowCandidates) {
-          const candidateRect = candidate.getBoundingClientRect();
-          const targetCenterX = targetRect.left + targetRect.width / 2;
-          const candidateCenterX = candidateRect.left + candidateRect.width / 2;
-          const distance = Math.abs(targetCenterX - candidateCenterX);
-
-          if (distance < minHorizontalDistance) {
-            minHorizontalDistance = distance;
-            bestMatch = candidate;
-          }
-        }
-        return bestMatch;
-      }
-    }
-
-    return null; // No suitable element found
   }
 
   // my impl unreliable and maybe incorrect.
@@ -277,9 +166,11 @@ export class HomeComponent implements OnInit, OnDestroy {
         (nextLeft >= targetLeft * 0.9 || nextRight >= targetRight * 0.9)
       )
         break;
+      
+      // where does this 100 come from? :' and why is it needed for this to work correctly? magic number?
       if (
         !down &&
-        width <= parentLeft + 100 &&
+        width <= parentLeft + 100 &&      
         (nextLeft <= targetLeft * 1.1 || nextRight <= targetRight * 1.1)
       )
         break;
