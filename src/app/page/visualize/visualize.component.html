@@ -1,22 +1,50 @@
 <div class="w-full h-full p-3 overflow-auto">
-<table class="mb-3">
-  <thead>
-    <th class="border-none"></th>
-    <th *ngFor="let header of fields" class="text-blue-500 bg-gray-900 hover:text-white">
-        <button (click)="toggleSortIndividual($event, header)" class="cursor-pointer hover:text-white" title="click to sort">
-            {{ header }} 
+  <div class="w-full flex md:justify-end sm:justify-evenly my-2">
+    <div
+      *ngFor="let chart of chartTypes"
+      [title]="chart"
+      class="bg-gray-900 text-white p-3 mx-3 rounded-2xl hover:scale-110 hover:text-blue-300 cursor-pointer transition-all flex justify-center content-center"
+      (click)="selectedChart = chart"
+      >
+      <mat-icon>{{ chart }}</mat-icon>
+    </div>
+  </div>
+
+  <table class="mb-3" *ngIf="selectedChart === 'table_chart'">
+    <thead>
+      <th class="border-none"></th>
+      <th
+        *ngFor="let header of fields"
+        class="text-blue-500 bg-gray-900 hover:text-white"
+      >
+        <button
+          (click)="toggleSortIndividual($event, header)"
+          class="cursor-pointer hover:text-white"
+          title="click to sort"
+        >
+          {{ header }}
         </button>
-    </th>
-  </thead>
-  <tbody>
-    <tr *ngFor="let item of reducedItemFlat; let i = index" title="edit"  class="hover:text-white">
-      <td class="w-4">
-        <button class="cursor-pointer hover:text-green-500 hover:scale-110" title="go to" (click)="onItemGoToClicked($event, item[0])"><mat-icon>navigate_next</mat-icon></button>
-      </td>
-      <td *ngFor="let val of item[1]">
-        {{ val }}
-      </td>
-    </tr>
-  </tbody>
-</table>
+      </th>
+    </thead>
+    <tbody>
+      <tr
+        *ngFor="let item of reducedItemsFlat; let i = index"
+        title="edit"
+        class="hover:text-white"
+      >
+        <td
+          class="w-4 cursor-pointer hover:text-green-500 hover:bg-gray-600 transition-all"
+          (click)="onItemGoToClicked($event, item[0])"
+          title="go to"
+        >
+          <mat-icon>navigate_next</mat-icon>
+        </td>
+        <td *ngFor="let val of item[1]">
+          {{ val }}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  
 </div>

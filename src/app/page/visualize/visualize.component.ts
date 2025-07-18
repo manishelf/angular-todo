@@ -16,7 +16,7 @@ import { MatIcon } from '@angular/material/icon';
 })
 export class VisualizeComponent implements OnInit {
   itemList: TodoItem[] = [];
-  reducedItemFlat: [number, any][] = [];
+  reducedItemsFlat: [number, any][] = [];
   fields: string[] = [
     'id',
     'subject',
@@ -24,6 +24,16 @@ export class VisualizeComponent implements OnInit {
     'setForReminder',
     'creationTimestamp',
     'updationTimestamp',
+  ];
+
+  selectedChart: string = 'table_chart';
+
+  chartTypes = [
+    'table_chart',
+    'functions',
+    'pie_chart',
+    'show_chart',
+    'bar_chart',
   ];
 
   sortedFields$ = new BehaviorSubject<string[]>([]);
@@ -103,7 +113,7 @@ export class VisualizeComponent implements OnInit {
   }
   populateItems(items: TodoItem[]) {
     this.itemList = items;
-    this.reducedItemFlat = this.filterOrReduceService.getReducedItems(
+    this.reducedItemsFlat = this.filterOrReduceService.getReducedItems(
       this.fields,
       items
     );

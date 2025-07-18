@@ -114,8 +114,7 @@ export class NavbarComponent implements AfterViewInit {
       tagList = input[1].split(',');
       tagList = tagList.map((tag) => tag.trim());
     }
-
-    this.router.navigate([], {
+    let extras = {
       queryParams: {
         ord: order,
         abs: exact,
@@ -123,7 +122,8 @@ export class NavbarComponent implements AfterViewInit {
         tag: tagList,
         has: searchTerms,
       },
-    });
+    };
+    this.router.navigate([], extras);
   }
 
   syncNotes(): void {
