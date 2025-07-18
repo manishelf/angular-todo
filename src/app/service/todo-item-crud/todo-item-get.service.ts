@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, from, BehaviorSubject, throwError, switchMap, tap, mergeMap, toArray, max } from 'rxjs';
+import { Observable, from, BehaviorSubject, throwError, switchMap, tap, mergeMap, toArray, max, take } from 'rxjs';
 import { TodoItem } from '../../models/todo-item';
 import { TodoItemUtils } from './todo-item-utils';
 import { Tag } from '../../models/tag';
@@ -169,9 +169,20 @@ export class TodoItemGetService {
     searchTerms: string[],
     fromBin: boolean,
     exact: boolean = true,
+    limit: number | null = null,
   ): Observable<TodoItem[]> {
+    
+    limit = limit?limit:Number.MAX_SAFE_INTEGER;
+
     if ((subjectQuery === '!ALL:' || subjectQuery === '') && tagsFilter.length === 0 && searchTerms.length === 0) {
-      return this.getAllItems(db$, fromBin);
+      console.log(limit, limit?limit:Number.MAX_SAFE_INTEGER);
+      
+      return this.getAllItems(db$,fromBin).pipe(
+        take(1),
+        mergeMap(items=> from(items)),
+        take(limit),
+        toArray(),
+      );
     }
 
     return new Observable<TodoItem[]>((observer) => {
@@ -253,6 +264,11 @@ export class TodoItemGetService {
           observer.complete();
         }
        });
-    });
+    }).pipe(
+        take(1),
+        mergeMap(items=> from(items)),
+        take(limit),
+        toArray(),
+    );
   }
 }

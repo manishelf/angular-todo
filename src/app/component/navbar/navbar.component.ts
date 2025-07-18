@@ -59,6 +59,7 @@ export class NavbarComponent implements AfterViewInit {
     let tagList: string[] = [];
     let input = [''];
     let exact = false;
+    let lim: number | null = null;
     let order = [];
 
     const populateFields = (x: string) => {
@@ -69,6 +70,13 @@ export class NavbarComponent implements AfterViewInit {
       order.push(...fields);
       searchQuery = input[1].substring(input[1]?.indexOf(';') + 1);
     };
+
+    input = searchQuery.split('!LIM:');
+    if(input.length == 2){
+      let l = input[1].substring(0,input[1].indexOf(';'));
+      lim = Number.parseInt(l);
+      searchQuery = input[1].substring(input[1].indexOf(';')+1);
+    }
 
     input = searchQuery.split('!ASC:');
     if (input.length == 2) {
@@ -116,6 +124,7 @@ export class NavbarComponent implements AfterViewInit {
     }
     let extras = {
       queryParams: {
+        lim:lim,
         ord: order,
         abs: exact,
         q: searchQuery.trim(),

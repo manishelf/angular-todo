@@ -118,7 +118,8 @@ export class TodoServiceService {
     subjectQuery: string,
     tagFilter: string[] = [],
     searchTerms: string[] = [],
-    exact = false
+    exact = false,
+    limit = null,
   ): Observable<TodoItem[]> {
     return this.getService.searchTodos(
       this.db$,
@@ -126,7 +127,8 @@ export class TodoServiceService {
       tagFilter,
       searchTerms,
       this.fromBin,
-      exact
+      exact,
+      limit
     );
   }
   sortTodoItems(order: string[], items: TodoItem[]): Observable<TodoItem[]> {
