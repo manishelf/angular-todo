@@ -408,8 +408,8 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
       let tagType = tags[i].substring(5);
       if (inputTagTypes.includes(tagType)) {
         fields.push({
-          name: tagType + '_' + i + 1,
-          label: tagType + '_' + i + 1,
+          name: tagType + '_' + i ,
+          label: tagType + '_' + i ,
           type: tagType as FormField['type'],
           placeholder: '',
           default: '',

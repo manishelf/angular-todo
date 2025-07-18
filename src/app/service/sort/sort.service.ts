@@ -15,12 +15,12 @@ export class SortService {
       switch (Object.getPrototypeOf(type)) {
         case Number.prototype:
           return (x: number, y: number) => x - y;
-        case String.prototype: 
+        case String.prototype:
           let numCast = Number.parseFloat(type);
-          if(!Number.isNaN(numCast)){
-            return (x: number, y: number) => x - y; 
+          if (!Number.isNaN(numCast)) {
+            return (x: number, y: number) => x - y;
           }
-          return (x: string, y: string) => x.length - y.length;
+          return (x: string, y: string) => x === y ? 0 : x < y ? -1 : 1;
         case Boolean.prototype:
           return (x: boolean, y: boolean) => (x == y ? 0 : x ? 1 : 0);
         case Date.prototype:
@@ -43,13 +43,13 @@ export class SortService {
   sortItems(order: string[], items: TodoItem[]): Observable<TodoItem[]> {
     return new Observable<TodoItem[]>((subscriber) => {
 
-      if(!order || order.length == 0) {
+      if (!order || order.length == 0) {
         items = items.sort(this.sortByReminderAndCompletionStatus);
         subscriber.next(items);
         subscriber.complete();
         return;
-      }  
-      
+      }
+
       let sortingFn = (x: TodoItem, y: TodoItem): number => {
         return 1;
       };
@@ -58,28 +58,30 @@ export class SortService {
       let oldest = order[1] === 'oldest';
       if (oldest) {
         sortingFn = (x, y) => {
-           return (
+          return (
             new Date(x.creationTimestamp).getTime() -
             new Date(y.creationTimestamp).getTime()
           ); // time since epoch
         };
       } else if (latest) {
         sortingFn = (x, y) => {
-            return (
+          return (
             new Date(y.updationTimestamp).getTime() -
             new Date(x.updationTimestamp).getTime()
           );
         };
       }
-      
 
-      subscriber.next(items.sort(sortingFn));
-      subscriber.complete();
-      
       let ascending = order[0] !== 'desc';
 
       for (let prop of order) {
-        if (prop === 'oldest' || prop === 'latest' || prop === 'asc' || prop === 'desc' || !prop) {
+        if (
+          prop === 'oldest' ||
+          prop === 'latest' ||
+          prop === 'asc' ||
+          prop === 'desc' ||
+          !prop
+        ) {
           continue;
         }
         let prevSortingFn = sortingFn; // latest or oldest or standard
@@ -91,16 +93,13 @@ export class SortService {
             val1 = (x.userDefined?.data as any)[prop];
             val2 = (y.userDefined?.data as any)[prop];
           }
-          if(val1 && val2){
-            let val =  prevSortingFn(x,y) * (ascending ? (1) : (-1)) * this.getComparatorForType(val1)(val1, val2);
-            return val;
+          if (val1 && val2) {
+            let prevComp = prevSortingFn(x, y) * (ascending ? 1 : -1);
+            let fieldComp = this.getComparatorForType(val1)(val1, val2);
+            return prevComp * fieldComp ? fieldComp : 1;
           }
           return 0;
         };
-      }
-      
-      if (order.length < 2){
-        sortingFn = this.sortByReminderAndCompletionStatus;
       }
 
       subscriber.next(items.sort(sortingFn));

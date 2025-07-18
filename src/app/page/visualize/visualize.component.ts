@@ -6,10 +6,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TodoItem } from '../../models/todo-item';
 import { CommonModule } from '@angular/common';
 import { BehaviorSubject } from 'rxjs';
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
   selector: 'app-visualize',
-  imports: [CommonModule],
+  imports: [CommonModule, MatIcon],
   templateUrl: './visualize.component.html',
   styleUrl: './visualize.component.css',
 })
@@ -23,7 +24,6 @@ export class VisualizeComponent implements OnInit {
     'setForReminder',
     'creationTimestamp',
     'updationTimestamp',
-    'description',
   ];
 
   sortedFields$ = new BehaviorSubject<string[]>([]);
@@ -35,10 +35,13 @@ export class VisualizeComponent implements OnInit {
     private router: Router,
     private activatedRoute: ActivatedRoute
   ) {
-    this.sortedFields$.subscribe(sortOnfields=>{
-      this.sortService.sortItems(sortOnfields, this.itemList).subscribe((items) => {
-        this.populateItems(items);
-      });
+    this.sortedFields$.subscribe((sortOnfields) => {
+      this.sortService
+        .sortItems(sortOnfields, this.itemList)
+        .subscribe((items) => {
+          this.itemList = items;
+          this.populateItems(items);
+        });
     });
   }
 
@@ -53,7 +56,7 @@ export class VisualizeComponent implements OnInit {
       if (order[1] === 'latest' || order[1] === 'oldest') {
         this.fields = ['id'];
         this.fields.push(...order.splice(2));
-      } else if(order.length>1) {
+      } else if (order.length > 1) {
         this.fields = ['id'];
         this.fields.push(...order.splice(1));
       }
@@ -71,6 +74,7 @@ export class VisualizeComponent implements OnInit {
               this.todoService
                 .sortTodoItems(order, itemList)
                 .subscribe((items) => {
+                  this.itemList = items;
                   this.populateItems(items);
                 });
             },
@@ -86,6 +90,7 @@ export class VisualizeComponent implements OnInit {
             this.todoService
               .sortTodoItems(order, itemList)
               .subscribe((items) => {
+                this.itemList = items;
                 this.populateItems(items);
               });
           },
@@ -94,8 +99,7 @@ export class VisualizeComponent implements OnInit {
           }
         );
       }
-    }
-  );
+    });
   }
   populateItems(items: TodoItem[]) {
     this.itemList = items;
@@ -105,18 +109,18 @@ export class VisualizeComponent implements OnInit {
     );
   }
   toggleSortIndividual(event: Event, field: string) {
-    this.sortedFields$.next([...this.sortedFields$.value, field]);
+    let sortFields = this.sortedFields$.value;
+    let set = new Set(sortFields);
+    set.add(field);
+    this.sortedFields$.next(Array.from(set));
   }
 
-  onItemIdClicked(event: Event, index: number) {
-    this.todoService.getItemById(index).subscribe((item) => {
-      this.activatedRoute.queryParams.subscribe((params) => {
-this.todoSercice.getItemById(index).subscribe(item=>{
-this.router.navigate(['/edit'], {
+  onItemGoToClicked(event: Event, index: number) {
+    this.activatedRoute.queryParams.subscribe((params) => {
+      this.todoService.getItemById(index).subscribe((item) => {
+        this.router.navigate(['/edit'], {
           state: { item, query: params },
         });
-});
-        
       });
     });
   }

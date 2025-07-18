@@ -1,6 +1,7 @@
 <div class="w-full h-full p-3 overflow-auto">
 <table class="mb-3">
   <thead>
+    <th class="border-none"></th>
     <th *ngFor="let header of fields" class="text-blue-500 bg-gray-900 hover:text-white">
         <button (click)="toggleSortIndividual($event, header)" class="cursor-pointer hover:text-white" title="click to sort">
             {{ header }} 
@@ -8,7 +9,10 @@
     </th>
   </thead>
   <tbody>
-    <tr *ngFor="let item of reducedItemFlat; let i = index" (click)="onItemIdClicked($event, item[0])" title="edit"  class="cursor-pointer hover:text-white transition-all">
+    <tr *ngFor="let item of reducedItemFlat; let i = index" title="edit"  class="hover:text-white">
+      <td class="w-4">
+        <button class="cursor-pointer hover:text-green-500 hover:scale-110" title="go to" (click)="onItemGoToClicked($event, item[0])"><mat-icon>navigate_next</mat-icon></button>
+      </td>
       <td *ngFor="let val of item[1]">
         {{ val }}
       </td>
