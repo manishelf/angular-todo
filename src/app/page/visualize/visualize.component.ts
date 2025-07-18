@@ -36,12 +36,6 @@ export class VisualizeComponent implements OnInit {
     private activatedRoute: ActivatedRoute
   ) {
     this.sortedFields$.subscribe(sortOnfields=>{
-      this.fields.map((field)=>{
-        if(sortOnfields.includes(field)){
-          return field+'(sorted)';
-        }
-        return field;
-      });
       this.sortService.sortItems(sortOnfields, this.itemList).subscribe((items) => {
         this.populateItems(items);
       });
