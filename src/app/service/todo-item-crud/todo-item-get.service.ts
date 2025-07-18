@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, from, BehaviorSubject, throwError, switchMap, tap, mergeMap, toArray, max, take } from 'rxjs';
+import { Observable, from, BehaviorSubject, throwError, switchMap, tap, mergeMap, toArray, max, take, of } from 'rxjs';
 import { TodoItem } from '../../models/todo-item';
 import { TodoItemUtils } from './todo-item-utils';
 import { Tag } from '../../models/tag';
@@ -178,10 +178,7 @@ export class TodoItemGetService {
       console.log(limit, limit?limit:Number.MAX_SAFE_INTEGER);
       
       return this.getAllItems(db$,fromBin).pipe(
-        take(1),
-        mergeMap(items=> from(items)),
-        take(limit),
-        toArray(),
+        mergeMap(items=> of(items.slice(0,limit))),
       );
     }
 
@@ -265,10 +262,7 @@ export class TodoItemGetService {
         }
        });
     }).pipe(
-        take(1),
-        mergeMap(items=> from(items)),
-        take(limit),
-        toArray(),
+        mergeMap(items=>of(items.slice(0,limit)))
     );
   }
 }
