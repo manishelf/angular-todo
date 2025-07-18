@@ -111,9 +111,12 @@ export class VisualizeComponent implements OnInit {
   onItemIdClicked(event: Event, index: number) {
     this.todoService.getItemById(index).subscribe((item) => {
       this.activatedRoute.queryParams.subscribe((params) => {
-        this.router.navigate(['/edit'], {
-          state: { item: this.itemList[index], query: params },
+this.todoSercice.getItemById(index).subscribe(item=>{
+this.router.navigate(['/edit'], {
+          state: { item, query: params },
         });
+});
+        
       });
     });
   }
