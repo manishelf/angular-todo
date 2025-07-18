@@ -8,7 +8,7 @@
     </th>
   </thead>
   <tbody>
-    <tr *ngFor="let item of reducedItemFlat; let i = index" (click)="onItemIdClicked($event, i)" title="edit"  class="cursor-pointer hover:text-white transition-all">
+    <tr *ngFor="let item of reducedItemFlat; let i = index" (click)="onItemIdClicked($event, item[0])" title="edit"  class="cursor-pointer hover:text-white transition-all">
       <td *ngFor="let val of item[1]">
         {{ val }}
       </td>
