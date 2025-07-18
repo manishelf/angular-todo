@@ -62,6 +62,7 @@ export class VisualizeComponent implements OnInit {
       let searchQuery = params['q'] ? params['q'] : '';
       let tags = params['tag'] ? params['tag'] : [];
       let searchTerms = params['has'] ? params['has'] : [];
+      let limit = params['lim']?params['lim']:null;
 
       if (order[1] === 'latest' || order[1] === 'oldest') {
         this.fields = ['id'];
@@ -78,7 +79,7 @@ export class VisualizeComponent implements OnInit {
       ) {
         this.todoService.initializeItems();
         this.todoService
-          .searchTodos(searchQuery, tags, searchTerms, exact)
+          .searchTodos(searchQuery, tags, searchTerms, exact,limit)
           .subscribe(
             (itemList) => {
               this.todoService
