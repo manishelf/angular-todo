@@ -5,7 +5,7 @@
         <div class="mb-8">
             <span class="block text-center text-4xl font-semibold text-emerald-600">
                 <ul class="text-lg text-left mt-6 p-6 rounded-4xl shadow-md w-fit mx-auto">
-                    <div class="text-center text-xl font-semibold mb-4">Features of this app V1 <a routerLink="/demo" routerLinkActive="active" ariaCurrentWhenActive="page" title="demo">download demo todo items to play arround</a></div>
+                    <div class="text-center text-xl font-semibold mb-4">Features of this app V1 <a href="/demo" title="demo">download demo todo items to play arround</a></div>
                     <li><h3 class="inline">A Fully Offline Progressive Web App</h3></li>
                     <li><span>Frontend:</span> Angular</li>
                     <li><span>Database:</span> Uses IndexedDB API for all storage needs. Fast in browser persistant db suported by all major browsers</li>
