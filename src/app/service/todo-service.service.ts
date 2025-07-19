@@ -119,7 +119,6 @@ export class TodoServiceService {
     tagFilter: string[] = [],
     searchTerms: string[] = [],
     exact = false,
-    limit = null,
   ): Observable<TodoItem[]> {
     return this.getService.searchTodos(
       this.db$,
@@ -128,11 +127,10 @@ export class TodoServiceService {
       searchTerms,
       this.fromBin,
       exact,
-      limit
     );
   }
-  sortTodoItems(order: string[], items: TodoItem[]): Observable<TodoItem[]> {
-    return this.sortService.sortItems(order, items);
+  sortTodoItems(order: string[], items: TodoItem[], limit = null): Observable<TodoItem[]> {
+    return this.sortService.sortItems(order, items, limit);
   }
 
   addItem(item: Omit<TodoItem, 'id'>) {

@@ -72,11 +72,11 @@ export class HomeComponent implements OnInit, OnDestroy {
         if (limit || order.length != 0 || searchQuery !== '' || tags.length > 0 || searchTerms.length > 0) {
           this.todoService.initializeItems();
           this.todoService
-            .searchTodos(searchQuery, tags, searchTerms, exact, limit)
+            .searchTodos(searchQuery, tags, searchTerms, exact)
             .subscribe(
               (itemList) => {
                 this.fromSearch = true;
-                this.todoService.sortTodoItems(order, itemList).subscribe(items=>this.itemList = items);
+                this.todoService.sortTodoItems(order, itemList, limit).subscribe(items=>this.itemList = items);
               },
               (error) => {
                 console.error('error fetching tasks ', error);

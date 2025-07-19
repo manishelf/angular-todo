@@ -255,3 +255,13 @@ body {
   background-color: rgb(59, 64, 87);
 }
 
+/*chartjs*/
+.canvasjs-chart-canvas{
+    border: 1px dotted white !important;
+    border-radius: 10px !important;
+    padding: 5px;
+}
+.canvasjs-chart-toolbar{
+  top:5px !important;
+  right:5px !important;
+}

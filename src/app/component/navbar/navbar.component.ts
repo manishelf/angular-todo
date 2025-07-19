@@ -64,8 +64,8 @@ export class NavbarComponent implements AfterViewInit {
 
     const populateFields = (x: string) => {
       if(x.startsWith('!')) return; // incase a following tag is used
-
-      let fields = x?.substring(0, x?.indexOf(';'))?.split(',');
+      
+      let fields = x?.substring(0, x?.indexOf(';'))?.split(',').map(f=>f.trim());
       fields?.map((field) => field.trim()).filter((field) => field != '');
       order.push(...fields);
       searchQuery = input[1].substring(input[1]?.indexOf(';') + 1);

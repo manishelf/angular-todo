@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { TodoItem } from '../../models/todo-item';
-import { from, Observable, scheduled } from 'rxjs';
+import { from, mergeMap, Observable, of, scheduled } from 'rxjs';
 import { TodoItemUtils } from '../todo-item-crud/todo-item-utils';
 
 @Injectable({
@@ -22,7 +22,7 @@ export class SortService {
           }
           return (x: string, y: string) => x === y ? 0 : x < y ? -1 : 1;
         case Boolean.prototype:
-          return (x: boolean, y: boolean) => (x == y ? 0 : x ? 1 : 0);
+          return (x: boolean, y: boolean) => (x == y ? 0 : x ? 1 : -1);
         case Date.prototype:
           return (x: Date, y: Date) => x.getTime() - y.getTime();
         case Object.prototype:
@@ -35,12 +35,22 @@ export class SortService {
   }
 
   sortByReminderAndCompletionStatus(x: TodoItem, y: TodoItem): number {
-    if (x.setForReminder || y.completionStatus) return -1;
-    if (y.setForReminder || x.completionStatus) return 1;
+    //if (x.setForReminder || y.completionStatus) return -1;
+    //if (y.setForReminder || x.completionStatus) return 1;
+    
+    // Prioritize incomplete items over completed ones
+    if (!x.completionStatus && y.completionStatus) return -1;
+    if (x.completionStatus && !y.completionStatus) return 1;
+
+    // If completion status is the same, prioritize items with reminders
+    if (x.setForReminder && !y.setForReminder) return -1;
+    if (!x.setForReminder && y.setForReminder) return 1;
+
     return 0;
   }
+  sortItems(order: string[], items: TodoItem[], limit:number | null | undefined = Number.MAX_SAFE_INTEGER): Observable<TodoItem[]> {  
+    limit = limit?limit:Number.MAX_SAFE_INTEGER;
 
-  sortItems(order: string[], items: TodoItem[]): Observable<TodoItem[]> {
     return new Observable<TodoItem[]>((subscriber) => {
 
       if (!order || order.length == 0) {
@@ -53,6 +63,13 @@ export class SortService {
       let sortingFn = (x: TodoItem, y: TodoItem): number => {
         return 1;
       };
+
+
+      let ascending = order[0] !== 'desc';
+      
+      if(order.length==1){
+        sortingFn = this.sortByReminderAndCompletionStatus;          
+      }
 
       let latest = order[1] === 'latest';
       let oldest = order[1] === 'oldest';
@@ -72,7 +89,6 @@ export class SortService {
         };
       }
 
-      let ascending = order[0] !== 'desc';
 
       for (let prop of order) {
         if (
@@ -89,21 +105,25 @@ export class SortService {
         sortingFn = (x, y) => {
           let val1 = (x as any)[prop];
           let val2 = (y as any)[prop];
-          if (!(val1 && val2) && x.userDefined?.data) {
+          
+          if (!(val1 && val2) && x.userDefined?.data && y.userDefined?.data) {
             val1 = (x.userDefined?.data as any)[prop];
             val2 = (y.userDefined?.data as any)[prop];
           }
           if (val1 && val2) {
             let prevComp = prevSortingFn(x, y) * (ascending ? 1 : -1);
+            
             let fieldComp = this.getComparatorForType(val1)(val1, val2);
-            return prevComp * fieldComp ? fieldComp : 1;
+            return prevComp * fieldComp ? prevComp*fieldComp : 1;
           }
           return 0;
         };
       }
-
+      
       subscriber.next(items.sort(sortingFn));
       subscriber.complete();
-    });
+    }).pipe(
+       mergeMap(items=> of(items.slice(0,limit)))
+    );
   }
 }

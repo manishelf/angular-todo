@@ -169,17 +169,10 @@ export class TodoItemGetService {
     searchTerms: string[],
     fromBin: boolean,
     exact: boolean = true,
-    limit: number | null = null,
   ): Observable<TodoItem[]> {
-    
-    limit = limit?limit:Number.MAX_SAFE_INTEGER;
 
     if ((subjectQuery === '!ALL:' || subjectQuery === '') && tagsFilter.length === 0 && searchTerms.length === 0) {
-      console.log(limit, limit?limit:Number.MAX_SAFE_INTEGER);
-      
-      return this.getAllItems(db$,fromBin).pipe(
-        mergeMap(items=> of(items.slice(0,limit))),
-      );
+      return this.getAllItems(db$,fromBin)
     }
 
     return new Observable<TodoItem[]>((observer) => {
@@ -261,8 +254,6 @@ export class TodoItemGetService {
           observer.complete();
         }
        });
-    }).pipe(
-        mergeMap(items=>of(items.slice(0,limit)))
-    );
+    })
   }
 }
