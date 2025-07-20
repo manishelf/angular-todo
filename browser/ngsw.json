@@ -1,0 +1,95 @@
+{
+  "configVersion": 1,
+  "timestamp": 1752982054207,
+  "index": "/angular-todo/index.html",
+  "assetGroups": [
+    {
+      "name": "app",
+      "installMode": "prefetch",
+      "updateMode": "prefetch",
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "urls": [
+        "/angular-todo/canvasjs.min.js",
+        "/angular-todo/favicon.ico",
+        "/angular-todo/index.html",
+        "/angular-todo/main-ST3EV4MA.js",
+        "/angular-todo/manifest.webmanifest",
+        "/angular-todo/polyfills-HGDOEU5L.js",
+        "/angular-todo/styles-72TPXPPR.css"
+      ],
+      "patterns": []
+    },
+    {
+      "name": "assets",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "urls": [
+        "/angular-todo/android-chrome-192x192.png",
+        "/angular-todo/android-chrome-512x512.png",
+        "/angular-todo/apple-touch-icon.png",
+        "/angular-todo/favicon-16x16.png",
+        "/angular-todo/favicon-32x32.png",
+        "/angular-todo/media/material-icons-JLIDJUWE.woff",
+        "/angular-todo/media/material-icons-LEZCGFVT.woff2",
+        "/angular-todo/media/material-icons-outlined-7BWLPMFK.woff2",
+        "/angular-todo/media/material-icons-outlined-PCUTWIDZ.woff",
+        "/angular-todo/media/material-icons-round-SLOHZIXU.woff",
+        "/angular-todo/media/material-icons-round-WEHMTW23.woff2",
+        "/angular-todo/media/material-icons-sharp-HCCYMPXE.woff2",
+        "/angular-todo/media/material-icons-sharp-U4OLFP3G.woff",
+        "/angular-todo/media/material-icons-two-tone-LCGWGE2N.woff",
+        "/angular-todo/media/material-icons-two-tone-M5N5K6F5.woff2"
+      ],
+      "patterns": []
+    }
+  ],
+  "dataGroups": [],
+  "hashTable": {
+    "/angular-todo/android-chrome-192x192.png": "04258ee7dbf7e8995d7b44db399fc3f0038b085d",
+    "/angular-todo/android-chrome-512x512.png": "1eb0904572e45d5ad3433c04b64d7d0bfe56f08c",
+    "/angular-todo/apple-touch-icon.png": "a11e41687f8505503f1dd08806e3fbcb3f46a289",
+    "/angular-todo/canvasjs.min.js": "2061e7e672beb28deb5b2de6586e343b1a689026",
+    "/angular-todo/favicon-16x16.png": "3d27328e1e19c342e5832b4c6741e7ed4106f158",
+    "/angular-todo/favicon-32x32.png": "3dd2eca0b23ee80f6c3ff206cc6aae62eaf41afc",
+    "/angular-todo/favicon.ico": "3df5bd793e7e65a484d314e0a8ef8ed0e8f43c17",
+    "/angular-todo/index.html": "c8a8683ff0122a6a4b5458734029f38bb6743e75",
+    "/angular-todo/main-ST3EV4MA.js": "99c83490de2d897dc51eb3964b99a9c2eff4064b",
+    "/angular-todo/manifest.webmanifest": "bf31baf91bdd2fcde24a45e3f2a1be33733c6f69",
+    "/angular-todo/media/material-icons-JLIDJUWE.woff": "e4bb7c1e40d3febee58df963db276b2bf68c117b",
+    "/angular-todo/media/material-icons-LEZCGFVT.woff2": "0bc0c675480d94ec7e8609dda6227f88c5d08d2c",
+    "/angular-todo/media/material-icons-outlined-7BWLPMFK.woff2": "2f9e28ab559782402f27332633c843c40209d95a",
+    "/angular-todo/media/material-icons-outlined-PCUTWIDZ.woff": "b52ccd8fca4199d257b2a9fe377db29862f2853e",
+    "/angular-todo/media/material-icons-round-SLOHZIXU.woff": "c41bfee3f01218e18d53f4f4cac00f385ac9fbb1",
+    "/angular-todo/media/material-icons-round-WEHMTW23.woff2": "abe05e0641f1050fbe00ef0dbb10c5ea72c26cff",
+    "/angular-todo/media/material-icons-sharp-HCCYMPXE.woff2": "cf1c7b4d066d18af44cf7bc664dd2e46652a3a30",
+    "/angular-todo/media/material-icons-sharp-U4OLFP3G.woff": "829cb48cb2dd17ae5e425b82dc186eb670694a10",
+    "/angular-todo/media/material-icons-two-tone-LCGWGE2N.woff": "02225d888afe4eebc7312b7432878dc8aef1f50f",
+    "/angular-todo/media/material-icons-two-tone-M5N5K6F5.woff2": "296ff0bff395a77c2e33e7e31fffe73980bd93cf",
+    "/angular-todo/polyfills-HGDOEU5L.js": "bf76ac291d7f51c1139b7edcf86b359a30c08c64",
+    "/angular-todo/styles-72TPXPPR.css": "699172afd77157223eab5e7f3fe4df9e2ea9a5f6"
+  },
+  "navigationUrls": [
+    {
+      "positive": true,
+      "regex": "^\\/.*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*\\.[^/]*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*__[^/]*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*__[^/]*\\/.*$"
+    }
+  ],
+  "navigationRequestStrategy": "performance"
+}
