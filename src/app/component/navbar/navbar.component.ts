@@ -11,6 +11,7 @@ import { CommonModule } from '@angular/common';
 import { ToastService } from 'angular-toastify';
 import { TodoServiceService } from '../../service/todo-service.service';
 import { filter } from 'rxjs';
+import { TodoItem } from '../../models/todo-item';
 
 @Component({
   selector: 'app-navbar',
@@ -22,6 +23,8 @@ export class NavbarComponent implements AfterViewInit {
   accessToken: string | null = null;
   @ViewChild('searchBox') searchBox!: ElementRef;
 
+  lastQueryParams: any = null;
+
   constructor(
     private router: Router,
     private toaster: ToastService,
@@ -29,6 +32,15 @@ export class NavbarComponent implements AfterViewInit {
   ) {
     if (window.innerWidth > 400) {
       // to avoid keyboards from poping upp on phones constantly
+      let l = localStorage['lastQueryParams'];
+      if(l){
+        this.lastQueryParams = JSON.parse(l);
+        console.log(this.lastQueryParams);
+        if(this.lastQueryParams){
+          this.router.navigate([], this.lastQueryParams);
+        }
+      }
+
       this.router.events
         .pipe(filter((e) => e instanceof NavigationEnd))
         .subscribe((event) => {
@@ -132,14 +144,31 @@ export class NavbarComponent implements AfterViewInit {
         has: searchTerms,
       },
     };
+    this.lastQueryParams = extras;
+    localStorage['lastQueryParams'] = JSON.stringify(this.lastQueryParams);
     this.router.navigate([], extras);
   }
 
   syncNotes(): void {
     this.toaster.info('Downloading notes...');
     this.todoService.fromBin = false;
+    
+    let {lim , ord, abs, q, tags, has} = this.lastQueryParams?.queryParams;
+    
+    if(this.lastQueryParams){
+      this.todoService.searchTodos(q,tags,has,abs)
+        .subscribe((itemList)=>{
+          this.save(itemList);
+        });
+    }else{
     this.todoService.getAll().subscribe((itemList) => {
-      this.todoService.serializeManyToJson(itemList).subscribe((json) => {
+      this.save(itemList);
+    });
+   }
+  }
+
+  save(list: TodoItem[]){
+    this.todoService.serializeManyToJson(list).subscribe((json) => {
         let blob = new Blob([json], { type: 'application/json' });
         let url = URL.createObjectURL(blob);
         let a = document.createElement('a');
@@ -148,8 +177,8 @@ export class NavbarComponent implements AfterViewInit {
         a.click();
         URL.revokeObjectURL(url);
       });
-    });
   }
+
   uploadNotes(): void {
     this.todoService.fromBin = false;
     let inp = document.createElement('input');
