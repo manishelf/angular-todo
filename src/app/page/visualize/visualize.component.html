@@ -1,10 +1,10 @@
 <div class="w-full h-full p-3 overflow-auto">
   <div class="w-full flex md:justify-end sm:justify-evenly my-2">
-    <div (click)="showFunctions = true"  class="relative bg-gray-900 text-white p-3 mx-3 rounded-2xl hover:scale-110 hover:text-blue-300 cursor-pointer transition-all flex justify-center content-center">
-      <mat-icon>functions</mat-icon>
-      <select *ngIf="showFunctions" style="background-color:#15162c;">
-        <option *ngFor="let op of dataOperations" (click)="selectedDataOperation$.next(op)">{{op}}</option>
-      </select>
+    <div (click)="showFunctions = !showFunctions"  class="relative bg-gray-900 text-white p-3 mx-3 rounded-2xl hover:scale-110 hover:text-blue-300 cursor-pointer transition-all flex justify-center content-center">
+      <mat-icon>functions</mat-icon> {{selectedDataOperation$.value}}
+      <div *ngIf="showFunctions" class="flex flex-col absolute top-10  right-0 rounded-xl" style="background-color:#15162c;">
+        <div *ngFor="let op of dataOperations" (click)="selectedDataOperation$.next(op)" class="w-fit p-1 cursor-pointer hover:scale-110 hover:underline">{{op}}</div>
+      </div>
     </div>
     <div
       *ngFor="let chart of chartTypes"
