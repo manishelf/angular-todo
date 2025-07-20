@@ -12,6 +12,7 @@ import { ToastService } from 'angular-toastify';
 import { TodoServiceService } from '../../service/todo-service.service';
 import { filter } from 'rxjs';
 import { TodoItem } from '../../models/todo-item';
+import { SortService } from './../../service/sort/sort.service';
 
 @Component({
   selector: 'app-navbar',
@@ -28,7 +29,8 @@ export class NavbarComponent implements AfterViewInit {
   constructor(
     private router: Router,
     private toaster: ToastService,
-    private todoService: TodoServiceService
+    private todoService: TodoServiceService,
+    private sortService: SortService
   ) {
     if (window.innerWidth > 400) {
       // to avoid keyboards from poping upp on phones constantly
@@ -151,13 +153,14 @@ export class NavbarComponent implements AfterViewInit {
   syncNotes(): void {
     this.toaster.info('Downloading notes...');
     this.todoService.fromBin = false;
-    
-    let {lim , ord, abs, q, tags, has} = this.lastQueryParams?.queryParams;
-    
+     
     if(this.lastQueryParams){
+      let {lim , ord, abs, q, tags, has} = this.lastQueryParams?.queryParams;
       this.todoService.searchTodos(q,tags,has,abs)
         .subscribe((itemList)=>{
-          this.save(itemList);
+          this.sortService.sortItems(ord,itemList,lim).subscribe((itemList)=>{
+            this.save(itemList);
+          });
         });
     }else{
     this.todoService.getAll().subscribe((itemList) => {
