@@ -32,16 +32,18 @@ export class NavbarComponent implements AfterViewInit {
     private todoService: TodoServiceService,
     private sortService: SortService
   ) {
-    if (window.innerWidth > 400) {
-      // to avoid keyboards from poping upp on phones constantly
-      let l = localStorage['lastQueryParams'];
-      if(l){
-        this.lastQueryParams = JSON.parse(l);
-        if(this.lastQueryParams){
-          this.router.navigate([], this.lastQueryParams);
-        }
+    // to avoid keyboards from poping upp on phones constantly
+    let l = localStorage['lastQueryParams'];
+    if(l){
+      this.lastQueryParams = JSON.parse(l);
+      if(this.lastQueryParams){
+        setTimeout(()=>{
+          this.searchBox.nativeElement.value = this.reconstructParams(this.lastQueryParams);
+        }, 200);
       }
-
+    }
+    
+    if (window.innerWidth > 400) {
       this.router.events
         .pipe(filter((e) => e instanceof NavigationEnd))
         .subscribe((event) => {
@@ -50,6 +52,65 @@ export class NavbarComponent implements AfterViewInit {
           }, 200);
         });
     }
+  }
+
+  reconstructParams(params:any): string{
+    if (!params || !params.queryParams) {
+      return '';
+    }
+
+    const qp = params.queryParams;
+    let queryParts = [];
+    const mainQuery = qp.q || '';
+
+    if (qp.lim != null) {
+      queryParts.push(`!LIM:${qp.lim};`);
+    }
+
+    let reconstructedOrderString = '';
+    if (qp.ord && Array.isArray(qp.ord) && qp.ord.length > 0) {
+      const orderKeywords = ['asc', 'desc', 'latest', 'oldest'];
+      let currentTag = ''; 
+      let currentFields = [];
+
+      const isDefaultAscOnly = qp.ord.length === 1 && qp.ord[0] === 'asc';
+
+      if (!isDefaultAscOnly) {
+        for (let i = 0; i < qp.ord.length; i++) {
+          const item = qp.ord[i];
+          if (orderKeywords.includes(item)) {
+            if (currentTag) {
+              reconstructedOrderString += `!${currentTag.toUpperCase()}:${currentFields.join(',')};`;
+            }
+            currentTag = item;
+            currentFields = [];
+          } else {
+            currentFields.push(item);
+          }
+        }
+        if (currentTag) {
+          reconstructedOrderString += `!${currentTag.toUpperCase()}:${currentFields.join(',')};`;
+        }
+        if (reconstructedOrderString) {
+          queryParts.push(reconstructedOrderString);
+        }
+      }
+    }
+    if (qp.abs === false) {
+      queryParts.push(`!ALL:`);
+    }
+
+    if (qp.has && Array.isArray(qp.has) && qp.has.length > 0) {
+      queryParts.push(`!F:${qp.has.join(' ')}`);
+    }
+
+    if (qp.tag && Array.isArray(qp.tag) && qp.tag.length > 0) {
+      queryParts.push(`!T:${qp.tag.join(',')}`);
+    }
+
+    queryParts.push(mainQuery);
+
+    return queryParts.join('');
   }
 
   ngAfterViewInit(): void {
@@ -163,9 +224,9 @@ export class NavbarComponent implements AfterViewInit {
           });
         });
     }else{
-    this.todoService.getAll().subscribe((itemList) => {
-      this.save(itemList);
-    });
+      this.todoService.getAll().subscribe((itemList) => {
+        this.save(itemList);
+      });
    }
   }
 
