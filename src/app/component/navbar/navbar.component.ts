@@ -35,7 +35,6 @@ export class NavbarComponent implements AfterViewInit {
       let l = localStorage['lastQueryParams'];
       if(l){
         this.lastQueryParams = JSON.parse(l);
-        console.log(this.lastQueryParams);
         if(this.lastQueryParams){
           this.router.navigate([], this.lastQueryParams);
         }
