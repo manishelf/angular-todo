@@ -39,6 +39,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
   @ViewChild('descriptionArea') descriptionArea!: ElementRef;
   @ViewChild('lineNumbers') lineNumbers!: ElementRef;
   @ViewChild('userForm') userForm!: UserFormComponent;
+  @ViewChild('tagInputArea') tagInputArea!: ElementRef;
 
   queryParams = {};
 
@@ -558,6 +559,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
 
   onClickTags() {
     this.showTags = !this.showTags;
+    setTimeout(()=>{this.tagInputArea.nativeElement.focus();},200);
   }
   onReminderClick() {
     this.todoItem.setForReminder = !this.todoItem.setForReminder;

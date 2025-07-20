@@ -1,26 +1,26 @@
-<div class="h-full m-4 p-4 overflow-auto">
+<div class="h-full md:m-4 md:p-4 overflow-auto">
   <div class="flex flex-row flex-wrap md:flex-nowrap justify-center md:justify-between p-4">
     <div class="m-2">
         <app-user-form #userForm [data]="customFormData" [schema]="customFormSchema"></app-user-form>
     </div>
-    <div class="flex max-w-full justify-evenly space-x-2">
+    <div class="flex justify-evenly space-x-2">
       <button
         (click)="onOptionClick()"
-        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        class="bg-blue-500 hover:bg-blue-700 text-white font-bold  rounded"
       >
         {{ option }}
       </button>
       <button
         (click)="onAddClick()"
         title="Save the note"
-        class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+        class="bg-green-500 hover:bg-green-700 text-white font-bold  rounded"
       >
         <mat-icon>save</mat-icon>
       </button> 
       <button
         (click)="onReminderClick()"
         [title]="!todoItem.setForReminder ? 'Set reminder' : 'Clear reminder'"
-        class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded"
+        class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold  rounded"
       >
         <mat-icon>{{
           !todoItem.setForReminder ? "alarm_add" : "alarm_off"
@@ -31,22 +31,23 @@
         [title]="
           !todoItem.completionStatus ? 'Status: Pending' : 'Status: Done'
         "
-        class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded"
+        class="bg-purple-500 hover:bg-purple-700 text-white font-bold  rounded"
       >
         <mat-icon>{{
           !todoItem.completionStatus ? "timelapse" : "done_all"
         }}</mat-icon>
       </button>
-      <div class="flex justify-center content-center">
+      <div class="flex md:flex-nowrap flex-wrap justify-center content-center">
         <button
           (click)="onClickTags()"
           title="Tags"
-          class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 w-full h-full rounded"
+          class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold  w-full h-full rounded"
         >
           <mat-icon>label</mat-icon>
         </button>
         <textarea
-          [ngClass]="showTags?'':'hidden'"
+          [ngClass]="showTags?'':'w-0 h-0 hidden'"
+          #tagInputArea
           placeholder="Add tags here like t1 , t2"
           class="bg-white border rounded p-2 shadow-md focus:outline-none"
           [(ngModel)]="tagNameList"
@@ -58,7 +59,7 @@
       <button
           (click)="onClickUserFormAdd($event)"
           title="add custom form"
-          class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 w-full h-full rounded"
+          class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold  w-full h-full rounded"
         >
           <mat-icon>queue-add</mat-icon>
       </button>

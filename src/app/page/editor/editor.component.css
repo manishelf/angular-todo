@@ -16,3 +16,8 @@
     text-align: right;
     overflow: hidden;
 }
+
+@import "tailwindcss";
+button {
+    @apply py-1 px-1 md:py-2 md:px-4
+}
