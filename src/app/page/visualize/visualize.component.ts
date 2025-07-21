@@ -91,7 +91,7 @@ export class VisualizeComponent implements OnInit {
       let searchTerms = params['has'] ? params['has'] : [];
       let limit = params['lim'] ? params['lim'] : null;
 
-      if (order[1] === 'latest' || order[1] === 'oldest') {
+      if (order[1] === 'lat' || order[1] === 'old') {
         this.fields = ['id'];
         this.fields.push(...order.slice(2));
       } else if (order.length > 1) {

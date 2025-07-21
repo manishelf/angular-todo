@@ -168,13 +168,13 @@ export class NavbarComponent implements AfterViewInit {
 
     input = searchQuery.split('!LAT:');
     if (input.length == 2) {
-      order.push('latest');
+      order.push('lat');
       populateFields(input[1]);
     }
 
     input = searchQuery.split('!OLD:');
     if (input.length == 2) {
-      order.push('oldest');
+      order.push('old');
       populateFields(input[1]);
     }
 
@@ -196,6 +196,9 @@ export class NavbarComponent implements AfterViewInit {
       tagList = input[1].split(',');
       tagList = tagList.map((tag) => tag.trim());
     }
+    
+    order = order.filter(o=>o!='');
+
     let extras = {
       queryParams: {
         lim:lim,

@@ -71,16 +71,16 @@ export class SortService {
         sortingFn = this.sortByReminderAndCompletionStatus;          
       }
 
-      let latest = order[1] === 'latest';
-      let oldest = order[1] === 'oldest';
-      if (oldest) {
+      let lat = order[1] === 'lat';
+      let old = order[1] === 'old';
+      if (old) {
         sortingFn = (x, y) => {
           return (
             new Date(x.creationTimestamp).getTime() -
             new Date(y.creationTimestamp).getTime()
           ); // time since epoch
         };
-      } else if (latest) {
+      } else if (lat) {
         sortingFn = (x, y) => {
           return (
             new Date(y.updationTimestamp).getTime() -
@@ -92,8 +92,8 @@ export class SortService {
 
       for (let prop of order) {
         if (
-          prop === 'oldest' ||
-          prop === 'latest' ||
+          prop === 'old' ||
+          prop === 'lat' ||
           prop === 'asc' ||
           prop === 'desc' ||
           !prop
