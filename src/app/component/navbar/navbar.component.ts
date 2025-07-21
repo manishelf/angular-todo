@@ -69,7 +69,7 @@ export class NavbarComponent implements AfterViewInit {
 
     let reconstructedOrderString = '';
     if (qp.ord && Array.isArray(qp.ord) && qp.ord.length > 0) {
-      const orderKeywords = ['asc', 'desc', 'latest', 'oldest'];
+      const orderKeywords = ['asc', 'desc', 'lat', 'old'];
       let currentTag = ''; 
       let currentFields = [];
 
