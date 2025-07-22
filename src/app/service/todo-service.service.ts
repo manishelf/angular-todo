@@ -61,8 +61,7 @@ export class TodoServiceService {
       request.onsuccess = (event) => {
         let db = (event.target as IDBOpenDBRequest).result;
         db.onerror = (err) => {
-          console.error('local db err: ', err);
-          this.toaster.error((err as any).srcElement.error);
+          throw (err as any).srcElement.error;
         };
         subscriber.next(db);
         subscriber.complete();
@@ -84,8 +83,7 @@ export class TodoServiceService {
   ) {}
 
   initializeItems(): void {
-    console.log(this.fromBin);
-    
+    console.log(this.fromBin); 
     this.getService.getAllItems(this.db$, this.fromBin).subscribe((items) => {
       this.todoItemsSubject.next(items);
     });
@@ -94,6 +92,7 @@ export class TodoServiceService {
   getAll(): Observable<TodoItem[]> {
     return this.getService.getAllItems(this.db$, this.fromBin);
   }
+
   deleteAll(): void {
     let res = prompt(
       `Are you sure you want to delete all items from ${
@@ -101,22 +100,21 @@ export class TodoServiceService {
       }?\n [ Y | N ]`
     );
     if (res === 'Y')
-      try {
-        this.getService
-          .getAllItems(this.db$, this.fromBin)
-          .subscribe((items) => {
-            items.forEach((item) => {
-              this.deleteItem(item);
-            });
-          });
+      this.getService
+      .getAllItems(this.db$, this.fromBin)
+      .subscribe((items) => {
+        items.forEach((item) => {
+          this.deleteItem(item);
+        });
         this.toaster.success(
           'cleared all items from ' + (this.fromBin ? 'bin' : 'todo list')
         );
-      } catch (e) {
+      },(error)=>{
         this.toaster.error('error deleting all items');
-        console.error('error deleting all items: ', e);
-      }
+        console.error(error);
+      });
   }
+
   searchTodos(
     subjectQuery: string,
     tagFilter: string[] = [],
@@ -132,29 +130,32 @@ export class TodoServiceService {
       exact,
     );
   }
+
   sortTodoItems(order: string[], items: TodoItem[], limit = null): Observable<TodoItem[]> {
     return this.sortService.sortItems(order, items, limit);
   }
 
   addItem(item: Omit<TodoItem, 'id'>) {
-    try {
-      this.addService.addItem(this.db$, item);
-      this.initializeItems();
-      this.toaster.success('added item successfully!');
-    } catch (e) {
-      this.toaster.error('error adding todo item: ');
-      console.error('error adding todo item: ', e);
-    }
+      this.addService.addItem(this.db$, item, (suc)=>{
+        this.initializeItems();
+        this.toaster.success('added item successfully!');
+      },
+      (err)=>{
+        this.toaster.error('error adding todo item!');
+        this.toaster.error((err as any).srcElement.error);
+        console.error('error adding todo item: ', err);        
+      }
+    );
   }
 
   addCustom(tag: string, item: any) {
-    try {
-      this.addService.addCustom(this.db$, tag, item);
+    this.addService.addCustom(this.db$, tag, item,(suc)=>{
       this.toaster.success('saved ' + tag);
-    } catch (e) {
+    },
+    (e)=>{
       this.toaster.error('error saving ' + tag);
       console.error('error adding custom item', e);
-    }
+    });
   }
 
   getItemById(id: number): Observable<TodoItem> {
@@ -170,25 +171,22 @@ export class TodoServiceService {
   }
 
   updateItem(item: TodoItem): void {
-    try {
-      this.updateService.updateItem(this.db$, item).add(() => {
-        this.initializeItems();
-        this.toaster.success('todo item updated');
-      });
-    } catch (e) {
+    this.updateService.updateItem(this.db$, item, (suc)=>{
+      this.initializeItems();
+      this.toaster.success('todo item updated');
+    },(e)=>{
       this.toaster.error('error updating todo item');
       console.error('error updating todo item: ', e);
-    }
+    });
   }
 
   updateCustom(tag: string, item: any): void {
-    try {
-      this.updateService.updateCustom(this.db$, tag, item);
+    this.updateService.updateCustom(this.db$, tag, item, (suc)=>{
       this.toaster.success('updated ' + tag);
-    } catch (e) {
+    },(e)=>{
       this.toaster.error('error updating ' + tag);
       console.error('error updating ' + tag, e);
-    }
+    });
   }
 
   deleteItem(item: TodoItem): void {

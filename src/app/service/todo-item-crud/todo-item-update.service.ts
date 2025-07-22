@@ -11,7 +11,7 @@ export class TodoItemUpdateService {
   constructor(private todoItemUtils: TodoItemUtils) { }
 
   
-    updateItem(db$: Observable<IDBDatabase>, todoItem: TodoItem): Subscription {
+    updateItem(db$: Observable<IDBDatabase>, todoItem: TodoItem, handleSucc = (e:Event)=>{}, handleErr = (e:Event)=>{}): Subscription {
       return db$.subscribe((db)=>{
         let request = this.todoItemUtils.getObjectStoreRW(db, 'todo_items').get(todoItem.id);
         if(request){
@@ -21,12 +21,14 @@ export class TodoItemUpdateService {
               this.updateTags(db$, todoItem);
             }
             this.todoItemUtils.getObjectStoreRW(db, 'todo_items').put(todoItem);
-          }
+            handleSucc(event);
+          };
+          request.onerror = handleErr;
         }
       });
     }
   
-    updateTags(db$: Observable<IDBDatabase>, todoItem: TodoItem): void{
+    updateTags(db$: Observable<IDBDatabase>, todoItem: TodoItem, handleSucc = (e:Event)=>{}, handleErr = (e:Event)=>{}): void{
       db$.subscribe(
         (db)=>{
         todoItem.tags.forEach(
@@ -44,8 +46,10 @@ export class TodoItemUpdateService {
                   }else{
                     this.todoItemUtils.getObjectStoreRW(db, 'tags_todo_items')
                         .add({name: name, todo_items: [todoItem.id]});
-                  }                  
-                }
+                  }
+                  handleSucc(event);                  
+                };
+                request.onerror = handleErr;
               }
             }
           );
@@ -53,14 +57,16 @@ export class TodoItemUpdateService {
       );
     }
 
-    updateCustom(db$: Observable<IDBDatabase>, tag: string, item: any): Subscription {
+    updateCustom(db$: Observable<IDBDatabase>, tag: string, item: any, handleSucc = (e:Event)=>{}, handleErr = (e:Event)=>{}): Subscription {
       return db$.subscribe((db)=>{
         let request = this.todoItemUtils.getObjectStoreRW(db, 'custom_items').get(tag);
         if(request){
           request.onsuccess = (event)=>{
             let target = event.target as IDBRequest<TodoItem>;
             this.todoItemUtils.getObjectStoreRW(db, 'custom_items').put(item);
-          }
+            handleSucc(event);
+          };
+          request.onerror = handleErr;
         }
       });
     }
