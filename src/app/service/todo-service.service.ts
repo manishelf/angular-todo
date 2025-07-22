@@ -62,7 +62,7 @@ export class TodoServiceService {
         let db = (event.target as IDBOpenDBRequest).result;
         db.onerror = (err) => {
           console.error('local db err: ', err);
-          this.toaster.error('local db error! unable to perform operation!');
+          this.toaster.error((event as any).srcElement.error);
         };
         subscriber.next(db);
         subscriber.complete();
