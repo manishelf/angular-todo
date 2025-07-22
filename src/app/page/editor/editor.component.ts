@@ -234,7 +234,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
       event.target instanceof HTMLTextAreaElement
     ) {
       this.onEventForResize(event);
-    } else if (event.key === 'Enter' && event.ctrlKey) {
+    } else if (event.key === 's' && event.ctrlKey) {
       event.preventDefault();
       this.onAddClick();
     }
