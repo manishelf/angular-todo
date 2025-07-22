@@ -83,6 +83,8 @@ export class TodoServiceService {
   ) {}
 
   initializeItems(): void {
+    console.log(this.fromBin);
+    
     this.getService.getAllItems(this.db$, this.fromBin).subscribe((items) => {
       this.todoItemsSubject.next(items);
     });

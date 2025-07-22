@@ -29,11 +29,11 @@ export class TodoItemComponent implements OnInit, AfterViewChecked {
 
   toolTipString: string = '';
   parsedMD: SafeHtml = '';
-  @Input('fromBin') fromBin: boolean = false;
   
   bgColour: string = 'bg-gray-600 border-1 border-e-2 border-s-2 ';
   tagNameList: string[] = [];
   
+  @Input() fromBin: boolean = false;
   @Input() optionsDisplayed: boolean = false;
   @Input() showTags:boolean = false;
   @Input() minimized: boolean = true;
@@ -41,7 +41,6 @@ export class TodoItemComponent implements OnInit, AfterViewChecked {
 
 
   constructor(private todoService: TodoServiceService, private route:ActivatedRoute, private router: Router, private sanitizer: DomSanitizer) {
-    this.todoService.fromBin = this.fromBin;
   }
   ngOnInit(): void {
     this.bgColour += 'border-amber-300';
@@ -69,6 +68,8 @@ export class TodoItemComponent implements OnInit, AfterViewChecked {
     const neverUpdated = this.item.creationTimestamp === this.item.updationTimestamp;
     this.toolTipString = neverUpdated ? 'created on - ' + this.item.creationTimestamp :
                                         'last updated on - ' + this.item.updationTimestamp;
+
+    this.todoService.fromBin = this.fromBin;
   }
 
   ngAfterViewChecked() {
