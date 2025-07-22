@@ -105,6 +105,7 @@ export function drawLineChart(containerId: string, fields:string[], itemList:Tod
     var chart = new CanvasJS.Chart(containerId, {
       animationEnabled: true, 
       theme: "dark2", 
+      exportEnabled: true,
       title:{
         text: `distribution`
       },
