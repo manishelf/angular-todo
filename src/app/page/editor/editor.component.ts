@@ -261,8 +261,8 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
       let cursorPosition = descArea.selectionStart;
       this.todoItem.description =
         this.todoItem.description.substring(0, cursorPosition) +
-        `[link-${new Date().getSeconds()}](${text})`;
-      this.todoItem.description.substring(cursorPosition);
+        `[link-${new Date().getSeconds()}](${text})` + 
+    this.todoItem.description.substring(cursorPosition);
       event.preventDefault();
     }
     interface data {
