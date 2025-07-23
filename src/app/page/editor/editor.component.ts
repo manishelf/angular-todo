@@ -56,7 +56,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
   todoItem: Omit<TodoItem, 'id'> = {
     subject: '',
     description: '',
-    tags: [{ name: 'QtodoQ' }], //if no tag is added for a item then search by tags does not work correctly
+    tags: [{ name: '*' }], //if no tag is added for a item then search by tags does not work correctly
     completionStatus: false,
     setForReminder: false,
     creationTimestamp: new Date(Date.now()).toISOString(),
