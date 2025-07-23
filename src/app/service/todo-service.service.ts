@@ -311,8 +311,8 @@ export class TodoServiceService {
           }
           console.log('error adding todo item', e);
         }
+        this.initializeItems(); // for asthetics allow repeatation
       }
-      this.initializeItems();
       this.toaster.success(`added ${items.length} todo items successfully!`);
     } catch (e) {
       this.toaster.error('error adding todo items');

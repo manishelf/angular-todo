@@ -9,7 +9,12 @@
         </div>
     </div>
 </div>
-<lib-toastify-toast-container 
+<lib-toastify-toast-container
+[position]="'bottom-right'"
+[transition]="'flip'"
 [autoClose]="2000" 
+[newestOnTop]="true"
+[autoCloseError]="5000"
 [iconLibrary]="'material'"
+[preventDuplicates]="true"
 ></lib-toastify-toast-container>
