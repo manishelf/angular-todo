@@ -265,3 +265,7 @@ body {
   top:5px !important;
   right:5px !important;
 }
+
+.angular-toastify-toast{
+  border-radius: 0.5rem !important;
+}
