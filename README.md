@@ -1,4 +1,4 @@
-# QtodoQ
+# qtodo
 
 <div class="h-full scroll-auto overflow-scroll justify-center">
     <div class="w-full flex flex-col justify-center">
