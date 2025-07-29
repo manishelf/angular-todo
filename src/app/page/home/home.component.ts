@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, HostListener } from '@angular/core';
 import { TodoItem } from './../../models/todo-item';
 import { TodoServiceService } from './../../service/todo-service.service';
 import { CommonModule } from '@angular/common';
@@ -60,6 +60,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.todoService.initializeItems();
+    
     this.queryParamsSubscription = this.route.queryParams.subscribe(
       (params: Params) => {
         let order = params['ord'] ? params['ord'] : [];
@@ -70,7 +72,6 @@ export class HomeComponent implements OnInit, OnDestroy {
         let limit = params['lim'] ? params['lim'] : null;
 
         if (limit || order.length != 0 || searchQuery !== '' || tags.length > 0 || searchTerms.length > 0) {
-          this.todoService.initializeItems();
           this.todoService
             .searchTodos(searchQuery, tags, searchTerms, exact)
             .subscribe(
@@ -84,7 +85,6 @@ export class HomeComponent implements OnInit, OnDestroy {
             );
         } else {
           this.router.navigate([]);
-          this.todoService.initializeItems();
           this.fromSearch = false;
           this.todoItemsSubscription = this.todoService.todoItems$.subscribe(
             (itemList) => {

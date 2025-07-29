@@ -39,6 +39,7 @@ export class NavbarComponent implements AfterViewInit {
       if(this.lastQueryParams){
         setTimeout(()=>{
           this.searchBox.nativeElement.value = this.reconstructParams(this.lastQueryParams);
+          this.lastQueryParams = null;
         }, 200);
       }
     }
@@ -217,7 +218,7 @@ export class NavbarComponent implements AfterViewInit {
   syncNotes(): void {
     this.toaster.info('Downloading notes...');
     this.todoService.fromBin = false;
-     
+    
     if(this.lastQueryParams){
       let {lim , ord, abs, q, tags, has} = this.lastQueryParams?.queryParams;
       this.todoService.searchTodos(q,tags,has,abs)

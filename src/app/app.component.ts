@@ -1,8 +1,9 @@
 import { Component, HostListener, OnInit, Renderer2 } from '@angular/core';
-import { Router, RouterOutlet } from '@angular/router';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { NavbarComponent } from './component/navbar/navbar.component';
 import { SidebarComponent } from './component/sidebar/sidebar.component';
 import { AngularToastifyModule } from 'angular-toastify';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-root',

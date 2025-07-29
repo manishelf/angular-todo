@@ -5,6 +5,7 @@ import {
   ElementRef,
   HostListener,
   OnChanges,
+  OnInit,
   ViewChild,
 } from '@angular/core';
 import * as marked from 'marked';
@@ -74,14 +75,9 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
     private domSanitizer: DomSanitizer,
     private toaster: ToastService
   ) {
-    if (router.url === '/edit') {
+    if (this.router.url === '/edit') {
       const navigation = this.router.getCurrentNavigation();
-      if (
-        navigation &&
-        navigation.extras &&
-        navigation.extras.state &&
-        navigation.extras.state
-      ) {
+      if (navigation?.extras?.state) {
         let itemForUpdate = navigation.extras.state['item'] as TodoItem;
         this.queryParams = navigation.extras.state['query'];
         this.forEdit = itemForUpdate.id;
@@ -94,10 +90,11 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
         this.customFormSchema = this.todoItem.userDefined?.formControlSchema;
         this.customFormData = this.todoItem.userDefined?.data;
       } else {
-        router.navigate(['/home'], { queryParamsHandling: 'merge' });
+        this.router.navigate(['/home'], { queryParamsHandling: 'merge' });
       }
     }
   }
+
 
   ngAfterViewInit(): void {
     setTimeout(() => {
