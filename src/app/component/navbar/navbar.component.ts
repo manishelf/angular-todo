@@ -223,7 +223,6 @@ export class NavbarComponent implements AfterViewInit {
       this.todoService.searchTodos(q,tags,has,abs)
         .subscribe((itemList)=>{
           this.sortService.sortItems(ord,itemList,lim).subscribe((itemList)=>{
-            alert('Downloading FILTERED items :'+itemList.length);
             this.save(itemList);
           });
         });
@@ -242,6 +241,8 @@ export class NavbarComponent implements AfterViewInit {
         a.href = url;
         a.download = `todo-${Date.now()}.json`;
         a.click();
+        this.toaster.success(list.length+' Notes downloaded successfully');
+            });
         URL.revokeObjectURL(url);
       });
   }
