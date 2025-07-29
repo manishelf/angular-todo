@@ -223,6 +223,7 @@ export class NavbarComponent implements AfterViewInit {
       this.todoService.searchTodos(q,tags,has,abs)
         .subscribe((itemList)=>{
           this.sortService.sortItems(ord,itemList,lim).subscribe((itemList)=>{
+            alert('Downloading FILTERED items :'+itemList.length);
             this.save(itemList);
           });
         });
