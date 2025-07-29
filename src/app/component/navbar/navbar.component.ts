@@ -242,7 +242,6 @@ export class NavbarComponent implements AfterViewInit {
         a.download = `todo-${Date.now()}.json`;
         a.click();
         this.toaster.success(list.length+' Notes downloaded successfully');
-            });
         URL.revokeObjectURL(url);
       });
   }
