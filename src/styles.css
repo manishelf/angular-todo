@@ -268,4 +268,5 @@ body {
 
 .angular-toastify-toast{
   border-radius: 0.5rem !important;
+  @apply outline-2 outline-white
 }
