@@ -1,20 +1,13 @@
-import { Injectable, Optional } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import {
   Observable,
-  from,
   BehaviorSubject,
-  throwError,
-  switchMap,
-  tap,
-  Subscriber,
 } from 'rxjs';
 import { TodoItem } from './../models/todo-item';
 import { TodoItemAddService } from './todo-item-crud/todo-item-add.service';
 import { TodoItemUpdateService } from './todo-item-crud/todo-item-update.service';
 import { TodoItemDeleteService } from './todo-item-crud/todo-item-delete.service';
 import { TodoItemGetService } from './todo-item-crud/todo-item-get.service';
-import { Params } from '@angular/router';
 import { ToastService } from 'angular-toastify';
 import { SortService } from './sort/sort.service';
 
@@ -73,7 +66,6 @@ export class TodoServiceService {
   todoItems$ = this.todoItemsSubject.asObservable();
 
   constructor(
-    private http: HttpClient,
     private addService: TodoItemAddService,
     private updateService: TodoItemUpdateService,
     private deleteService: TodoItemDeleteService,
@@ -83,7 +75,6 @@ export class TodoServiceService {
   ) {}
 
   initializeItems(): void {
-    console.log(this.fromBin); 
     this.getService.getAllItems(this.db$, this.fromBin).subscribe((items) => {
       this.todoItemsSubject.next(items);
     });
