@@ -367,9 +367,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
     }
     if (this.customFormSchema) {
       this.todoItem.userDefined = {
-        tag: JSON.stringify(
-          this.todoItem.tags.filter((tag) => tag.name.startsWith('form-'))
-        ),
+        tag: this.todoItem.tags.filter((tag) => tag.name.startsWith('form-')).map(tag => tag.name).join(','),
         formControlSchema: this.customFormSchema,
         data: this.userForm.state(),
       };
@@ -474,13 +472,13 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
           return;
         }
 
-        let tag = 'form-' + formSchema.tag;
+        let tag = 'form-' + formSchema.tag.trim();
         this.todoItem.tags.push({ name: tag });
         this.tagNameList = this.todoItem.tags.map((tag) => tag.name).join(',');
         this.todoServie.addCustom(tag, formSchema.formControlSchema);
 
         if (this.customFormSchema && this.customFormSchema.fields) {
-          this.customFormSchema = {
+          this.customFormSchema = { // for angular to properly update ui. as only reference change is tracked.
             fields: [
               ...this.customFormSchema.fields,
               ...formSchema.formControlSchema.fields,
@@ -538,15 +536,14 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
     if (this.todoItem.userDefined) {
       if (this.todoItem.userDefined.formControlSchema.fields) {
         // undo the form- prefix for convienience
-        this.todoItem.userDefined.tag = this.todoItem.userDefined.tag.replace(
-          'form-',
-          ''
-        );
-        this.todoItem.description += JSON.stringify(
+		let tag = this.todoItem.userDefined.tag;
+        this.todoItem.userDefined.tag = tag.replace('form-',''); // not replaceAll as let x,form-y be else on save it would become form-x,y in tags if all replaced
+		this.todoItem.description += JSON.stringify(
           this.todoItem.userDefined,
           null,
           4
         );
+		this.todoItem.userDefined.tag = tag;
       }
     }
 
