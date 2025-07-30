@@ -1,4 +1,4 @@
-<div class="max-w-full text-white rounded-2xl" [title]="toolTipString">
+<div class="max-w-full overflow-clip overflow-ellipsis text-white rounded-2xl" [title]="toolTipString">
     <div [class]="`${bgColour} flex flex-row rounded-2xl justify-between p-2`">
         <div class="flex-grow-1 text-2xl overflow-hidden overflow-ellipsis cursor-pointer" title="edit">
             <div class="border border-0 border-b-1 w-fit">{{item.subject}}</div> 
@@ -37,7 +37,7 @@
         </div>
     </div>
     <div [ngClass]="minimized?'max-h-0 opacity-0 max-w-0 ':'max-h-[500px] max-w-29/30 opacity-100 overflow-auto'"
-      class="px-2 overflow-auto overflow-ellipsis transition-all duration-1000 ease-in-out"
+      class="transition-all duration-1000 ease-in-out" style="margin: auto !important;"
       [innerHtml]="parsedMD" class="match-braces rainbow-braces">
     </div>
 </div>
