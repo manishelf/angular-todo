@@ -15,7 +15,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { BeanItemComponent } from '../../component/bean-item/bean-item.component';
 import { TodoServiceService } from './../../service/todo-service.service';
 import { TodoItem } from '../../models/todo-item';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Tag } from '../../models/tag';
 import { UserDefinedType } from '../../models/userdefined-type';
 import {
@@ -73,10 +73,22 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
     private todoServie: TodoServiceService,
     private router: Router,
     private domSanitizer: DomSanitizer,
-    private toaster: ToastService
+    private toaster: ToastService,
+    private route: ActivatedRoute
   ) {
-    if (this.router.url === '/edit') {
+    if (this.router.url.startsWith('/edit')) {
       const navigation = this.router.getCurrentNavigation();
+      
+      this.route.queryParams.subscribe((params)=>{
+        
+        let id = params['id'];
+        id = Number.parseInt(id);
+        if(id){
+          this.todoServie.getItemById(id).subscribe((item)=>{
+            this.todoItem = item;
+          });
+        }
+      });
       if (navigation?.extras?.state) {
         let itemForUpdate = navigation.extras.state['item'] as TodoItem;
         this.queryParams = navigation.extras.state['query'];
@@ -89,8 +101,6 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
         this.tagNameList = this.todoItem.tags.map((tag) => tag.name).join(',')+',';
         this.customFormSchema = this.todoItem.userDefined?.formControlSchema;
         this.customFormData = this.todoItem.userDefined?.data;
-      } else {
-        this.router.navigate(['/home'], { queryParamsHandling: 'merge' });
       }
     }
   }
