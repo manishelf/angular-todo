@@ -24,6 +24,10 @@ export class AppComponent{
 
   @HostListener('keydown', ['$event'])
   onKeyDown(event: KeyboardEvent): void{
+    let target = (event.target as HTMLElement);
+    if(target.id === 'editor-subject-input') return;
+    else if(target.id === 'editor-description-input') return; // ignore incase of the editor as it has its own handling
+    
     if(event.key === '[' && event.ctrlKey){
       event.preventDefault();
       this.router.navigate(['/create']);
