@@ -126,17 +126,24 @@ export class TodoServiceService {
     return this.sortService.sortItems(order, items, limit);
   }
 
-  addItem(item: Omit<TodoItem, 'id'>) {
+  addItem(item: Omit<TodoItem, 'id'>) : Promise<number>{
+    return new Promise<number>((res,rej)=>{
+      if(item.subject.trim()===''){
+       item.subject = new Date().toISOString(); 
+      }
       this.addService.addItem(this.db$, item, (suc)=>{
         this.initializeItems();
         this.toaster.success('added item successfully!');
-      },
-      (err)=>{
-        this.toaster.error('error adding todo item!');
-        this.toaster.error((err as any).srcElement.error);
-        console.error('error adding todo item: ', err);        
-      }
-    );
+          res((suc.target as IDBRequest).result);
+        },
+        (err)=>{
+          this.toaster.error('error adding todo item!');
+          this.toaster.error((err as any).srcElement.error);
+          console.error('error adding todo item: ', err);   
+          rej(err);     
+        }
+      );
+    });
   }
 
   addCustom(tag: string, item: any) {

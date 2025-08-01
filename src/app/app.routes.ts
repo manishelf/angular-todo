@@ -13,7 +13,10 @@ export const routes: Routes = [
   { path: 'bin/clear', component: HomeComponent },
   { path: 'home/clear', component: HomeComponent },
   { path: 'demo', component: HomeComponent },
-  { path: 'edit', component: EditorComponent },
+  { path: 'edit', component: EditorComponent, children: [
+    {path: 'parent', component: EditorComponent},
+    {path: 'child', component: EditorComponent}
+  ]},
   { path: 'visualize', component: VisualizeComponent },
   { path: 'calendar', component: CalendarComponent },
   { path: 'about', component: AboutComponent },

@@ -15,7 +15,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { BeanItemComponent } from '../../component/bean-item/bean-item.component';
 import { TodoServiceService } from './../../service/todo-service.service';
 import { TodoItem } from '../../models/todo-item';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { Tag } from '../../models/tag';
 import { UserDefinedType } from '../../models/userdefined-type';
 import {
@@ -26,6 +26,7 @@ import {
 import { UserFormComponent } from '../../component/user-form/user-form.component';
 import { FormField, FormSchema, inputTagTypes } from '../../models/FormSchema';
 import { ToastService } from 'angular-toastify';
+import { filter } from 'rxjs';
 
 declare var Prism: any;
 
@@ -74,24 +75,30 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
     private router: Router,
     private domSanitizer: DomSanitizer,
     private toaster: ToastService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
   ) {
     if (this.router.url.startsWith('/edit')) {
-      const navigation = this.router.getCurrentNavigation();
       
+      const navigation = this.router.getCurrentNavigation();
       this.route.queryParams.subscribe((params)=>{
         
         let id = params['id'];
+        let subject = params['subject'];
         id = Number.parseInt(id);
         if(id){
           this.todoServie.getItemById(id).subscribe((item)=>{
             this.todoItem = item;
           });
+        }else if(subject){
+          this.todoServie.searchTodos(subject).subscribe((item)=>{
+            this.todoItem = item[0];
+          });
         }
       });
+
       if (navigation?.extras?.state) {
         let itemForUpdate = navigation.extras.state['item'] as TodoItem;
-        this.queryParams = navigation.extras.state['query'];
+        this.queryParams = navigation.extras.state['query'];     
         this.forEdit = itemForUpdate.id;
         this.todoItem = itemForUpdate;
         this.todoItem.description = this.todoItem.description.replace(
@@ -244,6 +251,22 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
     } else if (event.key === 's' && event.ctrlKey) {
       event.preventDefault();
       this.onAddClick();
+    } else if(event.key ==='[' && event.ctrlKey) {
+      let {id, ...childItem} = structuredClone((this.todoItem as any)); // clone the parent; it can contain id from save
+
+      let name = `child-of-${this.todoItem.subject.replaceAll(' ','..')}`;
+      childItem.subject = '';
+      childItem.description = name;
+      childItem.userDefined = undefined;
+      childItem.tags.push({name});
+      this.todoServie.addItem(childItem).then((id)=>{
+        this.todoItem.description+= ` [Child-item-${id}](/edit?id=${id}) `;
+        this.onAddClick();
+        history.pushState(null,'','/edit/parent?subject='+this.todoItem.subject);
+        this.router.navigate(['/edit/child'],{state:{item:{id: id, ...childItem}, params: this.queryParams}, queryParams:{id}});
+      });
+    } else if(event.key === ']' && event.ctrlKey) {
+      history.back();
     }
   }
 
