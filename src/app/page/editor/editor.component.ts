@@ -271,6 +271,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
           });
       });
     } else if(event.key === ']' && event.ctrlKey) {
+      this.todoServie.updateItem({id:this.forEdit, ...this.todoItem});
       history.back(); // this does not work
       setTimeout(()=>{
         this.subjectTxt.nativeElement.focus();
