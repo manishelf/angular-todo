@@ -86,7 +86,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
           /<br>/g,
           '\n'
         );
-        this.tagNameList = this.todoItem.tags.map((tag) => tag.name).join(',');
+        this.tagNameList = this.todoItem.tags.map((tag) => tag.name).join(',')+',';
         this.customFormSchema = this.todoItem.userDefined?.formControlSchema;
         this.customFormData = this.todoItem.userDefined?.data;
       } else {
