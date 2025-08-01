@@ -36,9 +36,11 @@ export class HomeComponent implements OnInit, OnDestroy {
     if (url === '/bin/clear') {
       todoService.fromBin = true;
       todoService.deleteAll();
+      this.router.navigate(['/bin']);
     } else if (url === '/home/clear') {
       todoService.fromBin = false;
       todoService.deleteAll();
+      this.router.navigate(['/home']);
     } else if (url === '/demo') {
       let confirm = prompt('Download sample todo items? [Y|N]');
       if (confirm === 'Y') {

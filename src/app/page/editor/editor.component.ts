@@ -263,10 +263,18 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
         this.todoItem.description+= ` [Child-item-${id}](/edit?id=${id}) `;
         this.onAddClick();
         history.pushState(null,'','/edit/parent?subject='+this.todoItem.subject);
-        this.router.navigate(['/edit/child'],{state:{item:{id: id, ...childItem}, params: this.queryParams}, queryParams:{id}});
+        this.router.navigate(['/edit/child'],{state:{item:{id: id, ...childItem}, params: this.queryParams}, queryParams:{id}})
+          .then((val)=>{
+            setTimeout(()=>{
+              this.subjectTxt.nativeElement.focus();
+            },300);
+          });
       });
     } else if(event.key === ']' && event.ctrlKey) {
-      history.back();
+      history.back(); // this does not work
+      setTimeout(()=>{
+        this.subjectTxt.nativeElement.focus();
+      },300);
     }
   }
 

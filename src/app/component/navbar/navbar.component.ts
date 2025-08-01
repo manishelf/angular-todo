@@ -50,7 +50,7 @@ export class NavbarComponent implements AfterViewInit {
         .subscribe((event) => {
           setTimeout(() => {
             this.searchBox.nativeElement.focus();
-          }, 200);
+          }, 100);
         });
     }
   }
