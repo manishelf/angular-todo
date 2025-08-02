@@ -81,22 +81,25 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
       
       const navigation = this.router.getCurrentNavigation();
       this.route.queryParams.subscribe((params)=>{
-        
-        let id = params['id'];
-        let subject = params['subject'];
-        id = Number.parseInt(id);
-        if(id){
-          this.todoServie.getItemById(id).subscribe((item)=>{
-            this.todoItem = item;
-          });
-        }else if(subject){
-          this.todoServie.searchTodos(subject).subscribe((item)=>{
-            this.todoItem = item[0];
-          });
-        }
+        setTimeout(()=>{ // delay as the last item may not have updated just yet 
+          let id = params['id'];
+          let subject = params['subject'];
+          id = Number.parseInt(id);
+          if(id){
+            this.todoServie.getItemById(id).subscribe((item)=>{
+              this.todoItem = item;
+            });
+            
+          }else if(subject){
+            this.todoServie.searchTodos(subject).subscribe((item)=>{
+              this.todoItem = item[0];
+            });
+          }
+        },100);
       });
 
       if (navigation?.extras?.state) {
+        
         let itemForUpdate = navigation.extras.state['item'] as TodoItem;
         this.queryParams = navigation.extras.state['query'];     
         this.forEdit = itemForUpdate.id;
@@ -267,9 +270,8 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
       childItem.tags.push({name});
       this.todoItem.tags.push({name}); // so that parent appears in the search?
       this.todoServie.addItem(childItem).then((id)=>{
-        this.todoItem.description+= ` [Child-item-${id}](/edit?id=${id}) `;
+        this.todoItem.description+= `\n- [Child-item-${id}](/edit?id=${id})\n`;
         this.onAddClick();
-        
         history.pushState(null,'','/edit/parent?subject='+this.todoItem.subject);
         this.router.navigate(['/edit/child'],{state:{item:{id: id, ...childItem}, params: this.queryParams}, queryParams:{id}})
           .then((val)=>{
@@ -285,7 +287,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
     history.back();
     setTimeout(()=>{
       this.descriptionArea.nativeElement.focus();
-    },300);
+    }, 200);
   }
 
   @HostListener('focusin', ['$event'])
