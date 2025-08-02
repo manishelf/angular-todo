@@ -79,16 +79,16 @@
       </button>
       </div>
   </div>
-  <div class="bg-white rounded-lg shadow-md p-4">
+  <div class="bg-white rounded-lg shadow-md p-4" (focusout)="onOptionClickOnDelay()" (focusin)="onOptionClickOnDelayClearTimeout()">
+    <input
+    type="text"
+    #subjectTxt
+    class="w-full p-3 border rounded-lg text-lg focus:outline-none focus:ring focus:border-blue-300"
+    id="editor-subject-input"
+    [(ngModel)]="todoItem.subject"
+    placeholder="Enter a title for your note (must be unique)"
+    />
     <div *ngIf="option !== 'Editor'">
-      <input
-        type="text"
-        #subjectTxt
-        class="w-full p-3 border rounded-lg text-lg focus:outline-none focus:ring focus:border-blue-300"
-        id="editor-subject-input"
-        [(ngModel)]="todoItem.subject"
-        placeholder="Enter a title for your note (must be unique)"
-      />
       <div  id="container" class="container">
       <div id="line-numbers" #lineNumbers class="container__lines mt-2"></div>
       <textarea
@@ -101,6 +101,6 @@
       <div id="div-for-scrolling"></div>
       </div>
     </div>
-    <div *ngIf="option !== 'MD Preview'" [innerHTML]="convertedMarkdown" class="match-braces rainbow-braces"></div>
+    <div *ngIf="option !== 'Preview'" id='editor-markdown-div' (click)="onOptionClickOnDelay()" [innerHTML]="convertedMarkdown" class="match-braces rainbow-braces m-2"></div>
   </div>
 </div>

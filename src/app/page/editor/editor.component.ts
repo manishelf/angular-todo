@@ -46,7 +46,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
   queryParams = {};
 
   convertedMarkdown: SafeHtml = '';
-  option: string = 'MD Preview';
+  option: string = 'Preview';
   tagNameList: string = '';
   forEdit: number = -1;
   showTags: boolean = false;
@@ -55,6 +55,8 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
   customFormData: any;
   editiorLinesLoaded: boolean = false;
   hierarchy: Map<string, {item: TodoItem, children:Set<TodoItem>}> | null = null;
+
+  onOptionDelayTimer: number = -1;
 
   todoItem: Omit<TodoItem, 'id'> = {
     subject: '',
@@ -266,7 +268,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
       event.key === 'Enter' &&
       event.target instanceof HTMLTextAreaElement
     ) {
-      this.onEventForResize(event);
+      this.onEventForResize();
     } else if (event.key === 's' && event.ctrlKey) {
       event.preventDefault();
       this.onAddClick();
@@ -345,14 +347,15 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
     this.todoItem.description += tree;
   }
   
-  @HostListener('focusin', ['$event'])
-  onEventForResize(event: Event): void {
-    const target = event.target as HTMLTextAreaElement;
-    target.style.height = 'auto';
-    target.style.height = target.scrollHeight + 'px';
-    //target.nextElementSibling?.scrollIntoView(true);
+  @HostListener('focusin')
+  onEventForResize(): void {
+    if(this.descriptionArea){
+      this.descriptionArea.nativeElement.style.height = 'auto';
+      this.descriptionArea.nativeElement.style.height = this.descriptionArea.nativeElement.scrollHeight + 'px';
+      //this.descriptionArea.nativeElement.nextElementSibling?.scrollIntoView(true);
+    }
   }
-
+  
   @HostListener('paste', ['$event'])
   onPasteEvent(event: Event) {
     const descArea = event.target as HTMLTextAreaElement;
@@ -431,11 +434,25 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
         }
       };
     });
-    this.onEventForResize(event);
+    this.onEventForResize();
+  }
+
+  onOptionClickOnDelay(){
+    this.onOptionClickOnDelayClearTimeout(); // this allows navigation
+    this.onOptionDelayTimer = setTimeout(()=>this.onOptionClick(), 300);
+  }
+  onOptionClickOnDelayClearTimeout(){
+    clearTimeout(this.onOptionDelayTimer);
   }
 
   onOptionClick() {
-    this.option = this.option === 'MD Preview' ? 'Editor' : 'MD Preview';
+    this.onOptionClickOnDelayClearTimeout();
+
+    if(this.todoItem.subject === '' && this.todoItem.description === ''){
+      return;
+    }  
+
+    this.option = this.option === 'Preview' ? 'Editor' : 'Preview';
     if (this.option === 'Editor') {
       this.editiorLinesLoaded = false;
       let markdown = marked.parse(this.todoItem.description).toString();
@@ -458,9 +475,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
       this.convertedMarkdown =
         this.domSanitizer.bypassSecurityTrustHtml(markdown);
       if (this.todoItem.subject.trim().length != 0) {
-        this.convertedMarkdown = this.domSanitizer.bypassSecurityTrustHtml(
-          `<u class='text-3xl'>${this.todoItem.subject}</u><br>` + markdown
-        );
+        this.convertedMarkdown = this.domSanitizer.bypassSecurityTrustHtml(markdown);
       }
     }
   }
@@ -659,7 +674,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
       }
     }
 
-    this.onEventForResize(event);
+    this.onEventForResize();
     this.schemaEditingInProgress = true;
   }
 
