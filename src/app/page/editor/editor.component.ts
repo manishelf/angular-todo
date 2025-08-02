@@ -15,7 +15,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { BeanItemComponent } from '../../component/bean-item/bean-item.component';
 import { TodoServiceService } from './../../service/todo-service.service';
 import { TodoItem } from '../../models/todo-item';
-import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router, TitleStrategy } from '@angular/router';
 import { Tag } from '../../models/tag';
 import { UserDefinedType } from '../../models/userdefined-type';
 import {
@@ -36,7 +36,6 @@ declare var Prism: any;
   styleUrls: ['./editor.component.css'],
   imports: [FormsModule, CommonModule, MatIconModule, UserFormComponent],
 })
-
 export class EditorComponent implements AfterViewChecked, AfterViewInit {
   @ViewChild('subjectTxt') subjectTxt!: ElementRef;
   @ViewChild('descriptionArea') descriptionArea!: ElementRef;
@@ -55,6 +54,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
   customFormSchema: FormSchema | undefined;
   customFormData: any;
   editiorLinesLoaded: boolean = false;
+  hierarchy: Map<string, {item: TodoItem, children:Set<TodoItem>}> | null = null;
 
   todoItem: Omit<TodoItem, 'id'> = {
     subject: '',
@@ -97,11 +97,16 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
               this.todoItem = item[0];
             });
           }
+
           if(this.router.url.includes('/parent')){
+           this.hierarchy = new Map();
            setTimeout(()=>{
              this.todoServie.searchTodos('', ['child of '+this.todoItem.subject], [], true).subscribe((children)=>{
-               this.createChildTree(children).subscribe((result)=>{
-                console.log(result);
+                this.hierarchy?.set(this.todoItem.subject, {item: {id:this.forEdit, ...this.todoItem}, children: new Set(children)})
+                this.createChildTreeview(); // incase only one level deep
+                this.createChildTree(children).subscribe((result)=>{
+                this.hierarchy?.set(result.item.subject, result);
+                this.createChildTreeview();
                })
              })
            }, 200); // let it load the item then make the tree
@@ -274,23 +279,21 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
 
   addChildItem():void {
     let {id, ...childItem} = structuredClone((this.todoItem as any)); // clone the parent; it can contain id from save
-      let name = `child of ${this.todoItem.subject}`;
-      childItem.subject = '';
-      childItem.description = name;
-      childItem.userDefined = undefined;
-      childItem.tags.push({name});
-      this.todoItem.tags.push({name}); // so that parent appears in the search?
-      this.todoServie.addItem(childItem).then((id)=>{
-        this.todoItem.description+= `\n|-- [Child-item-${id}](/edit?id=${id})\n`;
-        this.onAddClick();
-        history.pushState(null,'','/edit/parent?subject='+this.todoItem.subject);
-        this.router.navigate(['/edit/child'],{state:{item:{id: id, ...childItem}, params: this.queryParams}, queryParams:{id}})
-          .then((val)=>{
-            setTimeout(()=>{
-              this.subjectTxt.nativeElement.focus();
-            },300);
-          });
-      });
+    let name = `child of ${this.todoItem.subject}`;
+    childItem.subject = '';
+    childItem.description = name;
+    childItem.userDefined = undefined;
+    childItem.tags.push({name});
+    this.todoServie.addItem(childItem).then((id)=>{
+      this.onAddClick();
+      history.pushState(null,'','/edit/parent?subject='+this.todoItem.subject);
+      this.router.navigate(['/edit/child'],{state:{item:{id: id, ...childItem}, params: this.queryParams}, queryParams:{id}})
+      .then((val)=>{
+          setTimeout(()=>{
+            this.subjectTxt.nativeElement.focus();
+          },300);
+        });
+    });
   }
 
   navigateToParent(): void {
@@ -310,7 +313,6 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
          */
         this.todoServie.searchTodos('',['child of '+child.subject],[],true)
         .subscribe((innerChildren)=>{
-          innerChildren = innerChildren.filter(item=>item.subject !== child.subject); // as parents also have the same tag 
           if(innerChildren.length>0){
             subscriber.next({item:child, children:new Set(innerChildren)});
             this.createChildTree(innerChildren);
@@ -320,16 +322,29 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
     });
   }
 
-  createChildTreeview(heirarchy: Map<number, {item:TodoItem,children:Set<TodoItem>}>): void{
-    let tree = '```treeview\n';
-    
-    for(let entry of heirarchy.entries()){
-      tree +='  |-- ['+entry[1].item.subject+'](/edit?id='+entry[1].item.id+')';
+  createChildTreeview(): void{
+    let tree = '\n```treeview\n';
+    tree += this.todoItem.subject+'/\n';
+    let visited:string[] = [];
+    for(let entry of this.hierarchy!.entries()){
+      let i = 1;
+      for(let child of entry[1].children){
+        let icon = '├──';
+        if(i == entry[1].children.size){
+          icon = '└──';
+        }
+        if(!visited.includes(child.subject)){
+          tree +=icon+' ['+child.subject+'](/edit?id='+child.id+')\n';
+        }
+        visited.push(child.subject);
+        i++;
+      }
     } 
-    tree+='\n```'
-    this.todoItem.description+=tree;
+    tree+='\n```\n';
+    this.todoItem.description = this.todoItem.description.replace(new RegExp('\n```treeview\n'+this.todoItem.subject+'.*\n```\n','s'),'')
+    this.todoItem.description += tree;
   }
-
+  
   @HostListener('focusin', ['$event'])
   onEventForResize(event: Event): void {
     const target = event.target as HTMLTextAreaElement;
