@@ -6,21 +6,21 @@
     <div class="flex justify-evenly space-x-2">
       <button
         (click)="onOptionClick()"
-        class="bg-blue-500 hover:bg-blue-700 text-white font-bold  rounded"
+        class="bg-blue-500 "
       >
         {{ option }}
       </button>
       <button
         (click)="onAddClick()"
         title="Save the note"
-        class="bg-green-500 hover:bg-green-700 text-white font-bold  rounded"
+        style="background-color: #70e000;"
       >
         <mat-icon>save</mat-icon>
       </button> 
       <button
         (click)="onReminderClick()"
         [title]="!todoItem.setForReminder ? 'Set reminder' : 'Clear reminder'"
-        class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold  rounded"
+        class="bg-yellow-500 "
       >
         <mat-icon>{{
           !todoItem.setForReminder ? "alarm_add" : "alarm_off"
@@ -29,9 +29,9 @@
       <button
         (click)="onCompletionClick()"
         [title]="
-          !todoItem.completionStatus ? 'Status: Pending' : 'Status: Done'
+          !todoItem.completionStatus ? 'set status: Done' : 'set status: Pending'
         "
-        class="bg-purple-500 hover:bg-purple-700 text-white font-bold  rounded"
+        class="bg-purple-500 "
       >
         <mat-icon>{{
           !todoItem.completionStatus ? "timelapse" : "done_all"
@@ -41,9 +41,9 @@
         <button
           (click)="onClickTags()"
           title="Tags"
-          class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold  w-full h-full rounded"
+          style="background-color: #f72585;"
         >
-          <mat-icon>label</mat-icon>
+          <mat-icon>local_offer</mat-icon>
         </button>
         <textarea
           [ngClass]="showTags?'':'w-0 h-0 hidden'"
@@ -57,11 +57,25 @@
         ></textarea>
       </div>
       <button
-          (click)="onClickUserFormAdd($event)"
-          title="add custom form"
-          class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold  w-full h-full rounded"
+          (click)="navigateToParent()"
+          title="go to parent"
+          style="background-color: #38a3a5"
         >
-          <mat-icon>queue-add</mat-icon>
+          <mat-icon>subdirectory_arrow_left</mat-icon>
+      </button>
+      <button
+          (click)="addChildItem()"
+          title="add child item"
+          style="background-color: #57cc99;"
+        >
+          <mat-icon>subdirectory_arrow_right</mat-icon>
+      </button>
+      <button
+          (click)="onClickUserFormAdd($event)"
+          title="add custom form widget"
+          style="background-color: #d74c11;"
+        >
+          <mat-icon>widgets</mat-icon>
       </button>
       </div>
   </div>

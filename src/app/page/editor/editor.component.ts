@@ -252,16 +252,24 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
       event.preventDefault();
       this.onAddClick();
     } else if(event.key ==='[' && event.ctrlKey) {
-      let {id, ...childItem} = structuredClone((this.todoItem as any)); // clone the parent; it can contain id from save
+      this.addChildItem();
+    } else if(event.key === ']' && event.ctrlKey) {
+      this.navigateToParent();
+    }
+  }
 
+  addChildItem():void {
+    let {id, ...childItem} = structuredClone((this.todoItem as any)); // clone the parent; it can contain id from save
       let name = `child-of-${this.todoItem.subject.replaceAll(' ','..')}`;
       childItem.subject = '';
       childItem.description = name;
       childItem.userDefined = undefined;
       childItem.tags.push({name});
+      this.todoItem.tags.push({name}); // so that parent appears in the search?
       this.todoServie.addItem(childItem).then((id)=>{
         this.todoItem.description+= ` [Child-item-${id}](/edit?id=${id}) `;
         this.onAddClick();
+        
         history.pushState(null,'','/edit/parent?subject='+this.todoItem.subject);
         this.router.navigate(['/edit/child'],{state:{item:{id: id, ...childItem}, params: this.queryParams}, queryParams:{id}})
           .then((val)=>{
@@ -270,13 +278,14 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
             },300);
           });
       });
-    } else if(event.key === ']' && event.ctrlKey) {
-      this.todoServie.updateItem({id:this.forEdit, ...this.todoItem});
-      history.back(); // this does not work
-      setTimeout(()=>{
-        this.subjectTxt.nativeElement.focus();
-      },300);
-    }
+  }
+
+  navigateToParent(): void {
+    this.todoServie.updateItem({id:this.forEdit, ...this.todoItem});
+    history.back();
+    setTimeout(()=>{
+      this.descriptionArea.nativeElement.focus();
+    },300);
   }
 
   @HostListener('focusin', ['$event'])
