@@ -26,7 +26,7 @@ import {
 import { UserFormComponent } from '../../component/user-form/user-form.component';
 import { FormField, FormSchema, inputTagTypes } from '../../models/FormSchema';
 import { ToastService } from 'angular-toastify';
-import { filter } from 'rxjs';
+import { filter, Observable } from 'rxjs';
 
 declare var Prism: any;
 
@@ -36,6 +36,7 @@ declare var Prism: any;
   styleUrls: ['./editor.component.css'],
   imports: [FormsModule, CommonModule, MatIconModule, UserFormComponent],
 })
+
 export class EditorComponent implements AfterViewChecked, AfterViewInit {
   @ViewChild('subjectTxt') subjectTxt!: ElementRef;
   @ViewChild('descriptionArea') descriptionArea!: ElementRef;
@@ -78,7 +79,6 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
     private route: ActivatedRoute,
   ) {
     if (this.router.url.startsWith('/edit')) {
-      
       const navigation = this.router.getCurrentNavigation();
       this.route.queryParams.subscribe((params)=>{
         setTimeout(()=>{ // delay as the last item may not have updated just yet 
@@ -87,13 +87,24 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
           id = Number.parseInt(id);
           if(id){
             this.todoServie.getItemById(id).subscribe((item)=>{
+              this.forEdit = id;
               this.todoItem = item;
             });
             
           }else if(subject){
             this.todoServie.searchTodos(subject).subscribe((item)=>{
+              this.forEdit = item[0].id;
               this.todoItem = item[0];
             });
+          }
+          if(this.router.url.includes('/parent')){
+           setTimeout(()=>{
+             this.todoServie.searchTodos('', ['child of '+this.todoItem.subject], [], true).subscribe((children)=>{
+               this.createChildTree(children).subscribe((result)=>{
+                console.log(result);
+               })
+             })
+           }, 200); // let it load the item then make the tree
           }
         },100);
       });
@@ -263,14 +274,14 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
 
   addChildItem():void {
     let {id, ...childItem} = structuredClone((this.todoItem as any)); // clone the parent; it can contain id from save
-      let name = `child-of-${this.todoItem.subject.replaceAll(' ','..')}`;
+      let name = `child of ${this.todoItem.subject}`;
       childItem.subject = '';
       childItem.description = name;
       childItem.userDefined = undefined;
       childItem.tags.push({name});
       this.todoItem.tags.push({name}); // so that parent appears in the search?
       this.todoServie.addItem(childItem).then((id)=>{
-        this.todoItem.description+= `\n- [Child-item-${id}](/edit?id=${id})\n`;
+        this.todoItem.description+= `\n|-- [Child-item-${id}](/edit?id=${id})\n`;
         this.onAddClick();
         history.pushState(null,'','/edit/parent?subject='+this.todoItem.subject);
         this.router.navigate(['/edit/child'],{state:{item:{id: id, ...childItem}, params: this.queryParams}, queryParams:{id}})
@@ -288,6 +299,35 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
     setTimeout(()=>{
       this.descriptionArea.nativeElement.focus();
     }, 200);
+  }
+
+  createChildTree(children: TodoItem[]):
+     Observable<{item:TodoItem,children:Set<TodoItem>}>{
+    return new Observable((subscriber)=>{
+      for(let child of children){
+        /**
+         * recursively get the children of the items
+         */
+        this.todoServie.searchTodos('',['child of '+child.subject],[],true)
+        .subscribe((innerChildren)=>{
+          innerChildren = innerChildren.filter(item=>item.subject !== child.subject); // as parents also have the same tag 
+          if(innerChildren.length>0){
+            subscriber.next({item:child, children:new Set(innerChildren)});
+            this.createChildTree(innerChildren);
+          }
+        });
+      }
+    });
+  }
+
+  createChildTreeview(heirarchy: Map<number, {item:TodoItem,children:Set<TodoItem>}>): void{
+    let tree = '```treeview\n';
+    
+    for(let entry of heirarchy.entries()){
+      tree +='  |-- ['+entry[1].item.subject+'](/edit?id='+entry[1].item.id+')';
+    } 
+    tree+='\n```'
+    this.todoItem.description+=tree;
   }
 
   @HostListener('focusin', ['$event'])
