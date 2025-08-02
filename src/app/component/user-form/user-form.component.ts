@@ -88,6 +88,7 @@ export class UserFormComponent implements OnChanges {
         const type = field.type;
         const {
           require,
+          readonly,
           maxLength,
           minLength,
           min,

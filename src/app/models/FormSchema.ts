@@ -23,6 +23,7 @@ export const inputTagTypes = [
 
 export interface FormFieldValidation{
     require? : boolean,
+    readonly?: boolean,
     minLength?: number,
     maxLength?: number,
     pattern? : string,

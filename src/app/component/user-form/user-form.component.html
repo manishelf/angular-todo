@@ -18,6 +18,7 @@
           [min]="field.validation?.min"
           [max]="field.validation?.max"
           [step]="field.validation?.step"
+          [readonly]="field.validation?.readonly"
           class="w-full outline-1 p-2 m-1"
         />
         <a *ngIf="field.type === 'url'"
@@ -33,6 +34,7 @@
           [id]="field.name"
           [formControlName]="field.name"
           [placeholder]="field.placeholder || ''"
+          [readonly]="field.validation?.readonly"
           class="w-full"
         ></textarea>
         <select
@@ -83,6 +85,7 @@
             type="text"
             [formControlName]="field.name"
             [placeholder]="field.placeholder"
+            [readonly]="field.validation?.readonly"
           />
           <img
             [src]="dynamicForm.get(field.name)?.value"

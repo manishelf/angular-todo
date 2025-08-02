@@ -403,6 +403,9 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
               '/' +
               new Date(data.file.lastModified).getSeconds(),
             default: 'file data',
+            validation:{
+              readonly: true,
+            },
           };
           if (data.file.type.startsWith('image')) {
             field.type = 'image';
@@ -624,6 +627,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
       *         "placeholder"?: string,
       *         "validation"?: {
       *             "require"? : boolean,
+      *             "readonly"?: any, // set any value for readonly control
       *             "minLength"?: number,
       *             maxLength"?: number,
       *             pattern"? : string,
