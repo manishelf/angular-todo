@@ -1,0 +1,7 @@
+tr {
+    border: 1px solid white;
+}
+
+td{
+    border: none !important;
+}

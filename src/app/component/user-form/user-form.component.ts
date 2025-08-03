@@ -26,6 +26,10 @@ import {
 } from '../../models/FormSchema';
 import { CommonModule } from '@angular/common';
 import { inputTagTypes } from './../../models/FormSchema';
+
+
+declare var fabric: any;
+
 @Component({
   selector: 'app-user-form',
   imports: [CommonModule, FormsModule, ReactiveFormsModule],
@@ -42,11 +46,18 @@ export class UserFormComponent implements OnChanges {
 
   fabricjsLoaded: boolean = false;
 
+  canvasMap:Map<string, any> | null = null;
+
   state(): Map<string, any> {
     if (!this.schema?.fields) return new Map();
 
     if (this.dynamicForm?.valid) {
-      return this.dynamicForm.value;
+      let data = this.dynamicForm.value;
+      if(this.canvasMap)
+      for(let entry of this.canvasMap){
+        data[entry[0]]=JSON.stringify(entry[1]?.toJSON());        
+      }
+      return data;
     } else {
       let errors = new Map();
       for (let i = 0; i < this.schema.fields.length; i++) {
@@ -160,9 +171,46 @@ export class UserFormComponent implements OnChanges {
 
         if(type === 'canvas') {
           if(!this.fabricjsLoaded){
-            fetch('/fabric.min.js').then(()=>{
-              this.fabricjsLoaded = true;
-            });
+            let script = document.createElement('script');
+            script.src = '/fabric.min.js';
+            script.async = true;
+            script.onload = ()=>{
+              this.initFabricjs(document.getElementById(field.name));
+              
+              if(document.getElementById(field.name+'_canvas_stroke_width')) return;
+
+              this.schema?.fields?.splice(
+                i+1,0,
+                {
+                  label:field.name+'_canvas_stroke_width',
+                  name: field.name+'_canvas_stroke_width',
+                  type:'range',
+                  default: '1',
+                  validation: {
+                    min: '1',
+                    max: '150',
+                  }
+                },
+                {
+                  label:field.name+'_canvas_stroke_color',
+                  name: field.name+'_canvas_stroke_color',
+                  type:'color',
+                  default: '#0000'
+                },
+                {
+                  label:field.name+'_canvas_size',
+                  name: field.name+'_canvas_size',
+                  type:'range',
+                  default: '300',
+                  validation: {
+                    min: '300',
+                    max: '1500'
+                  }
+                },
+              );
+            }
+            document.body.appendChild(script);
+            this.fabricjsLoaded = true;
           }
         }
 
@@ -191,5 +239,86 @@ export class UserFormComponent implements OnChanges {
       uniqueFields.set(f.name, f);
     }
     this.schema.fields = Array.from(uniqueFields.values());
+  }
+
+  initFabricjs(canvasEle: HTMLElement | null){
+    if(!canvasEle) return;
+
+    //https://fabricjs.com/demos/free-drawing/
+   
+    const container = document.getElementById(canvasEle.id+'_container');
+    container!.style.width = '50vw';
+    container!.style.height = '50vh';
+    let canvas = null;
+    
+    canvas = new fabric.Canvas(canvasEle, {
+      isDrawingMode: true,
+      width: container?.getBoundingClientRect().width,
+      height: container?.getBoundingClientRect().height, 
+    });
+    if(this.data){
+      let prevCanvas = this.data[canvasEle.id]; 
+      if(prevCanvas){
+        canvas.loadFromJSON(prevCanvas);
+      }
+    }
+    if(this.canvasMap == null) {
+      this.canvasMap = new Map();
+    }
+    
+    this.canvasMap.set(canvasEle.id, canvas);
+
+    canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
+    fabric.Object.prototype.transparentCorners = false;
+    canvas.freeDrawingBrush.width = 1;
+    canvas.backgroundColor = 'white';
+
+
+    if(container){
+      let containerResizeObserver = new ResizeObserver((entries)=>{
+        const containerRect = entries[0].contentRect;
+        canvas.setWidth(containerRect.width);
+        canvas.setHeight(containerRect.height);
+      });
+      containerResizeObserver.observe(container);
+      window.addEventListener('resize', (e) => {        
+        const containerRect = container.getBoundingClientRect();
+        canvas.setWidth(containerRect.width);
+        canvas.setHeight(containerRect.height);
+      });
+    }
+    
+
+    setTimeout(()=>{ // allow the controls to be added
+    let lineWidthCtrl = document.getElementById(canvasEle.id+'_canvas_stroke_width');
+    let lineColorCtrl = document.getElementById(canvasEle.id+'_canvas_stroke_color');
+    let canvasSizeCtrl = document.getElementById(canvasEle.id+'_canvas_size');
+    
+
+    if(lineColorCtrl && lineWidthCtrl && canvasSizeCtrl){
+      let val = (lineColorCtrl as HTMLInputElement).value;
+      canvas.freeDrawingBrush.color = val;
+      val = (lineWidthCtrl as HTMLInputElement).value;
+      canvas.freeDrawingBrush.width = parseInt(val, 10) || 1;
+      
+      lineColorCtrl.onchange = (e)=>{
+        let val = (e?.target as HTMLInputElement).value;
+        canvas.freeDrawingBrush.color = val;
+      }
+      lineWidthCtrl.onchange = (e)=>{
+        let val = (e?.target as HTMLInputElement).value;
+        canvas.freeDrawingBrush.width = parseInt(val, 10) || 1;
+      }
+      canvasSizeCtrl.onchange = (e)=>{
+        let val = (e?.target as HTMLInputElement).value;
+        let intVal = parseInt(val, 10) || 300;
+        container!.style.height = intVal+'px';
+        container!.style.width = intVal+'px';
+        canvas.setWidth(intVal);
+        canvas.setHeight(intVal);
+        console.log(intVal, val);
+      }
+    }
+    },1000);
   }
 }
