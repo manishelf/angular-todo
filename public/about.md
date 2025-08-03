@@ -1,9 +1,9 @@
+# <a id="features">Features of this app V1.00</a>
+---
+### [Download demo todo items to play around](/demo)
+---
 
-# Features of this app V1.00
-
-[Download demo todo items to play around](/demo)
-
-## General Features
+## <a id="general-features">General Features</a>
 
 - **A Fully Offline Progressive Web App**
 - **Frontend**: Angular
@@ -11,8 +11,7 @@
 - **Perk**: Item description supports full Markdown and code formatting. You can paste images and files from the clipboard too.
 
 ---
-
-## Search
+## <a id="search">Search</a>
 
 - **Prefix Matching**: Normal search or full-text search with `!F:`.
 - **Cumulative Search**: Use `!ALL:` for cumulative search or exact match otherwise.
@@ -22,16 +21,15 @@
   - **Stable Sorting**: Use `!ASC:` or `!DESC:` to sort by properties (e.g., `!ASC:subject,day;`).
   - **Limit Results**: Use `!LIM:` to limit the number of results (e.g., `!LIM:3;`).
 
-#### Search Commands
+#### <a id="search-commands">Search Commands</a>
 
 - `!ALL:` Any that match (default - matches all).
 - `!F:` Full text search (default - subject prefix).
 - `!T:` Tag-based search with `+` (include) and `-` (exclude) modifiers.
 
-
 ---
 
-## Filtering
+## <a id="filtering">Filtering</a>
 
 - **Advanced Grouping with Tags**:
   - Use `!T:` with `+` (include) or `-` (exclude) modifier.  
@@ -39,7 +37,7 @@
 
 ---
 
-## Custom Forms
+## <a id="custom-forms">Custom Forms</a>
 
 - **Add Custom Input Fields** with full validations.
 - **Supported Input Types**:
@@ -49,29 +47,29 @@
 
 ---
 
-
-## Keyboard Shortcuts
+## <a id="keyboard-shortcuts">Keyboard Shortcuts</a>
 
 - **Navigate Faster**:
   - `Ctrl + [` → Go to editor or new child note.
   - `Ctrl + ]` → Go to home or parent note.
-- **supports full navigation in list view at home sreen**
-  - focus the search bar in list view then press tab to focus on a note then ->
-  - `↑ | w | k` for up in same column
-  - `← | a | h` for right in same row
-  - `↓ | s | j` for down in same column
-  - `→ | d | l` for left in same row
+- **Supports full navigation in list view at home screen**:
+  - Focus the search bar in list view, then press `Tab` to focus on a note, then use:
+    - `↑ | w | k` for up in the same column.
+    - `← | a | h` for left in the same row.
+    - `↓ | s | j` for down in the same column.
+    - `→ | d | l` for right in the same row.
+
 ---
 
-## Nested Notes
+## <a id="nested-notes">Nested Notes</a>
 
 - **Create Child Notes**: Take nested notes by creating child notes.
-- e.g. `p1->c1; p1->c2;` or `p1->c1->c2` navigate the hierarchy with the generated treeview
+- Example: `p1->c1; p1->c2;` or `p1->c1->c2`. Navigate the hierarchy with the generated tree view.
 - Keyboard shortcuts also work for navigating through child and parent notes!
 
 ---
 
-## Backup
+## <a id="backup">Backup</a>
 
 - **Download Notes**: Export your notes as a JSON file and load them back as a backup.
 - **Use Third-Party Sharing Sites**:
