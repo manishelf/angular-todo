@@ -201,10 +201,10 @@ export class UserFormComponent implements OnChanges {
                   label:field.name+'_canvas_size',
                   name: field.name+'_canvas_size',
                   type:'range',
-                  default: '300',
+                  default: '10',
                   validation: {
-                    min: '300',
-                    max: '1500'
+                    min: '10',
+                    max: '200'
                   }
                 },
               );
@@ -293,14 +293,24 @@ export class UserFormComponent implements OnChanges {
     let lineWidthCtrl = document.getElementById(canvasEle.id+'_canvas_stroke_width');
     let lineColorCtrl = document.getElementById(canvasEle.id+'_canvas_stroke_color');
     let canvasSizeCtrl = document.getElementById(canvasEle.id+'_canvas_size');
-    
+    let clearBtn = document.getElementById(canvasEle.id+'_btn_clear');
+    let toggleDrawmodeBtn = document.getElementById(canvasEle.id+'_btn_drawmode_toggle');
 
-    if(lineColorCtrl && lineWidthCtrl && canvasSizeCtrl){
-      let val = (lineColorCtrl as HTMLInputElement).value;
-      canvas.freeDrawingBrush.color = val;
-      val = (lineWidthCtrl as HTMLInputElement).value;
-      canvas.freeDrawingBrush.width = parseInt(val, 10) || 1;
-      
+    let addRectangleBtn = document.getElementById(canvasEle.id+'_btn_add_rectangle');
+    let addCircleBtn = document.getElementById(canvasEle.id+'_btn_add_circle');
+    let addTriangleBtn = document.getElementById(canvasEle.id+'_btn_add_triangle');
+    let addLineBtn = document.getElementById(canvasEle.id+'_btn_add_line');
+    let addTextboxBtn = document.getElementById(canvasEle.id+'_btn_add_textbox');
+    let btnControlContainer = document.getElementById(canvasEle.id+'_btn_controls_container');
+
+
+    if(lineColorCtrl && lineWidthCtrl && canvasSizeCtrl && clearBtn && toggleDrawmodeBtn
+      && addRectangleBtn && addCircleBtn && addLineBtn && addTextboxBtn && addTriangleBtn && btnControlContainer){
+      let color = (lineColorCtrl as HTMLInputElement).value;
+      canvas.freeDrawingBrush.color = color;
+      let width = (lineWidthCtrl as HTMLInputElement).value;
+      canvas.freeDrawingBrush.width = parseInt(width, 10) || 1;
+
       lineColorCtrl.onchange = (e)=>{
         let val = (e?.target as HTMLInputElement).value;
         canvas.freeDrawingBrush.color = val;
@@ -309,16 +319,110 @@ export class UserFormComponent implements OnChanges {
         let val = (e?.target as HTMLInputElement).value;
         canvas.freeDrawingBrush.width = parseInt(val, 10) || 1;
       }
-      canvasSizeCtrl.onchange = (e)=>{
+      canvasSizeCtrl!.onchange = (e)=>{
         let val = (e?.target as HTMLInputElement).value;
         let intVal = parseInt(val, 10) || 300;
-        container!.style.height = intVal+'px';
-        container!.style.width = intVal+'px';
-        canvas.setWidth(intVal);
-        canvas.setHeight(intVal);
-        console.log(intVal, val);
+        if(intVal>60){
+          btnControlContainer!.style.display = 'block';
+
+          lineColorCtrl.style.width = '2rem';
+          lineColorCtrl.style.height = '2rem';
+
+          lineColorCtrl.style.position = 'fixed';
+          lineColorCtrl.style.left = '7rem';
+          lineColorCtrl.style.bottom = '0';
+
+          lineWidthCtrl.style.position = 'fixed';
+          lineWidthCtrl.style.bottom = '0';
+          lineWidthCtrl.style.left = '10rem';
+
+          lineWidthCtrl.style.width = '15rem';
+
+          canvasSizeCtrl.style.position = 'fixed';
+          canvasSizeCtrl.style.bottom = '0';
+          canvasSizeCtrl.style.left = '30rem';
+
+          canvasSizeCtrl.style.width = '15rem';
+        }else {
+          btnControlContainer.style.display = 'none';
+          
+          lineColorCtrl.style.position = '';
+          lineWidthCtrl.style.position = '';
+          canvasSizeCtrl.style.position = '';
+          lineColorCtrl.style.width = '100%';
+          lineWidthCtrl.style.width = '100%';
+          canvasSizeCtrl.style.width = '100%';
+        }
+        container!.style.height = intVal+'vh';
+        container!.style.width = intVal+'vw';
       }
+      
+      clearBtn.onclick = ()=>{
+        canvas.clear();
+      }
+      toggleDrawmodeBtn.onclick = (e)=>{
+        canvas.isDrawingMode = !canvas.isDrawingMode;
+      }
+
+      addRectangleBtn.onclick = (e)=>{this.canvasAddBtnHandler(e, canvas, (lineColorCtrl as HTMLInputElement).value)};
+      addTriangleBtn.onclick = (e)=>{this.canvasAddBtnHandler(e, canvas, (lineColorCtrl as HTMLInputElement).value)};
+      addCircleBtn.onclick = (e)=>{this.canvasAddBtnHandler(e, canvas, (lineColorCtrl as HTMLInputElement).value)};
+      addLineBtn.onclick = (e)=>{this.canvasAddBtnHandler(e, canvas, (lineColorCtrl as HTMLInputElement).value)};
+      addTextboxBtn.onclick = (e)=>{this.canvasAddBtnHandler(e, canvas, (lineColorCtrl as HTMLInputElement).value)};
     }
-    },1000);
+    },1500);
+  }
+
+  canvasAddBtnHandler(event:Event, canvas: any, color: string): void{
+    let shape = null;
+
+    let btnId = (event.target as HTMLElement).id;
+
+    if(btnId.includes('rectangle')){
+      shape = new fabric.Rect({
+        left: 100,
+        top: 50,
+        fill: color,
+        width: 200,
+        height: 100,
+        strokeWidth: 4,
+      });
+    }else if(btnId.includes('circle')){
+      shape = new fabric.Circle({
+          radius: 50,
+          left: 275,
+          top: 75,
+          fill: color,
+      });
+    }else if(btnId.includes('triangle')){
+      shape = new fabric.Triangle({
+        width: 100,
+        height: 100,
+        left: 50,
+        top: 300,
+        fill: color,
+      });
+    }else if(btnId.includes('line')){
+      shape = new fabric.Polyline([
+          { x: 10, y: 10 },
+          { x: 100, y: 100 }
+        ], {
+        stroke: color,
+        left: 100,
+        top: 100
+      });
+    }else if(btnId.includes('textbox')){
+      shape = new fabric.Textbox('text', {
+        left: 50,
+        top: 10,
+        width: 200,
+        fontSize: 60,
+        fontFamily: 'Roboto, "Helvetica Neue", sans-serif',
+      });
+    }
+
+    canvas.add(shape);
+    canvas.setActiveObject(shape);
+    canvas.isDrawingMode = !canvas.isDrawingMode;
   }
 }
