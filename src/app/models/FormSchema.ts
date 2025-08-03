@@ -7,7 +7,7 @@ export interface FormField {
     label : string,
     type : 'text' | 'textarea' | 'email' | 'password' 
             | 'number' | 'date' | 'select' | 'checkbox' | 'radio' | 'boolean' | 'image' | 'url'
-            | 'color' | 'range' | 'month' | 'date' | 'time' | 'datetime-local' | 'history'
+            | 'color' | 'range' | 'month' | 'date' | 'time' | 'datetime-local' | 'history' | 'canvas' 
             | 'timestamp',
     placeholder?: string,
     validation?: FormFieldValidation,

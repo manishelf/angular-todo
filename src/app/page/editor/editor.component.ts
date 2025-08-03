@@ -527,15 +527,13 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
     let fields: FormField[] = [];
     for (let i = 0; i < tags.length; i++) {
       let tagType = tags[i].substring(5);
-      if (inputTagTypes.includes(tagType)) {
-        fields.push({
-          name: tagType + '_' + i ,
-          label: tagType + '_' + i ,
-          type: tagType as FormField['type'],
-          placeholder: '',
-          default: '',
-        });
-      }
+      fields.push({
+        name: tagType + '_' + i ,
+        label: tagType + '_' + i ,
+        type: tagType as FormField['type'],
+        placeholder: '',
+        default: '',
+      }); 
     }
     this.appendCustomSchemaFields(fields);
   }

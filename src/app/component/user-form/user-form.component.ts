@@ -39,6 +39,9 @@ export class UserFormComponent implements OnChanges {
   @Input() data: any;
 
   isValid: boolean = false;
+
+  fabricjsLoaded: boolean = false;
+
   state(): Map<string, any> {
     if (!this.schema?.fields) return new Map();
 
@@ -154,6 +157,15 @@ export class UserFormComponent implements OnChanges {
             formData: JSON.stringify(this.data),
           });
         }
+
+        if(type === 'canvas') {
+          if(!this.fabricjsLoaded){
+            fetch('/fabric.min.js').then(()=>{
+              this.fabricjsLoaded = true;
+            });
+          }
+        }
+
         if (type === 'checkbox' && field.options) {
           let checkboxCtrls = field.options.map((option) => {
             const checked = (field.default || ['']).includes(option);

@@ -1,5 +1,6 @@
 <form [formGroup]="dynamicForm" autocomplete="on">
-  <table class="border border-collapse border-1 border-white transition-all" >
+  <div class="border border-1 border-white" [ngClass]="schema?.fields!.length>5? `h-100 overflow-auto resize`:``">
+  <table class="border h-full w-full border-collapse border-1 border-white transition-all" >
     <tr
       *ngFor="let field of schema?.fields"
       class="text-white flex flex-row justify-between rounded"
@@ -92,7 +93,16 @@
             class="border border-1 w-full"
           />
         </div>
-      </td>
+
+        <div class="w-7xl h-7xl bg-white overflow-hidden resize" *ngIf="field.type === 'canvas' && fabricjsLoaded">
+          <canvas  
+                  [id]="field.name" 
+                  class="bg-white" 
+                  style="width: 100%; height: 100%;"> 
+          </canvas>
+        </div>
+       </td>
     </tr>
-    </table>
+  </table>
+  </div>
 </form>
