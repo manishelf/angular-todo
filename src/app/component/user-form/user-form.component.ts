@@ -301,11 +301,12 @@ export class UserFormComponent implements OnChanges {
     let addTriangleBtn = document.getElementById(canvasEle.id+'_btn_add_triangle');
     let addLineBtn = document.getElementById(canvasEle.id+'_btn_add_line');
     let addTextboxBtn = document.getElementById(canvasEle.id+'_btn_add_textbox');
+    let addImageBtn = document.getElementById(canvasEle.id+'_btn_add_image');
     let btnControlContainer = document.getElementById(canvasEle.id+'_btn_controls_container');
 
 
     if(lineColorCtrl && lineWidthCtrl && canvasSizeCtrl && clearBtn && toggleDrawmodeBtn
-      && addRectangleBtn && addCircleBtn && addLineBtn && addTextboxBtn && addTriangleBtn && btnControlContainer){
+      && addRectangleBtn && addCircleBtn && addLineBtn && addTextboxBtn && addTriangleBtn && btnControlContainer && addImageBtn){
       let color = (lineColorCtrl as HTMLInputElement).value;
       canvas.freeDrawingBrush.color = color;
       let width = (lineWidthCtrl as HTMLInputElement).value;
@@ -369,6 +370,7 @@ export class UserFormComponent implements OnChanges {
       addCircleBtn.onclick = (e)=>{this.canvasAddBtnHandler(e, canvas, (lineColorCtrl as HTMLInputElement).value)};
       addLineBtn.onclick = (e)=>{this.canvasAddBtnHandler(e, canvas, (lineColorCtrl as HTMLInputElement).value)};
       addTextboxBtn.onclick = (e)=>{this.canvasAddBtnHandler(e, canvas, (lineColorCtrl as HTMLInputElement).value)};
+      addImageBtn.onclick = (e)=>{this.canvasAddBtnHandler(e, canvas, (lineColorCtrl as HTMLInputElement).value)};
     }
     },1500);
   }
@@ -419,6 +421,15 @@ export class UserFormComponent implements OnChanges {
         fontSize: 60,
         fontFamily: 'Roboto, "Helvetica Neue", sans-serif',
       });
+    }else if(btnId.includes('image')){
+      let url = prompt('Please enter the image url (link or data url)');
+      fabric.Image.fromURL(url, function(img: any) {
+      var imgCtrl = img.set({ left: 0, top: 0});
+        canvas.add(imgCtrl); 
+        canvas.setActiveObject(imgCtrl);
+        canvas.isDrawingMode = !canvas.isDrawingMode;
+      });
+      return;
     }
 
     canvas.add(shape);
