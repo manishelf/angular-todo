@@ -498,7 +498,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
       });
       return;
     }
-    if (this.customFormSchema) {
+    if (this.customFormSchema?.fields) {
       this.todoItem.userDefined = {
         tag: this.todoItem.tags.filter((tag) => tag.name.startsWith('form-')).map(tag => tag.name).join(','),
         formControlSchema: this.customFormSchema,
@@ -685,7 +685,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
 
   onClickTags() {
     this.showTags = !this.showTags;
-    setTimeout(()=>{this.tagInputArea.nativeElement.focus();},200);
+    setTimeout(()=>{this.tagInputArea?.nativeElement.focus();},200);
   }
   onReminderClick() {
     this.todoItem.setForReminder = !this.todoItem.setForReminder;
