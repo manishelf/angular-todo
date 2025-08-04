@@ -55,7 +55,6 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
   customFormData: any;
   editiorLinesLoaded: boolean = false;
   hierarchy: Map<string, {item: TodoItem, children:Set<TodoItem>}> | null = null;
-  parentSubject: string = '';
 
   onOptionDelayTimer: number = -1;
 
@@ -101,10 +100,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
             });
           }
 
-          let parentSubjectMatch = this.todoItem.description.match(/^### \[child of (.+?)\]/);
-          if (parentSubjectMatch) {
-            this.parentSubject = parentSubjectMatch[1]; 
-          }
+          
 
           if(this.router.url.includes('/parent')){
            this.hierarchy = new Map();
@@ -123,7 +119,6 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
       });
 
       if (navigation?.extras?.state) {
-        
         let itemForUpdate = navigation.extras.state['item'] as TodoItem;
         this.queryParams = navigation.extras.state['query'];     
         this.forEdit = itemForUpdate.id;
@@ -143,7 +138,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
   ngAfterViewInit(): void {
     setTimeout(() => {
       this.subjectTxt.nativeElement.focus();
-    }, 300);
+    }, 300); 
   }
 
   ngAfterViewChecked(): void {
@@ -292,7 +287,8 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
     childItem.description = '### ['+name+']';
     childItem.userDefined = undefined;
     childItem.tags.push({name});
-    this.onAddClick(); this.todoServie.addItem(childItem).then((id)=>{
+    this.onAddClick(); 
+    this.todoServie.addItem(childItem).then((id)=>{
       this.router.navigate(['/edit/child'],{state:{item:{id: id, ...childItem}, params: this.queryParams}, queryParams:{id}})
       .then((val)=>{
           setTimeout(()=>{
@@ -304,14 +300,13 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
 
   navigateToParent(): void {
     this.todoServie.updateItem({id:this.forEdit, ...this.todoItem});
-    if(this.parentSubject !== ''){
-      this.router.navigate(['/edit/parent'],{queryParams:{subject: this.parentSubject}});
-    }else {
+    let parentSubjectMatch = this.todoItem.description.match(/^### \[child of (.+?)\]/);
+    if (parentSubjectMatch) {
+      this.router.navigate(['/edit/parent'],{queryParams:{subject: parentSubjectMatch[1]}});
+    }
+    else {
        this.router.navigate(['/home'], {queryParams:this.queryParams});
     }
-    setTimeout(()=>{
-      this.descriptionArea.nativeElement.focus();
-    }, 200);
   }
 
   createChildTree(children: TodoItem[]):
