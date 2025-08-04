@@ -102,7 +102,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
           }
 
           if(this.router.url.includes('/child')){
-            this.parentSubject = this.todoItem.description..match(/^### \[child of (.+?)\]/); // '### [child of subj]
+            this.parentSubject = this.todoItem.description.match(/^### \[child of (.+?)\]/); // '### [child of subj]
           }
 
           if(this.router.url.includes('/parent')){
@@ -304,9 +304,9 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
   navigateToParent(): void {
     this.todoServie.updateItem({id:this.forEdit, ...this.todoItem});
     if(this.parentSubject !== ''){
-      this.router.navigate(['/edit/parent'],queryParams:{subject: this.parentSubject}});
+      this.router.navigate(['/edit/parent'],{queryParams:{subject: this.parentSubject}});
     }else {
-       this.router.navigate(['/home'], queryParams:this.queryParams);
+       this.router.navigate(['/home'], {queryParams:this.queryParams});
     }
     setTimeout(()=>{
       this.descriptionArea.nativeElement.focus();
