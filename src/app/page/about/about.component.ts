@@ -1,11 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { RouterLink, RouterLinkActive } from '@angular/router';
 import * as marked from 'marked';
 
 @Component({
   selector: 'app-about',
-  imports: [RouterLink, RouterLinkActive],
   templateUrl: './about.component.html',
   styleUrl: './about.component.css'
 })

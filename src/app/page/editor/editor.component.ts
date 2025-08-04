@@ -307,6 +307,10 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
     else {
        this.router.navigate(['/home'], {queryParams:this.queryParams});
     }
+    setTimeout(()=>{
+      this.descriptionArea?.nativeElement.focus();
+      this.onEventForResize();
+    }, 200);
   }
 
   createChildTree(children: TodoItem[]):
