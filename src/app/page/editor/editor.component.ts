@@ -102,9 +102,9 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
           }
 
           if(this.router.url.includes('/child')){
-            let parentSubject = this.todoItem.description.match(/^### \[child of (.+?)\]/); // '### [child of subj]
-            if(parentSubject){
-              this.parentSubject = parentSubject;
+            let parentSubjectMatch = this.todoItem.description.match(/^### \[child of (.+?)\]/);
+            if (parentSubjectMatch) {
+              this.parentSubject = parentSubjectMatch[1]; 
             }
           }
 
