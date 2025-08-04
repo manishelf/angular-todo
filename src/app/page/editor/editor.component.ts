@@ -55,6 +55,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
   customFormData: any;
   editiorLinesLoaded: boolean = false;
   hierarchy: Map<string, {item: TodoItem, children:Set<TodoItem>}> | null = null;
+  parentSubject: string = '';
 
   onOptionDelayTimer: number = -1;
 
@@ -98,6 +99,10 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
               this.forEdit = item[0].id;
               this.todoItem = item[0];
             });
+          }
+
+          if(this.router.url.includes('/child')){
+            this.parentSubject = this.todoItem.description..match(/^### \[child of (.+?)\]/); // '### [child of subj]
           }
 
           if(this.router.url.includes('/parent')){
@@ -283,11 +288,10 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
     let {id, ...childItem} = structuredClone((this.todoItem as any)); // clone the parent; it can contain id from save
     let name = `child of ${this.todoItem.subject}`;
     childItem.subject = '';
-    childItem.description = name;
+    childItem.description = '### ['+name+']';
     childItem.userDefined = undefined;
     childItem.tags.push({name});
     this.onAddClick(); this.todoServie.addItem(childItem).then((id)=>{
-      history.pushState(null,'','/edit/parent?subject='+this.todoItem.subject);
       this.router.navigate(['/edit/child'],{state:{item:{id: id, ...childItem}, params: this.queryParams}, queryParams:{id}})
       .then((val)=>{
           setTimeout(()=>{
@@ -299,7 +303,11 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
 
   navigateToParent(): void {
     this.todoServie.updateItem({id:this.forEdit, ...this.todoItem});
-    history.back();
+    if(this.parentSubject !== ''){
+      this.router.navigate(['/edit/parent'],queryParams:{subject: this.parentSubject}});
+    }else {
+       this.router.navigate(['/home'], queryParams:this.queryParams);
+    }
     setTimeout(()=>{
       this.descriptionArea.nativeElement.focus();
     }, 200);
