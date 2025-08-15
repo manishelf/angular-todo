@@ -1,11 +1,11 @@
-<div #canvasContainer class="overflow-hidden resize bg-white relative text-black">
+<div #canvasContainer class="overflow-hidden resize bg-white relative text-black z-3">
     <canvas [id]="id" > 
     </canvas>
     <div class="absolute top-0 right-0" [ngClass]="fullScreen?'fixed':'absolute'">
         <button (click)="toggleEditMode()"><mat-icon>{{editMode?'edit':'pan_tool'}}</mat-icon></button>
         <button (click)="toggleFullScreen()"><mat-icon>{{fullScreen?'fullscreen_exit':'fullscreen'}}</mat-icon></button>
     </div>
-  <div *ngIf="fullScreen" class="fixed bottom-0 left-0 p-3 flex flex-row justify-between z-1000 w-full">
+  <div *ngIf="fullScreen" class="fixed bottom-0 left-0 p-3 flex flex-row justify-between z-3 w-full">
     <div class="w-4/12 flex flex-col">
         <label>Stroke </label>
         <div class="flex flex-row w-full">
