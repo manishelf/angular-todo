@@ -228,10 +228,27 @@ export class CanvasComponent implements AfterViewInit {
       this.canvasContainer.nativeElement.style.position = 'absolute';
       this.canvasContainer.nativeElement.style.top = '0';
       this.canvasContainer.nativeElement.style.left = '0';
+
+      if (this.canvasContainer.nativeElement.requestFullscreen) {
+          this.canvasContainer.nativeElement.requestFullscreen();
+      } else if (this.canvasContainer.nativeElement.webkitRequestFullscreen) { // Safari
+          this.canvasContainer.nativeElement.webkitRequestFullscreen();
+      } else if (this.canvasContainer.nativeElement.msRequestFullscreen) { // IE11
+          this.canvasContainer.nativeElement.msRequestFullscreen();
+      }
     }else{
       this.canvasContainer.nativeElement.style.width = '20vw';
       this.canvasContainer.nativeElement.style.height = '20vh';
       this.canvasContainer.nativeElement.style.position = 'relative';
+
+      let doc:any = document;
+      if (doc.exitFullscreen) {
+          doc.exitFullscreen();
+      } else if (doc.webkitExitFullscreen) { // Safari
+          doc.webkitExitFullscreen();
+      } else if (doc.msExitFullscreen) { // IE11
+          doc.msExitFullscreen();
+      }
     }
   }
 }
