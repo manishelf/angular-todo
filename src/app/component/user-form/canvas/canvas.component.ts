@@ -87,8 +87,14 @@ export class CanvasComponent implements AfterViewInit {
     this.fabricJsCanvas.backgroundColor = 'white';
 
     let ResizeHandler = new ResizeObserver((entry)=>{
-      this.fabricJsCanvas.setHeight(entry[0].contentRect.height);
-      this.fabricJsCanvas.setWidth(entry[0].contentRect.width);
+      const ratio = window.devicePixelRatio || 1;
+      const height = entry[0].contentRect.height;
+      const width = entry[0].contentRect.width;
+      this.fabricJsCanvas.setHeight(height);
+      this.fabricJsCanvas.setWidth(width);      
+      this.fabricJsCanvas.lowerCanvasEl.style.width = width + "px";
+      this.fabricJsCanvas.lowerCanvasEl.style.height = height + "px";
+      //this.fabricJsCanvas.setZoom(ratio);
     });
     setTimeout(
       ()=>ResizeHandler.observe(this.canvasContainer.nativeElement)
@@ -189,8 +195,24 @@ export class CanvasComponent implements AfterViewInit {
     this.fabricJsCanvas.clear();
   }
 
-  copyToClipboardCanvas(){
+  async copyToClipboardCanvas(){
+    const dataUrl = this.fabricJsCanvas.toDataURL({
+        format: 'png',
+        quality: 1.0,
+    });
 
+    // Convert Data URL to Blob
+    const blob = await (await fetch(dataUrl)).blob();
+
+    // Create ClipboardItem and write to clipboard
+    try {
+        await navigator.clipboard.write([
+            new ClipboardItem({ 'image/png': blob })
+        ]);
+    } catch (err) {
+        console.error("Failed to copy image: ", err);
+        alert("Failed to copy image to clipboard.");
+    }
   }
   
   toggleEditMode(){
