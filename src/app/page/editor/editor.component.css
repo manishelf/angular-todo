@@ -7,7 +7,17 @@
 .container__textarea {
     border: none;
     outline: none;
-    width: 100%;
+    background: repeating-linear-gradient(
+        0deg,                
+        transparent,        /*background*/
+        transparent 24px,  /*space between each line*/ 
+        #efefef 24px,    /*line height start*/  
+        #efefef 25px     /*line height end*/
+    );
+    background-position: 0px 10px;
+    line-height: 25px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
 }
 .container__lines {
     border-right: 1px solid rgb(203 213 225);

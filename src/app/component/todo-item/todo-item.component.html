@@ -36,8 +36,8 @@
             </button>
         </div>
     </div>
-    <div [ngClass]="minimized?'max-h-0 opacity-0 max-w-0 ':'max-h-[500px] max-w-29/30 opacity-100 overflow-auto'"
-      class="transition-all duration-1000 ease-in-out" style="margin: auto !important;"
+    <div [ngClass]="minimized?'max-h-0 opacity-0 max-w-0 ':'max-h-[500px] max-w-29/30 opacity-100 overflow-auto m-auto pt-2'"
+      class="transition-all duration-1000 ease-in-out"
       [innerHtml]="parsedMD" class="match-braces rainbow-braces">
     </div>
 </div>

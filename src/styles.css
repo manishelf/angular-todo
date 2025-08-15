@@ -1,6 +1,15 @@
 /* You can add global styles to this file, and also import other style files */
 @import "tailwindcss";
 
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
 /* manual styling as tailwind overrides*/
 h1 {
   @apply text-3xl font-bold;
@@ -26,8 +35,6 @@ h6 {
   @apply text-sm font-bold;
 }
 
-
-
 p {
   @apply text-base;
 }
@@ -37,23 +44,14 @@ a {
 }
 
 blockquote {
-  @apply border-l-4 border-gray-300 pl-4 italic;
+  @apply border-l-4 border-gray-400 bg-gray-100 pl-4;
+  color: black;
 }
 
-ul,
-ol {
-  @apply pl-5;
+blockquote > blockquote {
+  mix-blend-mode: multiply;
 }
-ul {
-  @apply list-disc;
-}
-ol {
-  @apply list-decimal;
-}
-ol br,
-ul br {
-  display: none;
-}
+
 
 code {
   @apply bg-gray-700 text-green-400 py-1  rounded;
@@ -96,14 +94,6 @@ li:has(input[type="checkbox"]) {
   @apply p-2 text-2xl cursor-pointer
 }
 
-html,
-body {
-  height: 100%;
-}
-body {
-  margin: 0;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
-}
 
 /* styles for FullCalendar buttons */
 .fc-button {
@@ -270,3 +260,55 @@ body {
   border-radius: 0.5rem !important;
   @apply outline-2 outline-white
 }
+
+/*
+proper nested list styling
+*/
+
+/*https://codepen.io/maaviles/pen/oXagzq*/
+
+
+ul, ol{
+  @apply pl-5;
+}
+ol br,
+ul br {
+  display: none;
+}
+
+ul li {
+  list-style-type: disc;
+}
+
+ul ul li {
+  list-style-type: circle;
+}
+
+ul ul ul li {
+  list-style-type: square;
+}
+
+ul ul ul ul li {
+  list-style-type: disc;
+}
+
+ol li {
+  list-style-type: decimal;
+}
+
+ol ol li {
+  list-style-type: upper-latin;
+}
+
+ol ol ol li {
+  list-style-type: upper-roman;
+}
+
+ol ol ol ol li {
+  list-style-type: lower-latin;
+}
+
+ol ol ol ol ol li {
+  list-style-type: lower-roman;
+}
+
