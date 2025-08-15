@@ -1,0 +1,39 @@
+<div #canvasContainer class="overflow-hidden resize bg-white relative text-black">
+    <canvas [id]="id" > 
+    </canvas>
+    <div class="absolute top-0 right-0" [ngClass]="fullScreen?'fixed':'absolute'">
+        <button (click)="toggleEditMode()"><mat-icon>{{editMode?'edit':'pan_tool'}}</mat-icon></button>
+        <button (click)="toggleFullScreen()"><mat-icon>{{fullScreen?'fullscreen_exit':'fullscreen'}}</mat-icon></button>
+    </div>
+  <div *ngIf="fullScreen" class="fixed bottom-0 left-0 p-3 flex flex-row justify-between z-1000 w-full">
+    <div class="w-4/12 flex flex-col">
+        <label>Stroke </label>
+        <div class="flex flex-row w-full">
+            <input type="color" [(ngModel)]="strokeColor" (change)="onStrokeColorChange($event)">
+            &nbsp;&nbsp;
+            <input type="range" [(ngModel)]="strokeSize" (change)="onStrokeSizeChange($event)" min="1" max="150" class="w-full">
+        </div>
+        <label>Canvas size </label>
+        <div class="flex flex-row w-full">
+            &nbsp;&nbsp;
+            <input type="range" [(ngModel)]="canvasSize" (change)="onCanvasSizeChange($event)" min="100" max="4000" class="w-full">
+        </div>
+    </div>
+    <div class="flex flex-col">
+    <div class="flex-row">
+    <button type="button" (click)="addText()">textbox</button>
+    <button type="button" (click)="addRect()">rectangle</button>
+    <button type="button" (click)="addTriangle()">triangle</button>
+    <button type="button" (click)="addCircle()">circle</button>
+    <button type="button" (click)="addLine()">line</button>
+    <button type="button" (click)="addImage()">image</button>
+    </div>
+    <div class="flex flex-row justify-end">
+    <button type="button" (click)="copyToClipboardCanvas()" title="copy as image"><mat-icon>file_copy</mat-icon></button>
+    <button type="button" (click)="undoCanvas()" title="undo"><mat-icon>undo</mat-icon></button>
+    <button type="button" (click)="redoCanvas()" title="redo"><mat-icon>redo</mat-icon></button>
+    <button type="button" (click)="clearCanvas()" title="clear"><mat-icon>clear</mat-icon></button>
+    </div>
+    </div>
+  </div>
+</div>

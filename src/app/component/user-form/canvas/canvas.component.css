@@ -1,0 +1,13 @@
+button {
+    margin: 8px;
+    padding: 8px;
+    border-radius: 8px;
+    background-color: gray;
+    mix-blend-mode: difference;
+    cursor: pointer;
+    transition: all;
+}
+
+button:hover {
+    transform: scale(1.05);
+}

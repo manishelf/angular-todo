@@ -631,7 +631,8 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
       }
     }
     localStorage['tempTodoDescription'] = this.todoItem.description;
-    this.todoItem.description = `/* Please add your json schema for desired custom form here - 
+    this.todoItem.description =
+     `/* Please add your json schema for desired custom form here - 
       * Remove this commented part before save; Dont worry your description will be back once you save the schema by clicking the same 'add custom form' button
       * the format is - 
       * {
@@ -642,7 +643,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
       *         "name" : string,
       *         "label" : string,
       *         "type" : 'text' | 'textarea' | 'email' | 'password' 
-      *                  | 'number' | 'date' | 'select' | 'checkbox' | 'radio' | 'boolean' | 'image' 
+      *                  | 'number' | 'date' | 'select' | 'checkbox' | 'radio' | 'boolean' | 'image' | 'canvas' 
       *                  | 'color' | 'range' | 'month' | 'date' | 'time' | 'datetime-local' | 'timestamp' | 'history',
       *         "placeholder"?: string,
       *         "validation"?: {

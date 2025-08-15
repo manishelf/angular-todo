@@ -10,7 +10,7 @@
     background: repeating-linear-gradient(
         0deg,                
         transparent,        /*background*/
-        transparent 24px,  /*space between each line*/ 
+        transparent 24px,  /*space between each line current magic numbers*/ 
         #efefef 24px,    /*line height start*/  
         #efefef 25px     /*line height end*/
     );

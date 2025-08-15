@@ -93,26 +93,7 @@
             class="border border-1 w-full"
           />
         </div>
-
-        <div class="overflow-hidden resize h-fit bg-white" [id]="field.name+'_container'"
-          *ngIf="field.type === 'canvas' && fabricjsLoaded"
-        >
-          <div class="fixed bottom-0 right-20 flex flex-row flex-wrap max-w-100 z-1000" [id]="field.name+'_btn_controls_container'" style="mix-blend-mode: difference; display: none;">
-            <button type="button" class="m-2 p-2 bg-gray-600 rounded" [id]="field.name+'_btn_add_textbox'" >textbox</button>
-            <button type="button" class="m-2 p-2 bg-gray-600 rounded" [id]="field.name+'_btn_add_rectangle'" >rectangle</button>
-            <button type="button" class="m-2 p-2 bg-gray-600 rounded" [id]="field.name+'_btn_add_triangle'" >triangle</button>
-            <button type="button" class="m-2 p-2 bg-gray-600 rounded" [id]="field.name+'_btn_add_circle'" >circle</button>
-            <button type="button" class="m-2 p-2 bg-gray-600 rounded" [id]="field.name+'_btn_add_line'" >line</button>
-            <button type="button" class="m-2 p-2 bg-gray-600 rounded" [id]="field.name+'_btn_add_image'">image</button>
-            
-            <button type="button" class="m-2 p-2 bg-gray-600 rounded" [id]="field.name+'_btn_clear'" >clear</button>
-            <button type="button" class="m-2 p-2 bg-gray-600 rounded" [id]="field.name+'_btn_drawmode_toggle'" >toggle drawmode</button>
-          </div>
-          <canvas  
-                  [id]="field.name" 
-                > 
-          </canvas>
-        </div>
+        <app-canvas *ngIf="field.type === 'canvas'" [id]="field.name" [data]="data?data[field.name]:null"/>  
        </td>
     </tr>
   </table>
