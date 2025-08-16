@@ -144,9 +144,9 @@ export class TodoServiceService {
         }
       );
       if(item.userDefined)
-      this.getCustom(item.userDefined.tag).subscribe((schema)=>{
+      this.getCustom(item.userDefined.tag.name).subscribe((schema)=>{
           if(!schema){
-            this.addCustom(item.userDefined!.tag, item.userDefined!.formControlSchema);
+            this.addCustom(item.userDefined!.tag.name, item.userDefined!.formControlSchema);
           }
         });
     });
@@ -255,7 +255,7 @@ export class TodoServiceService {
       eventEnd: '',
       eventFullDay: false,
       deleted: false,
-      userDefined: { tag: '', formControlSchema: {}, data: null },
+      userDefined: { tag: {name:''}, formControlSchema: {}, data: null },
     };
     try {
       item = JSON.parse(jsonString);

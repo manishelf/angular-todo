@@ -67,7 +67,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
     creationTimestamp: new Date(Date.now()).toISOString(),
     updationTimestamp: new Date(Date.now()).toISOString(),
     userDefined: {
-      tag: '',
+      tag: {name:''},
       formControlSchema: {},
       data: null,
     },
@@ -500,7 +500,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
     }
     if (this.customFormSchema?.fields) {
       this.todoItem.userDefined = {
-        tag: this.todoItem.tags.filter((tag) => tag.name.startsWith('form-')).map(tag => tag.name).join(','),
+        tag: {name:this.todoItem.tags.filter((tag) => tag.name.startsWith('form-')).map(tag => tag.name).join(',')},
         formControlSchema: this.customFormSchema,
         data: this.userForm.state(),
       };
@@ -669,14 +669,11 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
     if (this.todoItem.userDefined) {
       if (this.todoItem.userDefined.formControlSchema.fields) {
         // undo the form- prefix for convienience
-		let tag = this.todoItem.userDefined.tag;
-        this.todoItem.userDefined.tag = tag.replace('form-',''); // not replaceAll as let x,form-y be else on save it would become form-x,y in tags if all replaced
 		this.todoItem.description += JSON.stringify(
           this.todoItem.userDefined,
           null,
           4
         );
-		this.todoItem.userDefined.tag = tag;
       }
     }
 
