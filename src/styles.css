@@ -82,13 +82,6 @@ input[type="checkbox"]{
   @apply w-4 h-4 rounded-sm m-1;
 }
 
-li:has(input[type="checkbox"]) {
-  list-style: none;
-  text-decoration: underline;
-  display: flex;
-  align-items: center;
-}
-
 /*prismjs*/
 .toolbar-item {
   @apply p-2 text-2xl cursor-pointer
