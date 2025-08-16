@@ -143,6 +143,12 @@ export class TodoServiceService {
           rej(err);     
         }
       );
+      if(item.userDefined)
+      this.getCustom(item.userDefined.tag).subscribe((schema)=>{
+          if(!schema){
+            this.addCustom(item.userDefined!.tag, item.userDefined!.formControlSchema);
+          }
+        });
     });
   }
 

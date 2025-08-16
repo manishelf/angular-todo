@@ -24,7 +24,7 @@
         />
         <a *ngIf="field.type === 'url'"
           [href]="field.validation?.pattern?
-          field.validation?.pattern?.replace('{key}',dynamicForm.get(field.name)?.value.trim())
+          field.validation?.pattern?.replace('{key}',dynamicForm.get(field.name)?.value?.trim())
           :dynamicForm.get(field.name)?.value"
           [formControlName]="field.name" 
           [title]="field.name">
