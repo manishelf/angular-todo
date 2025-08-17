@@ -66,6 +66,11 @@ export function reduceToFields(fields: string[], flatArr: [number, any[]][],op:s
     fields.forEach((field, i) => {
       let existing = res.get(field);
       let curr = Number.parseFloat(row[1][i+1]); // id is 0
+      
+      if(Number.isNaN(curr)){
+        curr = 0;
+      }
+
       if (existing) {
         res.set(field, perfOp(op, existing, curr));
       } else {

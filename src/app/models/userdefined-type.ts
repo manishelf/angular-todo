@@ -2,7 +2,7 @@ import { FormSchema } from "./FormSchema";
 import { Tag } from "./tag";
 
 export interface UserDefinedType {
-    tag : Tag,
+    tag : Omit<Tag,"id">,
     formControlSchema : FormSchema,
     data : Map<string, string> | null,
 }

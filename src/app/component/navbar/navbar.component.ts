@@ -257,9 +257,9 @@ export class NavbarComponent implements AfterViewInit {
       let reader = new FileReader();
       reader.readAsText(file);
       reader.onload = async (event) => {
-        let json = event.target!.result;
-          if(json){
-            let items = JSON.parse(json.toString());
+        let jsonBuffer = event.target!.result;
+          if(jsonBuffer){
+            let items = JSON.parse(jsonBuffer.toString());
             for(let item of items.items){
               if(item.userDefined?.tag){
                 item.userDefined.tag = {name: item.userDefined.tag};

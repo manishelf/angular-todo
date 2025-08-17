@@ -59,11 +59,13 @@ export class VisualizeComponent implements OnInit {
     
     this.sortedFields$.subscribe((sortOnfields) => {
       this.sortService
-        .sortItems(sortOnfields, this.itemList)
-        .subscribe((items) => {
-          this.itemList = items;
-          this.populateItems(items);
-        });
+      .sortItems(sortOnfields, this.itemList)
+      .subscribe((items) => {
+        this.itemList = items;
+        this.populateItems(items);
+      });
+      
+      if(sortOnfields.includes("id")) this.sortedFields$.next([]);
     });
 
     loadCharJS();
@@ -182,6 +184,7 @@ export class VisualizeComponent implements OnInit {
     let set = new Set(sortFields);
     set.add(field);
     let nextFields = Array.from(set);
+    if(nextFields.length>1)
     nextFields.shift(); // pop out desc, or asc;
     
     if(this.sortOrderAsc){

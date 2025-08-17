@@ -13,14 +13,18 @@ export class SortService {
     
     // all are in ascending order
     if (type) {
-      console.log(type);
       switch (Object.getPrototypeOf(type)) {
         case Number.prototype:
           return (x: number, y: number) => x - y;
         case String.prototype:
-          let numCast = Number.parseFloat(type);
-          if (!Number.isNaN(numCast)) {
-            return (x: number, y: number) => x - y;
+          let numCheck = Number.parseFloat(type);
+          let numRegEx = new RegExp("^[\\d.]+$"); // alphanumeric and .
+          if (!Number.isNaN(numCheck) && numRegEx.test(type)) {
+            return (x: number, y: number) => {              
+              if(Number.isNaN(x)) x = 0;
+              if(Number.isNaN(y)) y = 0;
+              return x - y;
+            }
           }
           return (x: string, y: string) => x === y ? 0 : x < y ? -1 : 1;
         case Boolean.prototype:
@@ -31,6 +35,7 @@ export class SortService {
           return this.sortByReminderAndCompletionStatus;
       }
     }
+    
     return (x: any, y: any) => {
       return 0;
     };
@@ -62,33 +67,33 @@ export class SortService {
         return;
       }
 
-      let sortingFn = (x: TodoItem, y: TodoItem): number => {
+      let sortingFnMap = new Map([["unsorted",(x: TodoItem, y: TodoItem): number => {
         return 1;
-      };
+      }]]);
 
 
       let ascending = order[0] !== 'desc';
       
       if(order.length==1){
-        sortingFn = this.sortByReminderAndCompletionStatus;          
+        sortingFnMap.set("ReminderAndCompletionStatus", this.sortByReminderAndCompletionStatus);          
       }
 
       let lat = order[1] === 'lat';
       let old = order[1] === 'old';
       if (old) {
-        sortingFn = (x, y) => {
+        sortingFnMap.set("oldest",(x, y) => {
           return (
             new Date(x.creationTimestamp).getTime() -
             new Date(y.creationTimestamp).getTime()
           ); // time since epoch
-        };
+        });
       } else if (lat) {
-        sortingFn = (x, y) => {
+        sortingFnMap.set("latest", (x, y) => {
           return (
             new Date(y.updationTimestamp).getTime() -
             new Date(x.updationTimestamp).getTime()
           );
-        };
+        });
       }
 
 
@@ -102,27 +107,29 @@ export class SortService {
         ) {
           continue;
         }
-        let prevSortingFn = sortingFn; // latest or oldest or standard
-
-        sortingFn = (x, y) => {
+        
+        sortingFnMap.set(prop,(x, y)=>{
           let val1 = (x as any)[prop];
-          let val2 = (y as any)[prop];
+          let val2 = (y as any)[prop];          
           
           if (!(val1 && val2) && x.userDefined?.data && y.userDefined?.data) {
             val1 = (x.userDefined?.data as any)[prop];
             val2 = (y.userDefined?.data as any)[prop];
           }
-          if (val1 && val2) {
-            let prevComp = prevSortingFn(x, y) * (ascending ? 1 : -1);
-            
-            let fieldComp = this.getComparatorForType(val1)(val1, val2);
-            return prevComp * fieldComp ? prevComp*fieldComp : 1;
+          
+          if (val1 && val2) {            
+            return this.getComparatorForType(val1)(val1, val2)*(ascending?1:-1);
           }
-          return 0;
-        };
+                    
+          return -1;
+        });
       }
-      
-      subscriber.next(items.sort(sortingFn));
+
+      for(let fn of sortingFnMap){
+        items = items.sort(fn[1]);
+      }
+
+      subscriber.next(items);
       subscriber.complete();
     }).pipe(
        mergeMap(items=> of(items.slice(0,limit)))
