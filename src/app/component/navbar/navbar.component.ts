@@ -257,10 +257,25 @@ export class NavbarComponent implements AfterViewInit {
       let reader = new FileReader();
       reader.readAsText(file);
       reader.onload = async (event) => {
-        let jsonBuff = event.target!.result;
-          if(jsonBuff){
+        let json = event.target!.result;
+          if(json){
+            let items = JSON.parse(json.toString());
+            for(let item of items.items){
+              if(item.userDefined?.tag){
+                item.userDefined.tag = {name: item.userDefined.tag};
+              }
+              if(item.userDefined.formControlSchema.fields){
+                for(let field of item.userDefined.formControlSchema.fields){
+                  if(field.options){
+                    console.log(field.options);
+                    
+                    field.options = field.options.join(',');
+                  }
+                }
+              }
+            }
             this.todoService
-            .deserializeManyFromJson(jsonBuff.toString())
+            .deserializeManyFromJson(JSON.stringify(items))
             .subscribe((itemList) => {
               this.todoService.addMany(itemList);
               this.toaster.success('Notes loaded successfully');
