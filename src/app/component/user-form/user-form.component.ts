@@ -169,8 +169,8 @@ export class UserFormComponent implements OnChanges {
         }
 
         if (type === 'checkbox' && field.options) {
-          let checkboxCtrls = field.options.map((option) => {
-            const checked = (field.default || ['']).includes(option);
+          let checkboxCtrls = field.options.split(',').map((option) => {
+            const checked = (field.default || ['']).includes(option.trim());
             return this.formBuilder.control(checked);
           });
           formControls[fieldName] = this.formBuilder.array(checkboxCtrls);

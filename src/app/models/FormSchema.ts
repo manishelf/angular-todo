@@ -12,7 +12,7 @@ export interface FormField {
     placeholder?: string,
     validation?: FormFieldValidation,
     default?: string,
-    options?: string[],
+    options?: string,
 }
 
 export const inputTagTypes = [

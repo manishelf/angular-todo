@@ -10,8 +10,10 @@ export class SortService {
   constructor(private todoItemUtils: TodoItemUtils) {}
 
   getComparatorForType(type: any): (x: any, y: any) => number {
+    
     // all are in ascending order
     if (type) {
+      console.log(type);
       switch (Object.getPrototypeOf(type)) {
         case Number.prototype:
           return (x: number, y: number) => x - y;
