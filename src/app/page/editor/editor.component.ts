@@ -657,7 +657,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
       *             "step"? : string
       *         },
       *         "default"?: string,
-      *         "options"?: string[]
+      *         "options"?: string // , seperated
       *       }
       *     ]
       *   },
