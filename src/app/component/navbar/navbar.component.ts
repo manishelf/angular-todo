@@ -13,6 +13,7 @@ import { TodoServiceService } from '../../service/todo-service.service';
 import { filter } from 'rxjs';
 import { TodoItem } from '../../models/todo-item';
 import { SortService } from './../../service/sort/sort.service';
+import { UserService } from '../../service/user/user.service';
 
 @Component({
   selector: 'app-navbar',
@@ -25,12 +26,14 @@ export class NavbarComponent implements AfterViewInit {
   @ViewChild('searchBox') searchBox!: ElementRef;
 
   lastQueryParams: any = null;
+  online: boolean = false;
 
   constructor(
     private router: Router,
     private toaster: ToastService,
     private todoService: TodoServiceService,
-    private sortService: SortService
+    private sortService: SortService,
+    private userService: UserService
   ) {
     // to avoid keyboards from poping upp on phones constantly
     let l = localStorage['lastQueryParams'];
@@ -53,6 +56,14 @@ export class NavbarComponent implements AfterViewInit {
           }, 100);
         });
     }
+    
+    userService.connected$.subscribe(status=>{
+      if(status){
+        this.online = true;
+      }else {
+        this.online = false;
+      }
+    });
   }
 
   reconstructParams(params:any): string{
@@ -247,7 +258,7 @@ export class NavbarComponent implements AfterViewInit {
       });
   }
 
-  async uploadNotes() {
+  uploadNotes() {
     this.todoService.fromBin = false;
     let inp = document.createElement('input');
     inp.type = 'file';
@@ -256,7 +267,7 @@ export class NavbarComponent implements AfterViewInit {
       let file = (e.target as HTMLInputElement).files![0];
       let reader = new FileReader();
       reader.readAsText(file);
-      reader.onload = async (event) => {
+      reader.onload = (event) => {
         let jsonBuffer = event.target!.result;
           if(jsonBuffer){
             let items = JSON.parse(jsonBuffer.toString());
@@ -266,9 +277,7 @@ export class NavbarComponent implements AfterViewInit {
               }
               if(item.userDefined.formControlSchema.fields){
                 for(let field of item.userDefined.formControlSchema.fields){
-                  if(field.options){
-                    console.log(field.options);
-                    
+                  if(field.options){                    
                     field.options = field.options.join(',');
                   }
                 }
@@ -284,5 +293,17 @@ export class NavbarComponent implements AfterViewInit {
       };
     };
     inp.click();
+  }
+
+  toggleBackendConnection(){
+    if(this.online){
+      this.userService.disconnectFromBackend().then(()=>{
+        this.online = false;
+      });
+    }else{
+      this.userService.connectToBackend().then(()=>{
+        this.online = true;
+      });
+    }
   }
 }

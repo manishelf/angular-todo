@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {
   Observable,
   BehaviorSubject,
+  Subscriber,
 } from 'rxjs';
 import { TodoItem } from './../models/todo-item';
 import { TodoItemAddService } from './todo-item-crud/todo-item-add.service';
@@ -10,55 +11,18 @@ import { TodoItemDeleteService } from './todo-item-crud/todo-item-delete.service
 import { TodoItemGetService } from './todo-item-crud/todo-item-get.service';
 import { ToastService } from 'angular-toastify';
 import { SortService } from './sort/sort.service';
+import { UserService } from './user/user.service';
+import { User } from '../models/User';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TodoServiceService {
   fromBin: boolean = false;
+  lastLoggedUserEmail: string = "qtodo@local";
   public db$: Observable<IDBDatabase> = new Observable<IDBDatabase>(
     (subscriber) => {
-      const request = indexedDB.open('todo_items_db', 2335);
-
-      request.onerror = (error) => {
-        subscriber.error(error);
-        this.toaster.error('error connecting to local idexedDB!');
-        console.error('Error opening IndexedDB:', error);
-      };
-
-      request.onupgradeneeded = (event) => {
-        let db = (event.target as IDBOpenDBRequest).result;
-        const todoItemsStore = db.createObjectStore('todo_items', {
-          keyPath: 'id',
-          autoIncrement: true,
-        });
-        const deletedTodoItemsStore = db.createObjectStore(
-          'deleted_todo_items',
-          { keyPath: 'id', autoIncrement: true }
-        );
-        const tagsTodoItemStroe = db.createObjectStore('tags_todo_items', {
-          keyPath: 'name',
-        });
-        const customItemStroe = db.createObjectStore('custom_items', {
-          keyPath: 'tag',
-        });
-
-        todoItemsStore.createIndex('subjectIndex', 'subject', { unique: true });
-        deletedTodoItemsStore.createIndex('subjectIndex', 'subject', {
-          unique: true,
-        });
-        tagsTodoItemStroe.createIndex('tagName', 'name', { unique: true });
-        customItemStroe.createIndex('tagIndex', 'tag', { unique: true });
-      };
-
-      request.onsuccess = (event) => {
-        let db = (event.target as IDBOpenDBRequest).result;
-        db.onerror = (err) => {
-          throw (err as any).srcElement.error;
-        };
-        subscriber.next(db);
-        subscriber.complete();
-      };
+      this.initializeIndexDB(subscriber, this.lastLoggedUserEmail);
     }
   );
 
@@ -71,8 +35,61 @@ export class TodoServiceService {
     private deleteService: TodoItemDeleteService,
     private getService: TodoItemGetService,
     private sortService: SortService,
-    private toaster: ToastService
-  ) {}
+    private toaster: ToastService,
+    private userService: UserService
+  ) {
+    userService.loggedInUser$.subscribe((user)=>{
+      if(user && user.email){
+        this.lastLoggedUserEmail = user.email;
+      }else{
+        this.lastLoggedUserEmail = "qtodo@local"
+      }
+    })
+  }
+
+
+  initializeIndexDB(subscriber: Subscriber<IDBDatabase>, userEmail: string){
+    const request = indexedDB.open('todo_items_db_'+userEmail, 1);
+    request.onerror = (error) => {
+      subscriber.error(error);
+      this.toaster.error('error connecting to local idexedDB!');
+      console.error('Error opening IndexedDB:', error);
+    };
+
+    request.onupgradeneeded = (event) => {
+      let db = (event.target as IDBOpenDBRequest).result;
+      const todoItemsStore = db.createObjectStore('todo_items', {
+        keyPath: 'id',
+        autoIncrement: true,
+      });
+      const deletedTodoItemsStore = db.createObjectStore(
+        'deleted_todo_items',
+        { keyPath: 'id', autoIncrement: true }
+      );
+      const tagsTodoItemStroe = db.createObjectStore('tags_todo_items', {
+        keyPath: 'name',
+      });
+      const customItemStroe = db.createObjectStore('custom_items', {
+        keyPath: 'tag',
+      });
+
+      todoItemsStore.createIndex('subjectIndex', 'subject', { unique: true });
+      deletedTodoItemsStore.createIndex('subjectIndex', 'subject', {
+        unique: true,
+      });
+      tagsTodoItemStroe.createIndex('tagName', 'name', { unique: true });
+      customItemStroe.createIndex('tagIndex', 'tag', { unique: true });
+    };
+
+    request.onsuccess = (event) => {
+      let db = (event.target as IDBOpenDBRequest).result;
+      db.onerror = (err) => {
+        throw (err as any).srcElement.error;
+      };
+      subscriber.next(db);
+      subscriber.complete();
+    };
+  }
 
   initializeItems(): void {
     this.getService.getAllItems(this.db$, this.fromBin).subscribe((items) => {
