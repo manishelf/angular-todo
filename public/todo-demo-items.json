@@ -4612,13 +4612,7 @@
               "validation": {
                 "require": true
               },
-              "options": [
-                "Planning",
-                "Development",
-                "Testing",
-                "Deployment",
-                "Maintenance"
-              ],
+              "options": "Planning,Development,Testing,Deployment,Maintenance",
               "default": "Deployment"
             },
             {
@@ -4628,13 +4622,7 @@
               "validation": {
                 "require": true
               },
-              "options": [
-                "Planning",
-                "Development",
-                "Testing",
-                "Deployment",
-                "Maintenance"
-              ],
+              "options": "Planning,Development,Testing,Deployment,Maintenance",
               "default": "Deployment"
             },
             {
@@ -4644,13 +4632,7 @@
               "validation": {
                 "require": true
               },
-              "options": [
-                "Planning",
-                "Development",
-                "Testing",
-                "Deployment",
-                "Maintenance"
-              ],
+              "options": "Planning,Development,Testing,Deployment,Maintenance",
               "default": "Deployment"
             },
             {

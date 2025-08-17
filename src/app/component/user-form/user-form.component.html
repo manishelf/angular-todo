@@ -45,18 +45,18 @@
           [id]="field.name"
           [formControlName]="field.name"
         >
-          <option *ngFor="let option of field.options.split(',')" [value]="option">{{ option }}</option>
+          <option *ngFor="let option of field.options?.split(',')" [value]="option">{{ option }}</option>
         </select>
         <div *ngIf="field.type === 'radio'" class="flex flex-wrap" [id]="field.name">
-          <div *ngFor="let option of field.options.split(',');" class="flex-shrink-0 m-1" [title]="field.name+'-'+option">
+          <div *ngFor="let option of field.options?.split(',');" class="flex-shrink-0 m-1" [title]="field.name+'-'+option">
             <label [for]="field.name+'-'+option">{{option}}:</label>
             <input type="radio" [id]="field.name+'-'+option" [value]="option" [name]="field.name" [formControlName]="field.name">
           </div>
         </div>
         <div *ngIf="field.type === 'checkbox'" class="flex flex-wrap" [id]="field.name">
-          <div *ngFor="let option of field.options.split(','); let i = index" class="flex-shrink-0 m-1" [title]="field.name+'-'+option" [formArrayName]="field.name">
+          <div *ngFor="let option of field.options?.split(','); let i = index" class="flex-shrink-0 m-1" [title]="field.name+'-'+option" [formArrayName]="field.name">
             <label [for]="field.name+'-'+option">{{option}}:</label>
-            <input type="checkbox" [id]="field.name+'-'+option" [value]="option" [name]="field.name" [formControlName]="i+'_'+option">
+            <input type="checkbox" [id]="field.name+'-'+option" [value]="option" [name]="field.name" [formControlName]="i">
           </div>
         </div>
         <div *ngIf="field.type === 'boolean'" [id]="field.name">
