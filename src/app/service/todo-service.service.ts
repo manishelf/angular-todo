@@ -165,8 +165,8 @@ export class TodoServiceService {
           if(!schema){
             this.addCustom(item.userDefined!.tag.name, item.userDefined!.formControlSchema);
           }
-        });
-    });*/
+        });*/
+    });
   }
 
   addCustom(tag: string, item: any) {
