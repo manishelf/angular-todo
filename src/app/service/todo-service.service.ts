@@ -19,7 +19,7 @@ import { User } from '../models/User';
 })
 export class TodoServiceService {
   fromBin: boolean = false;
-  lastLoggedUserEmail: string = "qtodo@local";
+  lastLoggedUserEmail: string = "";
   public db$: Observable<IDBDatabase> = new Observable<IDBDatabase>(
     (subscriber) => {
       this.initializeIndexDB(subscriber, this.lastLoggedUserEmail);
@@ -42,7 +42,7 @@ export class TodoServiceService {
       if(user && user.email){
         this.lastLoggedUserEmail = user.email;
       }else{
-        this.lastLoggedUserEmail = "qtodo@local"
+        //this.lastLoggedUserEmail = "qtodo@local"
       }
     })
   }
