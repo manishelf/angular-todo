@@ -19,7 +19,7 @@ import { User } from '../models/User';
 })
 export class TodoServiceService {
   fromBin: boolean = false;
-  lastLoggedUserEmail: string = "";
+  lastLoggedUserEmail: string = "qtodo@local";
   public db$: Observable<IDBDatabase> = new Observable<IDBDatabase>(
     (subscriber) => {
       this.initializeIndexDB(subscriber, this.lastLoggedUserEmail);
@@ -42,14 +42,14 @@ export class TodoServiceService {
       if(user && user.email){
         this.lastLoggedUserEmail = user.email;
       }else{
-        //this.lastLoggedUserEmail = "qtodo@local"
+        this.lastLoggedUserEmail = "qtodo@local"
       }
     })
   }
 
 
   initializeIndexDB(subscriber: Subscriber<IDBDatabase>, userEmail: string){
-    const request = indexedDB.open('todo_items_db_'+userEmail, 1);
+    const request = indexedDB.open('todo_items_db', 1);
     request.onerror = (error) => {
       subscriber.error(error);
       this.toaster.error('error connecting to local idexedDB!');
