@@ -160,13 +160,13 @@ export class TodoServiceService {
           rej(err);     
         }
       );
-      if(item.userDefined)
+      /*if(item.userDefined)
       this.getCustom(item.userDefined.tag.name).subscribe((schema)=>{
           if(!schema){
             this.addCustom(item.userDefined!.tag.name, item.userDefined!.formControlSchema);
           }
         });
-    });
+    });*/
   }
 
   addCustom(tag: string, item: any) {
