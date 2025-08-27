@@ -1,5 +1,6 @@
 import {
   Component,
+  ElementRef,
   HostListener,
   Input,
   OnChanges,
@@ -43,7 +44,9 @@ export class UserFormComponent implements OnChanges {
 
   @ViewChildren(CanvasComponent) canvasComponents!: QueryList<CanvasComponent>;
 
-  state(): Map<string, any> {
+  fileControlsId: string[] = [];
+
+  async state(): Promise<Map<string, any>> {
     if (!this.schema?.fields) return new Map();
 
     if (this.dynamicForm?.valid) {
@@ -52,7 +55,29 @@ export class UserFormComponent implements OnChanges {
       for(let canvas of canvasArr){
         data[canvas.id]=canvas.getState();       
       }
-      return data;
+
+      if(this.fileControlsId.length>0){
+        await new Promise((res)=>{
+          for(let fileId of this.fileControlsId){
+            let ele = document.getElementById(fileId);
+            let file = (ele as any).files[0];
+            if (file) {
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                  const dataUrl = e.target?.result;
+                  data[fileId]=dataUrl;
+                  res(data);
+                };
+
+                reader.readAsDataURL(file);
+            }
+          }
+        });
+      }
+      
+
+      return new Promise((res)=>res(data));
     } else {
       let errors = new Map();
       for (let i = 0; i < this.schema.fields.length; i++) {
@@ -69,14 +94,13 @@ export class UserFormComponent implements OnChanges {
 
   constructor(private formBuilder: FormBuilder) {
     this.inputTagTypes = inputTagTypes;
-  }
+   }
 
   ngOnChanges(): void {
     if (this.data) {
       let data = new Map(Object.entries(this.data));
       this.schema?.fields?.forEach((field) => {
-        if (data.has(field.name))
-          field.default = data.get(field.name) as string;
+        field.default = data.get(field.name) as string;
       });
     }
     this.createForm();
@@ -168,6 +192,10 @@ export class UserFormComponent implements OnChanges {
           continue; // dont add as a form 
         }
 
+        if(type === 'file'){
+          this.fileControlsId.push(field.name);
+        }
+
         if (type === 'checkbox' && field.options) {
           console.log(field.options);
            
@@ -195,5 +223,9 @@ export class UserFormComponent implements OnChanges {
       uniqueFields.set(f.name, f);
     }
     this.schema.fields = Array.from(uniqueFields.values());
+  }
+
+  openFileBrowserFor(id: string){
+    document.getElementById(id)?.click();
   }
 }

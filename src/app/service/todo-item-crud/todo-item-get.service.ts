@@ -43,13 +43,13 @@ export class TodoItemGetService {
       })
     );
   }
-  getAllCustom(db$: Observable<IDBDatabase>, tags: string[]):Observable<any[]>{
+  getAllCustom(db$: Observable<IDBDatabase>, tags: Tag[]):Observable<any[]>{
     return db$.pipe(
       switchMap((db)=>{
         const store = this.todoItemUtils.getObjectStoreRO(db, 'custom_items');
         return from(tags).pipe(
           mergeMap(tag=>{
-            const request = store.get(tag);
+            const request = store.get(tag.name);
             return this.todoItemUtils.createObservable<any>(request);
           }),
           toArray()

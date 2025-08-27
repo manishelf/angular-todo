@@ -13,16 +13,19 @@ import { ToastService } from 'angular-toastify';
 import { SortService } from './sort/sort.service';
 import { UserService } from './user/user.service';
 import { User } from '../models/User';
+import { BackendCrudService } from './todo-item-crud/backend-crud/backend-crud.service';
+import { Tag } from '../models/tag';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TodoServiceService {
   fromBin: boolean = false;
-  lastLoggedUserEmail: string = "qtodo@local";
+  lastLoggedUserEmail: string = "qtodo";
+  lastLoggedUserGroup: string = "local";
   public db$: Observable<IDBDatabase> = new Observable<IDBDatabase>(
     (subscriber) => {
-      this.initializeIndexDB(subscriber, this.lastLoggedUserEmail);
+      this.initializeIndexDB(subscriber, this.lastLoggedUserEmail,this.lastLoggedUserGroup);
     }
   );
 
@@ -36,20 +39,24 @@ export class TodoServiceService {
     private getService: TodoItemGetService,
     private sortService: SortService,
     private toaster: ToastService,
-    private userService: UserService
+    private userService: UserService,
+    private backendService: BackendCrudService
   ) {
     userService.loggedInUser$.subscribe((user)=>{
-      if(user && user.email){
+      if(user && user.email && user.userGroup){
         this.lastLoggedUserEmail = user.email;
+        this.lastLoggedUserGroup = user.userGroup;
       }else{
-        this.lastLoggedUserEmail = "qtodo@local"
+        this.lastLoggedUserEmail = 'qtodo';
+        this.lastLoggedUserGroup = 'local';
       }
+      this.initializeItems();
     })
   }
 
 
-  initializeIndexDB(subscriber: Subscriber<IDBDatabase>, userEmail: string){
-    const request = indexedDB.open('todo_items_db_'+userEmail, 1);
+  initializeIndexDB(subscriber: Subscriber<IDBDatabase>, userEmail: string, userGroup: string){
+    const request = indexedDB.open('todo_items_db_'+userEmail+"@"+userGroup, 1);
     request.onerror = (error) => {
       subscriber.error(error);
       this.toaster.error('error connecting to local idexedDB!');
@@ -92,7 +99,7 @@ export class TodoServiceService {
   }
 
   initializeItems(): void {
-    this.getService.getAllItems(this.db$, this.fromBin).subscribe((items) => {
+    this.getAll().subscribe((items)=>{
       this.todoItemsSubject.next(items);
     });
   }
@@ -160,6 +167,9 @@ export class TodoServiceService {
           rej(err);     
         }
       );
+      
+      this.backendService.addItem(item);
+
       /*if(item.userDefined)
       this.getCustom(item.userDefined.tag.name).subscribe((schema)=>{
           if(!schema){
@@ -187,7 +197,7 @@ export class TodoServiceService {
     return this.getService.getCustom(this.db$, tag);
   }
 
-  getAllCustom(tags: string[]): Observable<any[]> {
+  getAllCustom(tags: Tag[]): Observable<any[]> {
     return this.getService.getAllCustom(this.db$, tags);
   }
 

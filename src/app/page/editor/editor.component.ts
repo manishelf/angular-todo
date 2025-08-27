@@ -27,6 +27,7 @@ import { UserFormComponent } from '../../component/user-form/user-form.component
 import { FormField, FormSchema, inputTagTypes } from '../../models/FormSchema';
 import { ToastService } from 'angular-toastify';
 import { filter, Observable } from 'rxjs';
+import { TagListComponent } from '../../component/tag-list/tag-list.component';
 
 declare var Prism: any;
 
@@ -34,7 +35,7 @@ declare var Prism: any;
   selector: 'app-markdown-editor',
   templateUrl: './editor.component.html',
   styleUrls: ['./editor.component.css'],
-  imports: [FormsModule, CommonModule, MatIconModule, UserFormComponent],
+  imports: [FormsModule, CommonModule, MatIconModule, UserFormComponent, TagListComponent],
 })
 export class EditorComponent implements AfterViewChecked, AfterViewInit {
   @ViewChild('subjectTxt') subjectTxt!: ElementRef;
@@ -47,7 +48,6 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
 
   convertedMarkdown: SafeHtml = '';
   option: string = 'Preview';
-  tagNameList: string = '';
   forEdit: number = -1;
   showTags: boolean = false;
   schemaEditingInProgress: boolean = false;
@@ -98,23 +98,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
               this.forEdit = item[0].id;
               this.todoItem = item[0];
             });
-          }
-
-          
-
-          if(this.router.url.includes('/parent')){
-           this.hierarchy = new Map();
-           setTimeout(()=>{
-             this.todoServie.searchTodos('', ['child of '+this.todoItem.subject], [], true).subscribe((children)=>{
-                this.hierarchy?.set(this.todoItem.subject, {item: {id:this.forEdit, ...this.todoItem}, children: new Set(children)})
-                this.createChildTreeview(); // incase only one level deep
-                this.createChildTree(children).subscribe((result)=>{
-                this.hierarchy?.set(result.item.subject, result);
-                this.createChildTreeview();
-               })
-             })
-           }, 200); // let it load the item then make the tree
-          }
+          } 
         },100);
       });
 
@@ -127,7 +111,6 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
           /<br>/g,
           '\n'
         );
-        this.tagNameList = this.todoItem.tags.map((tag) => tag.name).join(',')+',';
         this.customFormSchema = this.todoItem.userDefined?.formControlSchema;
         this.customFormData = this.todoItem.userDefined?.data;
       }
@@ -138,7 +121,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
   ngAfterViewInit(): void {
     setTimeout(() => {
       this.subjectTxt.nativeElement.focus();
-    }, 300); 
+    }, 300);
   }
 
   ngAfterViewChecked(): void {
@@ -302,6 +285,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
     this.todoServie.updateItem({id:this.forEdit, ...this.todoItem});
     let parentSubjectMatch = this.todoItem.description.match(/^### \[child of (.+?)\]/);
     if (parentSubjectMatch) {
+      this.updateParentDescForTree();
       this.router.navigate(['/edit/parent'],{queryParams:{subject: parentSubjectMatch[1]}});
     }
     else {
@@ -313,29 +297,11 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
     }, 200);
   }
 
-  createChildTree(children: TodoItem[]):
-     Observable<{item:TodoItem,children:Set<TodoItem>}>{
-    return new Observable((subscriber)=>{
-      for(let child of children){
-        /**
-         * recursively get the children of the items
-         */
-        this.todoServie.searchTodos('',['child of '+child.subject],[],true)
-        .subscribe((innerChildren)=>{
-          if(innerChildren.length>0){
-            subscriber.next({item:child, children:new Set(innerChildren)});
-            this.createChildTree(innerChildren);
-          }
-        });
-      }
-    });
-  }
-
-  createChildTreeview(): void{
+  createChildTreeview(parentSubject: string, hierarchy: Map<string, {item:TodoItem, children: Set<TodoItem>}>): string{
     let tree = '\n```treeview\n';
-    tree += this.todoItem.subject+'/\n';
+    tree += parentSubject+'/\n';
     let visited:string[] = [];
-    for(let entry of this.hierarchy!.entries()){
+    for(let entry of hierarchy!.entries()){
       let i = 1;
       for(let child of entry[1].children){
         let icon = '├──';
@@ -350,8 +316,32 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
       }
     } 
     tree+='\n```\n';
-    this.todoItem.description = this.todoItem.description.replace(new RegExp('\n```treeview\n'+this.todoItem.subject+'.*\n```\n','s'),'')
-    this.todoItem.description += tree;
+    return tree;
+  }
+
+  updateParentDescForTree(){
+    let parentSubjectMatch = this.todoItem.description.match(/^### \[child of (.+?)\]/);
+    if(parentSubjectMatch){
+      let replaceDesc = (parent:TodoItem, tree:string)=>{
+          let existingTree = parent.description.match(new RegExp('\n```treeview\n'+parent.subject+'.*\n```\n','s'));
+          if(existingTree){
+            parent.description = parent.description.replace(new RegExp('\n```treeview\n'+parent.subject+'.*\n```\n','s'), tree); 
+          }else{
+            parent.description += tree;
+          }
+      }
+      this.todoServie.searchTodos(parentSubjectMatch[1]).subscribe((res)=>{
+        let parent = res[0];
+        let hierarchy = new Map();
+        this.todoServie.searchTodos('', ['child of '+parentSubjectMatch[1]], [], true).subscribe((children)=>{
+          hierarchy?.set(this.todoItem.subject, {item: {id:this.forEdit, ...this.todoItem}, children: new Set(children)})
+          let tree = this.createChildTreeview(parentSubjectMatch[1], hierarchy);
+          replaceDesc(parent, tree);
+          this.todoServie.updateItem(parent);
+        });
+      });
+    }
+
   }
   
   @HostListener('focusin')
@@ -403,7 +393,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
         let target: any = event.target;
         if (target.result) {
           let field: FormField = {
-            type: 'url',
+            type: 'file',
             name:
               data.file.name.replaceAll(/[.]/g, '_') +
               '/' +
@@ -486,11 +476,12 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
       }
     }
   }
-  onAddClick() {
+
+  async onAddClick() {
     if (this.userForm?.dynamicForm.invalid) {
       console.log('user defined field validation failed - ');
       console.error(this.userForm.state());
-      this.userForm.state().forEach((value, key) => {
+      (await this.userForm.state() ).forEach((value, key) => {
         if (value) {
           let stringy = JSON.stringify(value);
           this.toaster.error(key + '->' + stringy);
@@ -502,39 +493,34 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
       this.todoItem.userDefined = {
         tag: {name:this.todoItem.tags.filter((tag) => tag.name.startsWith('form-')).map(tag => tag.name).join(',')},
         formControlSchema: this.customFormSchema,
-        data: this.userForm.state(),
+        data: await this.userForm.state(),
       };
     }
 
+    this.updateParentDescForTree();
+
     if (this.forEdit !== -1) {
-      this.todoItem.updationTimestamp = new Date(Date.now()).toISOString();
       this.todoServie.updateItem({ id: this.forEdit, ...this.todoItem });
     } else {
       this.todoServie.addItem(this.todoItem);
     }
+
     this.router.navigate(['/home'], { queryParams: this.queryParams });
   }
 
-  onUpdateTags(event: Event) {
-    let inputValue = (event.target as HTMLInputElement).value;
-    let lastTags = this.tagNameList.split(',');
-    this.todoItem.tags = [];
-    let tags = inputValue.split(',');
-    tags.forEach((name) => {
-      this.todoItem.tags.push({ name: name.trim() });
-    });
+  onUpdateTags(tags: Tag[]) {
+    this.todoItem.tags = tags;
     this.loadCustomSchemaFromDb(tags);
     this.loadPrimitiveFields(tags);
-    this.tagNameList = this.todoItem.tags.map((tag) => tag.name).join(',');
   }
 
-  loadPrimitiveFields(tags: string[]) {
-    tags = tags.filter((tag) => tag.startsWith('form-'));
+  loadPrimitiveFields(tags: Tag[]) {
+    tags = tags.filter((tag) => tag.name.startsWith('form-'));
     if (tags.length === 0) return;
     this.customFormSchema = this.todoItem.userDefined?.formControlSchema;
     let fields: FormField[] = [];
     for (let i = 0; i < tags.length; i++) {
-      let tagType = tags[i].substring(5);
+      let tagType = tags[i].name.substring(5);
       fields.push({
         name: tagType + '_' + i ,
         label: tagType + '_' + i ,
@@ -546,8 +532,8 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
     this.appendCustomSchemaFields(fields);
   }
 
-  loadCustomSchemaFromDb(tags: string[]) {
-    tags = tags.filter((tag) => tag.startsWith('form-'));
+  loadCustomSchemaFromDb(tags: Tag[]) {
+    tags = tags.filter((tag) => tag.name.startsWith('form-'));
     if (tags.length === 0) return;
 
     this.customFormSchema = this.todoItem.userDefined?.formControlSchema;
@@ -605,7 +591,6 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
 
         let tag = 'form-' + formSchema.tag.trim();
         this.todoItem.tags.push({ name: tag });
-        this.tagNameList = this.todoItem.tags.map((tag) => tag.name).join(',');
         this.todoServie.addCustom(tag, formSchema.formControlSchema);
 
         if (this.customFormSchema && this.customFormSchema.fields) {
@@ -643,7 +628,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
       *         "name" : string,
       *         "label" : string,
       *         "type" : 'text' | 'textarea' | 'email' | 'password' 
-      *                  | 'number' | 'date' | 'select' | 'checkbox' | 'radio' | 'boolean' | 'image' | 'canvas' 
+      *                  | 'number' | 'date' | 'select' | 'checkbox' | 'radio' | 'boolean' | 'image' | 'file' | 'canvas' 
       *                  | 'color' | 'range' | 'month' | 'date' | 'time' | 'datetime-local' | 'timestamp' | 'history',
       *         "placeholder"?: string,
       *         "validation"?: {
@@ -681,10 +666,6 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
     this.schemaEditingInProgress = true;
   }
 
-  onClickTags() {
-    this.showTags = !this.showTags;
-    setTimeout(()=>{this.tagInputArea?.nativeElement.focus();},200);
-  }
   onReminderClick() {
     this.todoItem.setForReminder = !this.todoItem.setForReminder;
   }

@@ -1,54 +1,63 @@
-<section class="">
-  <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
-      <div class="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
-          <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
-              <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
+ <form class="flex flex-col items-center justify-center px-6 py-8 mx-auto mt-5 lg:py-0" [formGroup]="formGroup">
+    <div class="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
+        <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
+            <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
                 <div *ngIf="asLogin">
                     <span class="text-green-400">Sign in</span> to your account
                 </div>
                 <div *ngIf="!asLogin">
                     <span class="text-green-400">Sign Up</span> to use online features!
                 </div>
-              </h1>
-              <form class="space-y-4 md:space-y-6" action="#">
-                  <div class="flex flex-row items-end justify-between">
-                  <div class="w-11/12">
-                      <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your email</label>
-                      <input type="email" #emailInp name="email" id="email" class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="name@company.com" required="">
-                  </div>
-                    <div *ngIf="!asLogin" class="relative hover:scale-105 cursor-pointer p-2 ml-2 text-white" title="add profile pic">
-                        <mat-icon class="scale-200">person_pin</mat-icon>
-                        <mat-icon class="absolute scale-70" style="top:-15px; right:-15px;">edit</mat-icon>
+            </h1>
+            <div class="space-y-4 md:space-y-6" action="#">
+                <div class="flex flex-row items-end justify-between">
+                    <div class="w-full">
+                        <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your email</label>
+                        <input type="email" autocomplete="email" #emailInp class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" [formControlName]="'email'" placeholder="name@example.com" required="">
                     </div>
-                  </div>
-                  <div class="w-11/12">
-                      <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
-                      <input type="password" name="password" id="password" placeholder="••••••••" class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required="">
-                  </div>
-                  <div class="flex items-center justify-between" *ngIf="asLogin">
-                      <div class="flex items-start">
-                          <div class="flex items-center h-5">
-                            <input id="remember" aria-describedby="remember" type="checkbox" class="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600 dark:ring-offset-gray-800" required="">
-                          </div>
-                          <div class="ml-3 text-sm">
-                            <label for="remember" class="text-gray-500 dark:text-gray-300">Remember me</label>
-                          </div>
-                      </div>
-                      <a href="#" class="text-sm font-medium text-primary-600 hover:underline dark:text-primary-500">Forgot password?</a>
-                  </div>
-                  <button type="submit" class="w-full text-white bg-primary-600 outline-2 outline-amber-100 hover:bg-primary-700 hover:scale-101 cursor-pointer focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Sign {{asLogin?'in':'up'}}</button>
-                  <div class="text-sm font-light text-gray-500 dark:text-gray-400">
-                      <div *ngIf="asLogin">
-                          Don’t have an account yet? 
-                          <a routerLink="/signup" class="font-medium text-primary-600 hover:underline dark:text-primary-500">Sign up</a>
-                      </div>  
-                      <div *ngIf="!asLogin">
-                          Already have an account?
-                          <a routerLink="/login" class="font-medium text-primary-600 hover:underline dark:text-primary-500">Login</a>
-                      </div>
-                 </div>
-              </form>
-          </div>
-      </div>
-  </div>
-</section>
+                    <div *ngIf="!asLogin" [ngClass]="profilePicDataUrl == null ? 'text-white' :'text-emerald-500'"  class="relative hover:scale-105 cursor-pointer p-2 ml-2" title="add profile pic" (click)="selectImageFile()">
+                        <div *ngIf="profilePicDataUrl == null">
+                            <mat-icon class="scale-200" >person_pin</mat-icon>
+                            <mat-icon class="absolute scale-70" style="top:-15px; right:-15px;">edit</mat-icon>
+                        </div>
+                        <input type="file" #profilePicEle accept="image/png, image/jpeg" class="hidden" (change)="saveProfilePic($event)">
+                        <img [src]="profilePicDataUrl" class="w-10 rounded-[40%]">
+                    </div>
+                </div>
+                <div class="w-full">
+                    <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
+                    <input type="password" autocomplete="current-password" placeholder="••••••••" class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required="" [formControlName]="'password'">
+                </div>
+                <div class="flex items-end justify-evenly center w-full">
+                    <div class="flex flex-col w-full ml-2 mr-2">
+                        <div class="flex flex-row items-end justify-between">
+                            <label class="text-white">open usergroups</label>
+                            <button class="text-blue-600 cursor-pointer hover:scale-110" (click)="addUserGroup()">[ + ]</button>
+                        </div>
+                        <select class="w-full p-3 text-wrap bg-white rounded" title="usergroup" [formControlName]="'usergroup'">
+                            <option *ngFor="let usergroup of userGroupList; let i = index" [value]="usergroup"> {{usergroup}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex flex-row">
+                    <button type="submit" class="grow text-white bg-primary-600 outline-2 outline-amber-100 hover:bg-primary-700 hover:scale-101 cursor-pointer focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800" (click)="onSubmitClick()">Sign {{asLogin?'in':'up'}}</button>
+                    <div class="w-3/12 ml-2">
+                        <label class="text-white">Remember me</label>
+                        <input type="checkbox" [checked]="rememberMe" (change)="rememberMe = !rememberMe">
+                    </div>
+                </div>
+                <div class="text-sm flex justify-evenly font-light text-gray-500 dark:text-gray-400">
+                    <div class="flex flex-col" *ngIf="asLogin">
+                        <a href="#" class="text-sm font-medium text-primary-600 hover:underline dark:text-primary-500">Forgot password</a>
+                    </div>
+                    <div *ngIf="asLogin">
+                        <a routerLink="/signup" class="font-medium text-primary-600 hover:underline dark:text-primary-500">Sign up</a>
+                    </div>
+                    <div *ngIf="!asLogin">
+                        <a routerLink="/login" class="font-medium text-primary-600 hover:underline dark:text-primary-500">Login</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form> 

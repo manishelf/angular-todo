@@ -16,10 +16,11 @@
         </div>
         <div *ngIf="optionsDisplayed" class="flex flex-row">
             <div *ngIf="!fromBin">
-                <textarea type="text" *ngIf="showTags" placeholder="add tags here ',' seperated"
-                class="border-b-2 border-b-blue-500 text-white text-center focus:outline-0 option" [value]="tagNameList" (input)="onUpdateTags($event)" rows="1"></textarea>
-                <button type="button" class="cursor-pointer m-0.5 hover:scale-120" title="tags" (click)="onClickTags()" >
-                    <mat-icon class="option">add_box</mat-icon>
+                <!-- <textarea type="text" *ngIf="showTags" placeholder="add tags here ',' seperated"
+                class="border-b-2 border-b-blue-500 text-white text-center focus:outline-0 option" [value]="tagNameList" (input)="onUpdateTags($event)" rows="1"></textarea> -->
+                <app-tag-list *ngIf="showTags" [tags]="item.tags" [editable]="true" (onChange)="onUpdateTags($event)" class="option"></app-tag-list>
+                <button type="button" class="cursor-pointer m-0.5 hover:scale-120" title="tags" (click)="showTags = !showTags" >
+                    <mat-icon class="option">local_offer</mat-icon>
                 </button>
                 <button type="button" class="cursor-pointer m-0.5 hover:scale-120" (click)="onClickSetReminder()" [title]="!item.setForReminder?'set reminder':'clear reminder'">
                     <mat-icon class="option">{{!item.setForReminder?'alarm_add':'alarm_off'}}</mat-icon>

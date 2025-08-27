@@ -5,9 +5,11 @@ export interface User {
 
 	email: string | null;
 
-	profilePicture?: Blob;
+	userGroup: string | null;
+
+	password?: string;
+
+	profilePicture?: string;
 
     token?: string;
-
-    refreshToken?: string;
 }

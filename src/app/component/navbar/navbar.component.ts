@@ -14,11 +14,13 @@ import { filter } from 'rxjs';
 import { TodoItem } from '../../models/todo-item';
 import { SortService } from './../../service/sort/sort.service';
 import { UserService } from '../../service/user/user.service';
+import { ConnectionService } from '../../service/connection/connection.service';
+import { User } from './../../models/User';
 
 @Component({
   selector: 'app-navbar',
   imports: [MatIconModule, CommonModule],
-  templateUrl: './navbar.component.html',
+templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css',
 })
 export class NavbarComponent implements AfterViewInit {
@@ -28,14 +30,20 @@ export class NavbarComponent implements AfterViewInit {
   lastQueryParams: any = null;
   online: boolean = false;
 
+  user: User | null = null;
+
+  recentLogins: any = {};
+  selectedUserIndex = 0;
+  private lastUserLoginArrSize = 0;
+
   constructor(
     private router: Router,
     private toaster: ToastService,
     private todoService: TodoServiceService,
     private sortService: SortService,
-    private userService: UserService
+    private userService: UserService,
+    private connectionService: ConnectionService
   ) {
-    // to avoid keyboards from poping upp on phones constantly
     let l = localStorage['lastQueryParams'];
     if(l){
       this.lastQueryParams = JSON.parse(l);
@@ -47,6 +55,7 @@ export class NavbarComponent implements AfterViewInit {
       }
     }
     
+    // to avoid keyboards from poping upp on phones constantly
     if (window.innerWidth > 400) {
       this.router.events
         .pipe(filter((e) => e instanceof NavigationEnd))
@@ -57,12 +66,39 @@ export class NavbarComponent implements AfterViewInit {
         });
     }
     
-    userService.connected$.subscribe(status=>{
+    connectionService.connected$.subscribe((status)=>{
       if(status){
         this.online = true;
       }else {
         this.online = false;
       }
+    });
+
+    userService.loggedInUser$.subscribe((user)=>{
+      this.user = user;
+      
+      let recentLogins = localStorage["recentLogins"];
+      if(!recentLogins || recentLogins == 'null'){
+        recentLogins = '{"qtodo/local":{"email":"qtodo","userGroup":"local"}}';
+      }
+      
+      recentLogins = JSON.parse(recentLogins);
+      this.recentLogins = Object.entries(recentLogins);
+
+      if(this.lastUserLoginArrSize != this.recentLogins.length){
+        this.selectedUserIndex = this.recentLogins.length - 1; // in case a user is added pick the latest
+      }else{
+        let i = 0;
+        for(let e of this.recentLogins){
+          if(e[0] == user?.email+'/'+user?.userGroup){
+            this.selectedUserIndex = i;
+            break;
+          }
+          i++;
+        }
+      }
+
+      this.lastUserLoginArrSize = this.recentLogins.length;
     });
   }
 
@@ -284,13 +320,20 @@ export class NavbarComponent implements AfterViewInit {
 
   toggleBackendConnection(){
     if(this.online){
-      this.userService.disconnectFromBackend().then(()=>{
-        this.online = false;
-      });
+      this.online = false;
+      this.userService.logoutUser();
     }else{
-      this.userService.connectToBackend().then(()=>{
-        this.online = true;
-      });
+      this.online = true;
+      this.userService.loginUser();
     }
+  }
+
+  changeCurrentUser(event: Event){
+    let ele = event.target as HTMLInputElement;
+    let i = (ele?.value as any) || this.recentLogins.length-1;
+    
+    let user = this.recentLogins[i][1]; // reversed
+    this.selectedUserIndex = i;
+    this.userService.loggedInUser.next(user);
   }
 }

@@ -8,7 +8,7 @@ export interface FormField {
     type : 'text' | 'textarea' | 'email' | 'password' 
             | 'number' | 'date' | 'select' | 'checkbox' | 'radio' | 'boolean' | 'image' | 'url'
             | 'color' | 'range' | 'month' | 'date' | 'time' | 'datetime-local' | 'history' | 'canvas' 
-            | 'timestamp',
+            | 'timestamp' | 'file',
     placeholder?: string,
     validation?: FormFieldValidation,
     default?: string,

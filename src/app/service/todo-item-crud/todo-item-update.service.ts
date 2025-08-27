@@ -20,6 +20,7 @@ export class TodoItemUpdateService {
             if(target.result.tags.join(',') !== todoItem.tags.join(',')){
               this.updateTags(db$, todoItem);
             }
+            todoItem.updationTimestamp = new Date(Date.now()).toISOString();
             this.todoItemUtils.getObjectStoreRW(db, 'todo_items').put(todoItem);
             handleSucc(event);
           };

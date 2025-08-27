@@ -1,18 +1,26 @@
-<nav class="bg-gray-600 h-full flex flex-row items-center justify-between p-2">
-    <a href="./home" tabindex="1">
+<nav class="bg-gray-600 h-full flex flex-row flex-wrap items-center justify-between p-2">
+    <a href="./home" tabindex="1" class="flex justify-end shrink order-1 md:order-0">
         <span class="text-blue-50 text-3xl m-3" >qtodo</span>
     </a>
-    <input type="search" class="w-7/12 h-10 p-2 rounded-2xl bg-white" #searchBox tabindex="0" (input)="searchItems($event)" placeholder="Search for your notes"/>
-    <div class="m-1 mr-3 transition-all flex cursor-pointer">
+    <input type="search" class="grow h-10 p-2 rounded-2xl bg-white sm:float-end order-2 md:order-1" #searchBox tabindex="0" (input)="searchItems($event)" placeholder="Search for your notes"/>
+    <div class="m-1 mr-3 transition-all shrink cursor-pointer flex flex-row flex-wrap order-0 md:order-2 items-center">
         <div class="text-white scale-180 flex items-center hover:scale-200 transition-all mx-3" (click)="toggleBackendConnection()" title="toggle connection">
             <mat-icon>{{!online?'cloud_off':'cloud_done'}}</mat-icon>
+        </div>
+        
+        <div class="text-white scale-180 flex items-center hover:scale-200 transition-all mx-3" (click)="uploadNotes()" title="click to upload local backup">
+            <mat-icon>cloud_upload</mat-icon>
         </div>
         
         <div class="text-white scale-180 flex items-center hover:scale-200 transition-all mx-3" (click)="syncNotes()" title="click to download as a local backup">
             <mat-icon>cloud_download</mat-icon>
         </div>
-        <div class="text-white scale-180 flex items-center hover:scale-200 transition-all mx-3" (click)="uploadNotes()" title="click to upload local backup">
-            <mat-icon>cloud_upload</mat-icon>
+
+        <div *ngIf="user != null || online" class="flex flex-row">
+            <select class="bg-white rounded p-1 m-1 max-w-30" (change)="changeCurrentUser($event)" tabindex="1">
+                <option *ngFor="let recentUserEntry of recentLogins let i = index" [value]="i" [selected]="i == selectedUserIndex">{{recentUserEntry[0]}}</option>
+            </select>
+            <img *ngIf="user?.profilePicture" [src]="user?.profilePicture" class="w-10 p-1 rounded-[40%]" [title]="user?.email+'/'+user?.userGroup">
         </div>
     </div>
 </nav>

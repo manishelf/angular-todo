@@ -6,12 +6,14 @@ import * as marked from 'marked';
 import { TodoServiceService } from '../../service/todo-service.service';
 import { ActivatedRoute, NavigationExtras, Route, Router } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { TagListComponent } from '../tag-list/tag-list.component';
+import { Tag } from '../../models/tag';
 
 declare var Prism : any;
 
 @Component({
   selector: 'app-todo-item',
-  imports: [MatIconModule, CommonModule],
+  imports: [MatIconModule, CommonModule, TagListComponent],
   templateUrl: './todo-item.component.html',
   styleUrl: './todo-item.component.css'
 })
@@ -31,7 +33,6 @@ export class TodoItemComponent implements OnInit, AfterViewChecked {
   parsedMD: SafeHtml = '';
   
   bgColour: string = 'bg-gray-600 border-1 border-e-2 border-s-2 ';
-  tagNameList: string[] = [];
   
   @Input() fromBin: boolean = false;
   @Input() optionsDisplayed: boolean = false;
@@ -62,9 +63,6 @@ export class TodoItemComponent implements OnInit, AfterViewChecked {
     }
     this.parsedMD = this.sanitizer.bypassSecurityTrustHtml(markdown);
 
-    this.item.tags.forEach((tag)=>{
-      this.tagNameList.push(' '+tag.name+' ');
-    });
     const neverUpdated = this.item.creationTimestamp === this.item.updationTimestamp;
     this.toolTipString = neverUpdated ? 'created on - ' + this.item.creationTimestamp :
                                         'last updated on - ' + this.item.updationTimestamp;
@@ -94,27 +92,11 @@ export class TodoItemComponent implements OnInit, AfterViewChecked {
   }
 
   private updateSave(){
-    this.item.updationTimestamp = new Date(Date.now()).toISOString();
     this.todoService.updateItem(this.item);
   }
 
-  onUpdateTags(event: Event){
-    let inputValue = (event.target as HTMLInputElement).value;
-    this.item.tags = [];
-    inputValue.split(',').forEach(
-      (name)=>{
-        this.item.tags.push(
-          {name: name.trim()}
-        )
-      }
-    )
-  }
-
-  onClickTags(){
-    this.showTags = !this.showTags;
-    if(this.showTags==false){
-      this.updateSave();
-    }
+  onUpdateTags(tags: Tag[]){
+    this.updateSave();
   }
 
   onClickDuplicate(){
