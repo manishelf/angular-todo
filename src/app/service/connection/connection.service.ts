@@ -42,22 +42,22 @@ export class ConnectionService {
     this.userService.loggedInUser.subscribe(async (user)=>{
       if(user){
         this.accessToken = user.token || '';
-      }else this.accessToken = ''
-          let resp = await this.axios.get('/user/refresh',{
-            headers: {
-              Authorization: 'Bearer '+this.accessToken
-            }
-          });
-          console.log(resp);
+      }else{
+        if(this.accessToken != '')
+        this.axios.post('/user/logout');
+      }
     })
 
     this.axios.interceptors.request.use(async (config)=> {
-        if(this.isTokenExpired(this.accessToken)){
+        if(this.accessToken != '' && this.isTokenExpired(this.accessToken) && !config.url?.includes('/user/refresh')){
+          let resp = await this.axios.get('/user/refresh');
+          this.accessToken = resp.data.accessToken;
         }
         config.headers.Authorization = 'Bearer '+ this.accessToken;
         config.data = JSON.stringify(config.data);
         config.headers['Content-Type'] = 'application/json';
         config.url = this.backendUrl+config.url;
+        config.withCredentials = true;
         return config;
       }, function (error) {
         console.error(error);
@@ -73,7 +73,9 @@ export class ConnectionService {
         this.toaster.success(resp.data.responseMessage);
         else if(resp.status == 400 || resp.status == 500){
           this.toaster.error(resp.data.responseMessage);
-        } else {
+        } else if(resp.status == 403){
+          this.toaster.error('403 -> forbidden')
+        }else {
           this.toaster.warn(resp.data.responseMessage);
         }
       }
@@ -89,7 +91,6 @@ export class ConnectionService {
       const decodedPayload = atob(payloadBase64);
       const payload = JSON.parse(decodedPayload);
       expirationTimeInSeconds = payload.exp*1000;
-
     }
     return expirationTimeInSeconds<Date.now();
   } catch (e) {

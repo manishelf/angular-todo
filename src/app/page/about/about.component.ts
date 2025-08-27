@@ -26,7 +26,7 @@ export class AboutComponent implements OnInit{
   }
 
   ngOnInit(): void {
-    fetch('/about.md').then((resp)=>{
+    fetch('./about.md').then((resp)=>{
       let body = resp.body;
       let reader = body?.getReader();
       let decoder = new TextDecoder();

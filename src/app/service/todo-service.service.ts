@@ -56,7 +56,7 @@ export class TodoServiceService {
 
 
   initializeIndexDB(subscriber: Subscriber<IDBDatabase>, userEmail: string, userGroup: string){
-    const request = indexedDB.open('todo_items_db_'+userEmail+"@"+userGroup, 1);
+    const request = indexedDB.open('qtodo_idb/'+userGroup+'/'+userEmail, 1);
     request.onerror = (error) => {
       subscriber.error(error);
       this.toaster.error('error connecting to local idexedDB!');

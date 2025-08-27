@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { User } from '../../models/User';
 import { ToastService } from 'angular-toastify';
-import { ConnectionService } from '../connection/connection.service';
 import { Route, Router } from '@angular/router';
 
 @Injectable({
@@ -14,7 +13,7 @@ export class UserService {
 
   constructor(
     private toaster: ToastService,
-    private router: Router
+    private router: Router,
   ) {
   }
 
