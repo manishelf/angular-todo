@@ -25,75 +25,75 @@ export class BackendCrudService {
     });
   }
 
-  syncAll(db$: Observable<IDBDatabase>, localItems: TodoItem[]): Promise<TodoItem[]>{
-    return new Promise<TodoItem[]>((res, rej)=>{
-        if(!this.connected || true) res(localItems);
+  // syncAll(db$: Observable<IDBDatabase>, localItems: TodoItem[]): Promise<TodoItem[]>{
+  //   return new Promise<TodoItem[]>((res, rej)=>{
+  //       if(!this.connected || true) res(localItems);
 
-        this.getDirty(localItems).then((dirtyItems)=>{
-          if(dirtyItems.length == 0){
-            res(localItems);
-          }else{
-            for(let item of dirtyItems){
-              this.localUpdateService.updateItem(db$, item, (suc)=>{
-              },(err)=>{
-                this.localAddService.addItem(db$, item);
-              });
-            }
-          }
-        });
-    });
-  }
+  //       this.getDirty(localItems).then((dirtyItems)=>{
+  //         if(dirtyItems.length == 0){
+  //           res(localItems);
+  //         }else{
+  //           for(let item of dirtyItems){
+  //             this.localUpdateService.updateItem(db$, item, (suc)=>{
+  //             },(err)=>{
+  //               this.localAddService.addItem(db$, item);
+  //             });
+  //           }
+  //         }
+  //       });
+  //   });
+  // }
 
-  getDirty(localItems: TodoItem[]): Promise<TodoItem[]>{
-    return new Promise<TodoItem[]>((res)=>{
-      let dirty:TodoItem[] = [];
-      if(!this.connected) res(localItems);
-      this.connectionService.axios.post('/item/merge',{itemList: localItems}).then((resp)=>{
-        let items = resp.data.items as TodoItem[];
-        res(items);
-      })
-    });
-  }
+  // getDirty(localItems: TodoItem[]): Promise<TodoItem[]>{
+  //   return new Promise<TodoItem[]>((res)=>{
+  //     let dirty:TodoItem[] = [];
+  //     if(!this.connected) res(localItems);
+  //     this.connectionService.axios.post('/item/merge',{itemList: localItems}).then((resp)=>{
+  //       let items = resp.data.items as TodoItem[];
+  //       res(items);
+  //     })
+  //   });
+  // }
 
-  addItem(item: Omit<TodoItem, 'id'>){
-    if(!this.connected) return;
+  // addItem(item: Omit<TodoItem, 'id'>){
+  //   if(!this.connected) return;
 
-    this.connectionService.axios.post('/item/save',{itemList:[item]}).then((res)=>{
-      console.log(res);
-    }).catch((e)=>{
-      console.log(e);
-    });
-  }
+  //   this.connectionService.axios.post('/item/save',{itemList:[item]}).then((res)=>{
+  //     console.log(res);
+  //   }).catch((e)=>{
+  //     console.log(e);
+  //   });
+  // }
 
-  updateManyItems(items:TodoItem[]): Promise<any>{
-    if(!this.connected) return new Promise<void>((res)=>res());
+  // updateManyItems(items:TodoItem[]): Promise<any>{
+  //   if(!this.connected) return new Promise<void>((res)=>res());
     
-    return new Promise((resolve,reject)=>{
-      this.connectionService.axios.patch('/item/update', {itemList:items}).then((resp)=>{
-        console.log(resp);
-        resolve(resp);
-      }).catch((e)=>{
-        console.log(e);
-        reject(e);
-      });
-    });
-  }
+  //   return new Promise((resolve,reject)=>{
+  //     this.connectionService.axios.patch('/item/update', {itemList:items}).then((resp)=>{
+  //       console.log(resp);
+  //       resolve(resp);
+  //     }).catch((e)=>{
+  //       console.log(e);
+  //       reject(e);
+  //     });
+  //   });
+  // }
 
-  updateItem(db$:Observable<IDBDatabase>,dirtyItem: TodoItem){
-    if(!this.connected) return;
-    this.localGetService.getItemById(db$,dirtyItem.id).subscribe(item=>{
-      (dirtyItem as any).subjectBeforeUpdate = item.subject;
-      this.updateManyItems([item]); 
-    });
-  }
+  // updateItem(db$:Observable<IDBDatabase>,dirtyItem: TodoItem){
+  //   if(!this.connected) return;
+  //   this.localGetService.getItemById(db$,dirtyItem.id).subscribe(item=>{
+  //     (dirtyItem as any).subjectBeforeUpdate = item.subject;
+  //     this.updateManyItems([item]); 
+  //   });
+  // }
 
-  deleteItem(item: TodoItem){
-    if(!this.connected) return;
+  // deleteItem(item: TodoItem){
+  //   if(!this.connected) return;
 
-    this.connectionService.axios.post('/item/delete',{itemList:[item]}).then((res)=>{
-      console.log(res);
-    }).catch((e)=>{
-      console.log(e);
-    });
-  }
+  //   this.connectionService.axios.post('/item/delete',{itemList:[item]}).then((res)=>{
+  //     console.log(res);
+  //   }).catch((e)=>{
+  //     console.log(e);
+  //   });
+  // }
 }

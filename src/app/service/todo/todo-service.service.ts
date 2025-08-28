@@ -105,19 +105,7 @@ export class TodoServiceService {
   }
 
   getAll(): Observable<TodoItem[]> {
-    return new Observable((sub)=>{
-      this.getService.getAllItems(this.db$, this.fromBin).subscribe((items)=>{
-        this.backendService
-        .syncAll(
-          this.db$,
-          items
-        )
-        .then((items)=>{
-            sub.next(items);
-            sub.complete();
-        });
-      });
-    });
+    return  this.getService.getAllItems(this.db$, this.fromBin);
   }
 
   deleteAll(): void {
@@ -132,7 +120,6 @@ export class TodoServiceService {
       .subscribe((items) => {
         items.forEach((item) => {
           this.deleteItem(item);
-          this.backendService.deleteItem(item);
         });
         this.toaster.success(
           'cleared all items from ' + (this.fromBin ? 'bin' : 'todo list')
@@ -172,7 +159,6 @@ export class TodoServiceService {
           this.initializeItems();
           this.toaster.success('added item successfully!');
           res((suc.target as IDBRequest).result);
-          this.backendService.addItem(item);
         },
         (err)=>{
           this.toaster.error('error adding todo item!');
@@ -215,7 +201,6 @@ export class TodoServiceService {
   }
 
   updateItem(item: TodoItem): void {
-    this.backendService.updateItem(this.db$, item);
     this.updateService.updateItem(this.db$, item, (suc)=>{
       this.initializeItems();
       this.toaster.success('todo item updated');
@@ -237,7 +222,6 @@ export class TodoServiceService {
   deleteItem(item: TodoItem): void {
     try {
       this.deleteService.deleteItem(this.db$, item, this.fromBin);
-      this.backendService.deleteItem(item);
       this.initializeItems();
       this.toaster.success('todo item deleted');
     } catch (e) {
@@ -249,7 +233,6 @@ export class TodoServiceService {
   deleteItemById(id: number): void {
     this.getService.getItemById(this.db$, id).subscribe((item) => {
       this.deleteItem(item);
-      this.backendService.deleteItem(item);
     });
   }
 
