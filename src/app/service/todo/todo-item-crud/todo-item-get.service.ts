@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Observable, from, BehaviorSubject, throwError, switchMap, tap, mergeMap, toArray, max, take, of } from 'rxjs';
-import { TodoItem } from '../../models/todo-item';
+import { TodoItem } from '../../../models/todo-item';
 import { TodoItemUtils } from './todo-item-utils';
-import { Tag } from '../../models/tag';
+import { Tag } from '../../../models/tag';
 
 @Injectable({
   providedIn: 'root',

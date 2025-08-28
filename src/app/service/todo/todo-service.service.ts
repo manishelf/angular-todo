@@ -4,17 +4,17 @@ import {
   BehaviorSubject,
   Subscriber,
 } from 'rxjs';
-import { TodoItem } from './../models/todo-item';
+import { TodoItem } from '../../models/todo-item';
 import { TodoItemAddService } from './todo-item-crud/todo-item-add.service';
 import { TodoItemUpdateService } from './todo-item-crud/todo-item-update.service';
 import { TodoItemDeleteService } from './todo-item-crud/todo-item-delete.service';
 import { TodoItemGetService } from './todo-item-crud/todo-item-get.service';
 import { ToastService } from 'angular-toastify';
-import { SortService } from './sort/sort.service';
-import { UserService } from './user/user.service';
-import { User } from '../models/User';
+import { SortService } from '../sort/sort.service';
+import { UserService } from '../user/user.service';
+import { User } from '../../models/User';
 import { BackendCrudService } from './todo-item-crud/backend-crud/backend-crud.service';
-import { Tag } from '../models/tag';
+import { Tag } from '../../models/tag';
 
 @Injectable({
   providedIn: 'root',
@@ -56,7 +56,7 @@ export class TodoServiceService {
 
 
   initializeIndexDB(subscriber: Subscriber<IDBDatabase>, userEmail: string, userGroup: string){
-    const request = indexedDB.open('qtodo_idb/'+userGroup+'/'+userEmail, 1);
+    const request = indexedDB.open('todo_items_db_'+userEmail+'@'+userGroup, 1);
     request.onerror = (error) => {
       subscriber.error(error);
       this.toaster.error('error connecting to local idexedDB!');
@@ -105,7 +105,19 @@ export class TodoServiceService {
   }
 
   getAll(): Observable<TodoItem[]> {
-    return this.getService.getAllItems(this.db$, this.fromBin);
+    return new Observable((sub)=>{
+      this.getService.getAllItems(this.db$, this.fromBin).subscribe((items)=>{
+        this.backendService
+        .syncAll(
+          this.db$,
+          items
+        )
+        .then((items)=>{
+            sub.next(items);
+            sub.complete();
+        });
+      });
+    });
   }
 
   deleteAll(): void {
@@ -120,6 +132,7 @@ export class TodoServiceService {
       .subscribe((items) => {
         items.forEach((item) => {
           this.deleteItem(item);
+          this.backendService.deleteItem(item);
         });
         this.toaster.success(
           'cleared all items from ' + (this.fromBin ? 'bin' : 'todo list')
@@ -156,9 +169,10 @@ export class TodoServiceService {
        item.subject = new Date().toISOString(); 
       }
       this.addService.addItem(this.db$, item, (suc)=>{
-        this.initializeItems();
-        this.toaster.success('added item successfully!');
+          this.initializeItems();
+          this.toaster.success('added item successfully!');
           res((suc.target as IDBRequest).result);
+          this.backendService.addItem(item);
         },
         (err)=>{
           this.toaster.error('error adding todo item!');
@@ -168,7 +182,6 @@ export class TodoServiceService {
         }
       );
       
-      this.backendService.addItem(item);
 
       /*if(item.userDefined)
       this.getCustom(item.userDefined.tag.name).subscribe((schema)=>{
@@ -202,6 +215,7 @@ export class TodoServiceService {
   }
 
   updateItem(item: TodoItem): void {
+    this.backendService.updateItem(this.db$, item);
     this.updateService.updateItem(this.db$, item, (suc)=>{
       this.initializeItems();
       this.toaster.success('todo item updated');
@@ -223,6 +237,7 @@ export class TodoServiceService {
   deleteItem(item: TodoItem): void {
     try {
       this.deleteService.deleteItem(this.db$, item, this.fromBin);
+      this.backendService.deleteItem(item);
       this.initializeItems();
       this.toaster.success('todo item deleted');
     } catch (e) {
@@ -230,9 +245,11 @@ export class TodoServiceService {
       console.error('error deleting todo item: ', e);
     }
   }
+
   deleteItemById(id: number): void {
     this.getService.getItemById(this.db$, id).subscribe((item) => {
       this.deleteItem(item);
+      this.backendService.deleteItem(item);
     });
   }
 

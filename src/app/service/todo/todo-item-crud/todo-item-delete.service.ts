@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { TodoItem } from '../../models/todo-item';
+import { TodoItem } from '../../../models/todo-item';
 import { Observable, switchMap } from 'rxjs';
 import { TodoItemUtils } from './todo-item-utils';
 

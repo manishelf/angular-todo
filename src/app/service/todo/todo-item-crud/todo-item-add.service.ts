@@ -8,7 +8,7 @@ import {
   tap,
   subscribeOn,
 } from 'rxjs';
-import { TodoItem } from '../../models/todo-item';
+import { TodoItem } from '../../../models/todo-item';
 import { TodoItemUtils } from './todo-item-utils';
 import { TodoItemUpdateService } from './todo-item-update.service';
 

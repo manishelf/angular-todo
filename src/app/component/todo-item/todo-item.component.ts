@@ -3,7 +3,7 @@ import { TodoItem } from '../../models/todo-item';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import * as marked from 'marked';
-import { TodoServiceService } from '../../service/todo-service.service';
+import { TodoServiceService } from '../../service/todo/todo-service.service';
 import { ActivatedRoute, NavigationExtras, Route, Router } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { TagListComponent } from '../tag-list/tag-list.component';

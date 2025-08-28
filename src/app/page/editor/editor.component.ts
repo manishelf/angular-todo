@@ -13,7 +13,7 @@ import { FormControl, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { BeanItemComponent } from '../../component/bean-item/bean-item.component';
-import { TodoServiceService } from './../../service/todo-service.service';
+import { TodoServiceService } from '../../service/todo/todo-service.service';
 import { TodoItem } from '../../models/todo-item';
 import { ActivatedRoute, NavigationEnd, Router, TitleStrategy } from '@angular/router';
 import { Tag } from '../../models/tag';
@@ -65,12 +65,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
     completionStatus: false,
     setForReminder: false,
     creationTimestamp: new Date(Date.now()).toISOString(),
-    updationTimestamp: new Date(Date.now()).toISOString(),
-    userDefined: {
-      tag: {name:''},
-      formControlSchema: {},
-      data: null,
-    },
+    updationTimestamp: new Date(Date.now()).toISOString()
   };
 
   constructor(

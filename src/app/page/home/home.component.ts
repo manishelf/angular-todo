@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit, HostListener } from '@angular/core';
 import { TodoItem } from './../../models/todo-item';
-import { TodoServiceService } from './../../service/todo-service.service';
+import { TodoServiceService } from '../../service/todo/todo-service.service';
 import { CommonModule } from '@angular/common';
 import { TodoItemComponent } from './../../component/todo-item/todo-item.component';
 import {

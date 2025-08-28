@@ -15,7 +15,7 @@ import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import listPlugin from '@fullcalendar/list';
-import { TodoServiceService } from './../../service/todo-service.service';
+import { TodoServiceService } from '../../service/todo/todo-service.service';
 import { TodoItem } from '../../models/todo-item';
 import { Router, withDebugTracing } from '@angular/router';
 import { Subscription } from 'rxjs';

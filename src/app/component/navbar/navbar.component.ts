@@ -9,7 +9,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { NavigationEnd, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ToastService } from 'angular-toastify';
-import { TodoServiceService } from '../../service/todo-service.service';
+import { TodoServiceService } from '../../service/todo/todo-service.service';
 import { filter } from 'rxjs';
 import { TodoItem } from '../../models/todo-item';
 import { SortService } from './../../service/sort/sort.service';
@@ -86,16 +86,17 @@ export class NavbarComponent implements AfterViewInit {
       this.recentLogins = Object.entries(recentLogins);
 
       if(this.lastUserLoginArrSize != this.recentLogins.length){
+        if(this.user)
         this.selectedUserIndex = this.recentLogins.length - 1; // in case a user is added pick the latest
-      }else{
-        let i = 0;
-        for(let e of this.recentLogins){
-          if(e[0] == user?.email+'/'+user?.userGroup){
-            this.selectedUserIndex = i;
-            break;
-          }
-          i++;
+      }
+
+      let i = 0;
+      for(let e of this.recentLogins){
+        if(e[0] == user?.email+'/'+user?.userGroup){
+          this.selectedUserIndex = i;
+          break;
         }
+        i++;
       }
 
       this.lastUserLoginArrSize = this.recentLogins.length;

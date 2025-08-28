@@ -1,7 +1,7 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FilterOrReduceService } from '../../service/filterOrReduce/filter-or-reduce.service';
 import { SortService } from '../../service/sort/sort.service';
-import { TodoServiceService } from '../../service/todo-service.service';
+import { TodoServiceService } from '../../service/todo/todo-service.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TodoItem } from '../../models/todo-item';
 import { CommonModule } from '@angular/common';

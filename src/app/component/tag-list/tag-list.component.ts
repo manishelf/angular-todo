@@ -22,18 +22,13 @@ export class TagListComponent implements OnInit{
   ngOnInit(): void {
   }
 
-  updateState(name: string){
-    let newTagName = document.getElementById(name)?.innerHTML.replaceAll(/<div>|<\/div>|<br>/g,'') || '';
-    this.tagsList.map(t=>{
-      if(t.name == name){
-        t.name = newTagName;
-      }
-      return t;
-    })
-
+  updateState(item: Tag, tagInput: HTMLElement){
+    let newTagName = tagInput?.innerHTML.replaceAll(/<div>|<\/div>|<br>/g,'') || '';
+    item.name = newTagName;
     this.tagsList = this.tagsList.filter(t=>t.name.trim() != '');
     this.tagsList.forEach(t=>t.name=t.name.trim());
     this.onChange.emit(this.tagsList);
+    this.editing = -1;
   }
 
   addItem(){
