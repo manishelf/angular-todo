@@ -54,9 +54,10 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
   customFormSchema: FormSchema | undefined;
   customFormData: any;
   editiorLinesLoaded: boolean = false;
-  hierarchy: Map<string, {item: TodoItem, children:Set<TodoItem>}> | null = null;
 
   onOptionDelayTimer: number = -1;
+  leftIndentSpcaeCount: number = 0;
+
 
   todoItem: Omit<TodoItem, 'id'> = {
     subject: '',
@@ -229,14 +230,22 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
 
   @HostListener('keydown', ['$event'])
   handleKeydown(event: KeyboardEvent): void {
+
+    
+    const target = event.target as HTMLTextAreaElement;
+    const start = target.selectionStart;
+    const end = target.selectionEnd;
+    const sentenceStart = target.value.substring(0,start);
+    const sentenceEnd = target.value.substring(end);
+
     if (event.key === 'Tab' && event.target instanceof HTMLTextAreaElement) {
       event.preventDefault();
-      const target = event.target as HTMLTextAreaElement;
-      const start = target.selectionStart;
-      const end = target.selectionEnd;
-      target.value =
-        target.value.substring(0, start) + '\t' + target.value.substring(end);
+      target.value = sentenceStart + '\t' + sentenceEnd;
       target.selectionStart = target.selectionEnd = start + 1;
+
+      if(sentenceStart.length == 0 || sentenceStart.match(/\n\t*$/)){ // zero or more tabs after nl
+        this.leftIndentSpcaeCount+=1;
+      }
     } else if (
       event.key === 'Enter' &&
       event.target instanceof HTMLInputElement
@@ -245,16 +254,41 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
       this.onAddClick();
     } else if (
       event.key === 'Enter' &&
-      event.target instanceof HTMLTextAreaElement
+      target instanceof HTMLTextAreaElement
     ) {
+      if(this.leftIndentSpcaeCount>0 && sentenceStart.match(/\n\t*$/)){ // zero or more tabs after nl
+        event.preventDefault();
+        target.value=sentenceStart+'\n';
+        for(let i = 0; i<this.leftIndentSpcaeCount; i++){
+          target.value+='\t';
+        }
+        target.value+=sentenceEnd;
+        target.selectionStart = target.selectionEnd = start + 1 + this.leftIndentSpcaeCount;
+      }else{
+        // alow natural line breaking and reset indentation
+        this.leftIndentSpcaeCount = 0;
+      }
       this.onEventForResize();
-    } else if (event.key === 's' && event.ctrlKey) {
+    }else if (event.key === 'Backspace' &&
+      event.target instanceof HTMLTextAreaElement){
+      const target = event.target as HTMLTextAreaElement;
+      const start = target.selectionStart;
+      const sentenceStart = target.value.substring(0,start);
+      if(sentenceStart.match(/\n\t+$/)){ // one or more tabs after nl
+        this.leftIndentSpcaeCount-=1;
+        if(this.leftIndentSpcaeCount<0) this.leftIndentSpcaeCount = 0;
+      }
+    }
+     else if (event.key === 's' && event.ctrlKey) {
       event.preventDefault();
       this.onAddClick();
     } else if(event.key ==='[' && event.ctrlKey) {
       this.addChildItem();
     } else if(event.key === ']' && event.ctrlKey) {
       this.navigateToParent();
+    }
+    if(target instanceof HTMLTextAreaElement){
+      this.todoItem.description = target.value;
     }
   }
 
@@ -426,13 +460,21 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
         }
       };
     });
-    this.onEventForResize();
+    setTimeout(()=>this.onEventForResize(),10);
   }
 
   onOptionClickOnDelay(){
+    let selection = window.getSelection();
+    if(selection && selection.toString().length>0) {
+      console.log(1);
+      
+      return;
+    }
+
     this.onOptionClickOnDelayClearTimeout(); // this allows navigation
     this.onOptionDelayTimer = setTimeout(()=>this.onOptionClick(), 300);
   }
+
   onOptionClickOnDelayClearTimeout(){
     clearTimeout(this.onOptionDelayTimer);
   }
@@ -469,7 +511,13 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
       if (this.todoItem.subject.trim().length != 0) {
         this.convertedMarkdown = this.domSanitizer.bypassSecurityTrustHtml(markdown);
       }
+    }else{
+      setTimeout(()=>{
+        this.onEventForResize()
+        this.descriptionArea.nativeElement.focus(); 
+      }, 5);
     }
+
   }
 
   async onAddClick() {
