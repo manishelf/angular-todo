@@ -256,7 +256,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
       event.key === 'Enter' &&
       target instanceof HTMLTextAreaElement
     ) {
-      if(this.leftIndentSpcaeCount>0 && sentenceStart.match(/\n\t*$/)){ // zero or more tabs after nl
+      if(this.leftIndentSpcaeCount>0 && sentenceStart.match(/\n*\t*$/)){ // zero or more tabs after nl
         event.preventDefault();
         target.value=sentenceStart+'\n';
         for(let i = 0; i<this.leftIndentSpcaeCount; i++){
