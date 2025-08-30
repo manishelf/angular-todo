@@ -156,8 +156,6 @@ export class TodoServiceService {
        item.subject = new Date().toISOString(); 
       }
       this.addService.addItem(this.db$, item, (suc)=>{
-          this.initializeItems();
-          this.toaster.success('added item successfully!');
           res((suc.target as IDBRequest).result);
         },
         (err)=>{
@@ -342,7 +340,6 @@ export class TodoServiceService {
           }
           console.log('error adding todo item', e);
         }
-        this.initializeItems(); // for asthetics allow repeatation
       }
       this.toaster.success(`added ${items.length} todo items successfully!`);
     } catch (e) {
