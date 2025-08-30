@@ -1,0 +1,9 @@
+.animate-focus > * {
+    display: block;
+    transition: .2s;
+}
+
+.animate-focus:hover > *,
+.animate-focus:focus > * {
+    translate: 0 -0.2lh;
+}
