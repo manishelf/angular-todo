@@ -521,7 +521,6 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
     }else{
       setTimeout(()=>{
         this.onEventForResize()
-        this.editorContainer.nativeElement.requestFullscreen();
       }, 5);
     }
     
