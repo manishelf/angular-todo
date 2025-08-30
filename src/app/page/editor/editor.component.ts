@@ -38,11 +38,14 @@ declare var Prism: any;
   imports: [FormsModule, CommonModule, MatIconModule, UserFormComponent, TagListComponent],
 })
 export class EditorComponent implements AfterViewChecked, AfterViewInit {
+  
+  @ViewChild('editorContainer') editorContainer!: ElementRef;
   @ViewChild('subjectTxt') subjectTxt!: ElementRef;
   @ViewChild('descriptionArea') descriptionArea!: ElementRef;
   @ViewChild('lineNumbers') lineNumbers!: ElementRef;
   @ViewChild('userForm') userForm!: UserFormComponent;
   @ViewChild('tagInputArea') tagInputArea!: ElementRef;
+
 
   queryParams = {};
 
@@ -204,7 +207,12 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
         {
           length: lineNumbers.length,
         },
-        (_, i) => `<div>${lineNumbers[i] || '&nbsp;'}</div>`
+        (_, i) => 
+          `<div style="cursor:pointer"
+             onmouseover="this.style.color = 'white'"
+             onmouseout="this.style.color = '#39ff13'">
+              ${lineNumbers[i] || '&nbsp;'}
+            </div>`
       ).join('');
     };
 
@@ -228,49 +236,38 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
     this.editiorLinesLoaded = true;
   }
 
-  @HostListener('keydown', ['$event'])
-  handleKeydown(event: KeyboardEvent): void {
-
+  handleKeydownForDescription(event: KeyboardEvent): void {
     
-    const target = event.target as HTMLTextAreaElement;
-    const start = target.selectionStart;
-    const end = target.selectionEnd;
-    const sentenceStart = target.value.substring(0,start);
-    const sentenceEnd = target.value.substring(end);
+    const targetTextArea = event.target as HTMLTextAreaElement;
+    const start = targetTextArea.selectionStart;
+    const end = targetTextArea.selectionEnd;
+    const sentenceStart = targetTextArea.value.substring(0,start);
+    const sentenceEnd = targetTextArea.value.substring(end);
 
-    if (event.key === 'Tab' && event.target instanceof HTMLTextAreaElement) {
+    if (event.key === 'Tab') {
       event.preventDefault();
-      target.value = sentenceStart + '\t' + sentenceEnd;
-      target.selectionStart = target.selectionEnd = start + 1;
+      targetTextArea.value = sentenceStart + '\t' + sentenceEnd;
+      targetTextArea.selectionStart = targetTextArea.selectionEnd = start + 1;
 
       if(sentenceStart.length == 0 || sentenceStart.match(/\n\t*$/)){ // zero or more tabs after nl
         this.leftIndentSpcaeCount+=1;
       }
-    } else if (
-      event.key === 'Enter' &&
-      event.target instanceof HTMLInputElement
-    ) {
-      event.preventDefault();
-      this.onAddClick();
-    } else if (
-      event.key === 'Enter' &&
-      target instanceof HTMLTextAreaElement
-    ) {
+      this.todoItem.description = targetTextArea.value;
+    } else if (event.key === 'Enter' ) {
       if(this.leftIndentSpcaeCount>0 && sentenceStart.match(/\n*\t*$/)){ // zero or more tabs after nl
         event.preventDefault();
-        target.value=sentenceStart+'\n';
+        targetTextArea.value=sentenceStart+'\n';
         for(let i = 0; i<this.leftIndentSpcaeCount; i++){
-          target.value+='\t';
+          targetTextArea.value+='\t';
         }
-        target.value+=sentenceEnd;
-        target.selectionStart = target.selectionEnd = start + 1 + this.leftIndentSpcaeCount;
+        targetTextArea.value+=sentenceEnd;
+        targetTextArea.selectionStart = targetTextArea.selectionEnd = start + 1 + this.leftIndentSpcaeCount;
+        this.todoItem.description = targetTextArea.value;
       }else{
         // alow natural line breaking and reset indentation
         this.leftIndentSpcaeCount = 0;
       }
-      this.onEventForResize();
-    }else if (event.key === 'Backspace' &&
-      event.target instanceof HTMLTextAreaElement){
+    }else if (event.key === 'Backspace'){
       const target = event.target as HTMLTextAreaElement;
       const start = target.selectionStart;
       const sentenceStart = target.value.substring(0,start);
@@ -278,6 +275,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
         this.leftIndentSpcaeCount-=1;
         if(this.leftIndentSpcaeCount<0) this.leftIndentSpcaeCount = 0;
       }
+      this.onEventForResize();
     }
      else if (event.key === 's' && event.ctrlKey) {
       event.preventDefault();
@@ -287,8 +285,12 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
     } else if(event.key === ']' && event.ctrlKey) {
       this.navigateToParent();
     }
-    if(target instanceof HTMLTextAreaElement){
-      this.todoItem.description = target.value;
+  }
+
+  handleKeydownForSubject(event: KeyboardEvent){
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      this.onAddClick();
     }
   }
 
@@ -463,21 +465,28 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
     setTimeout(()=>this.onEventForResize(),10);
   }
 
-  onOptionClickOnDelay(){
-    let selection = window.getSelection();
-    if(selection && selection.toString().length>0) {
-      console.log(1);
-      
-      return;
-    }
-
-    this.onOptionClickOnDelayClearTimeout(); // this allows navigation
-    this.onOptionDelayTimer = setTimeout(()=>this.onOptionClick(), 300);
-  }
-
   onOptionClickOnDelayClearTimeout(){
     clearTimeout(this.onOptionDelayTimer);
   }
+
+  onOptionClickOnDelay(event: Event){
+    let selection = window.getSelection();
+    if(selection && selection.toString().length > 0) {
+        return;
+    }
+
+    const editorContainer = this.editorContainer.nativeElement;
+    const scrollPercentage = editorContainer.scrollTop / editorContainer.scrollHeight;
+
+    this.onOptionClickOnDelayClearTimeout();
+    this.onOptionDelayTimer = setTimeout(()=>{
+        this.onOptionClick();
+        setTimeout(()=>{
+          const newScrollTop = editorContainer.scrollHeight * scrollPercentage;
+          editorContainer.scrollTop = newScrollTop;
+        },50);
+    }, 300);
+}
 
   onOptionClick() {
     this.onOptionClickOnDelayClearTimeout();
@@ -486,19 +495,16 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
       return;
     }  
 
-    this.option = this.option === 'Preview' ? 'Editor' : 'Preview';
-    if (this.option === 'Editor') {
+    if (this.option == 'Preview') {
       this.editiorLinesLoaded = false;
       let markdown = marked.parse(this.todoItem.description).toString();
-
-      markdown = markdown.replaceAll('\n\n', '<br>');
 
       let code =
         markdown.match(/<code class="language-(\w+)">([\s\S]*?)<\/code>/g) ||
         markdown.match(/<code>([\s\S]*?)<\/code>/);
 
-      if (code) {
-        for (let i = 0; i < code.length; i++) {
+        if (code) {
+          for (let i = 0; i < code.length; i++) {
           let snippet = code[i];
           markdown = markdown.replace(snippet, snippet.replace(/<br>/g, '\n'));
         }
@@ -514,10 +520,10 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
     }else{
       setTimeout(()=>{
         this.onEventForResize()
-        this.descriptionArea.nativeElement.focus(); 
       }, 5);
     }
-
+    
+    this.option = this.option === 'Preview' ? 'Editor' : 'Preview';
   }
 
   async onAddClick() {

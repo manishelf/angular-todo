@@ -12,7 +12,11 @@
         </div>
     </div>
     <div class="h-fit w-full flex flex-row flex-wrap">
-        <div tabindex="0" (keydown)="onKeyDownTodoItem($event)" (click)="onClickTodoItem($event, i)" *ngFor="let todoItem of itemList; let i = index" [id]="i"  class="flex-auto max-w-full mx-2 my-1 rounded-2xl focus:outline-2 hover:outline-2 hover:shadow-lg shadow-gray-50 outline-offset-2 outline-white transition-all">
+        <div tabindex="0" (keydown)="onKeyDownTodoItem($event)" 
+        (click)="onClickTodoItem($event, i)" 
+        *ngFor="let todoItem of itemList; let i = index" [id]="i"  
+        class="flex-auto max-w-full h-fit mx-2 my-1 rounded-2xl focus:outline-2 hover:outline-2 hover:shadow-lg
+         shadow-gray-50 outline-offset-2 outline-white transition-all">
             <app-todo-item [item]="todoItem" [fromBin]="fromBin"/>
         </div>
     </div>

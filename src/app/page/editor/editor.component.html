@@ -1,19 +1,19 @@
-<div class="h-full md:m-4 md:p-4 overflow-auto">
-  <div class="flex flex-row flex-wrap md:flex-nowrap justify-center md:justify-between p-4">
+<div class="h-full md:m-4 md:p-4 overflow-auto" #editorContainer>
+  <div class="flex flex-row flex-wrap md:flex-nowrap justify-center md:justify-between pb-1">
     <div class="m-2">
         <app-user-form #userForm *ngIf="customFormSchema?.fields" [data]="customFormData" [schema]="customFormSchema"></app-user-form>
     </div>
     <div class="flex justify-evenly space-x-2">
       <button
         (click)="onOptionClick()"
-        class="bg-blue-500 "
+        class="bg-blue-500"
       >
         {{ option }}
       </button>
       <button
         (click)="onAddClick()"
         title="Save the note"
-        style="background-color: #70e000;"
+        class="bg-[#70e000]"
       >
         <mat-icon>save</mat-icon>
       </button> 
@@ -70,28 +70,32 @@
       </button>
       </div>
   </div>
-  <div class="bg-white rounded-lg shadow-md p-4" (focusout)="onOptionClickOnDelay()" (focusin)="onOptionClickOnDelayClearTimeout()">
+  <div class="bg-[#0b0025] rounded-lg shadow-md p-4" (focusout)="onOptionClickOnDelay($event)" (focusin)="onOptionClickOnDelayClearTimeout()">
     <input
     type="text"
     #subjectTxt
-    class="w-full p-3 border rounded-lg text-lg focus:outline-none focus:ring focus:border-blue-300"
+    class="w-full bg-white p-3 rounded-lg text-lg outline-0 ring-2 ring-inset focus:ring-blue-600"
     id="editor-subject-input"
     [(ngModel)]="todoItem.subject"
     placeholder="Enter a title for your note (must be unique)"
+    (keydown)="handleKeydownForSubject($event)"
     />
     <div *ngIf="option !== 'Editor'">
-      <div  id="container" class="container">
-      <div id="line-numbers" #lineNumbers class="container__lines mt-2"></div>
+      <div  id="container" class="input-area-container w-full">
+      <div id="line-numbers" (click)="onOptionClickOnDelay($event)" #lineNumbers class="container__lines mt-2"></div>
       <textarea
         id="editor-description-input"
         [(ngModel)]="todoItem.description"
         placeholder="Enter your note here (supports markdown)"
-        class="w-full border rounded-lg p-3 m-2 container__textarea resize-vertical focus:outline-none focus:ring focus:border-blue-300 overflow-hidden"
+        (keydown)="handleKeydownForDescription($event)"
+        class="w-full rounded-lg p-3 m-2 input-textarea resize-vertical ring-2 ring-inset focus:ring-blue-600"
         #descriptionArea
       ></textarea>
-      <div id="div-for-scrolling"></div>
       </div>
     </div>
-    <div *ngIf="option !== 'Preview'" id='editor-markdown-div' (click)="onOptionClickOnDelay()" [innerHTML]="convertedMarkdown" class="match-braces rainbow-braces m-2"></div>
+    <div *ngIf="option !== 'Preview'" id='editor-markdown-div' (click)="onOptionClickOnDelay($event)" [innerHTML]="convertedMarkdown" 
+      class="match-braces rainbow-braces m-2 p-3 rounded-lg ring-2 ring-inset bg-white ring-[#8900ff]">
+    </div>
   </div>
+  <footer class="w-full h-20"></footer>
 </div>
