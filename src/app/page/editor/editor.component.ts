@@ -253,7 +253,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
         this.leftIndentSpcaeCount+=1;
       }
       this.todoItem.description = targetTextArea.value;
-    } else if (event.key === 'Enter' ) {
+    } else if (event.key === 'Enter') {
       if(this.leftIndentSpcaeCount>0 && sentenceStart.match(/\n*\t*$/)){ // zero or more tabs after nl
         event.preventDefault();
         targetTextArea.value=sentenceStart+'\n';
@@ -267,6 +267,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
         // alow natural line breaking and reset indentation
         this.leftIndentSpcaeCount = 0;
       }
+      this.onEventForResize();
     }else if (event.key === 'Backspace'){
       const target = event.target as HTMLTextAreaElement;
       const start = target.selectionStart;
@@ -520,6 +521,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
     }else{
       setTimeout(()=>{
         this.onEventForResize()
+        this.editorContainer.nativeElement.requestFullscreen();
       }, 5);
     }
     
