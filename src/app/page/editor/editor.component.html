@@ -88,7 +88,7 @@
         [(ngModel)]="todoItem.description"
         placeholder="Enter your note here (supports markdown)"
         (keydown)="handleKeydownForDescription($event)"
-        class="w-full rounded-lg p-3 m-2 input-textarea resize-vertical ring-2 ring-inset focus:ring-blue-600"
+        class="w-full rounded-lg p-3 m-2 input-textarea resize-vertical overflow-hidden ring-2 ring-inset focus:ring-blue-600"
         #descriptionArea
       ></textarea>
       </div>

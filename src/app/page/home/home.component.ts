@@ -103,8 +103,9 @@ export class HomeComponent implements OnInit, OnDestroy {
 
    onClickTodoItem(event: Event, id: number) {
     let targetItem = event.target as HTMLElement;
-    
-    if (targetItem.classList.contains('option')) {
+   
+    let sel = window.getSelection();
+    if (targetItem.classList.contains('option') || (sel && sel.toString().length>0)) {
       return;
     }
 
