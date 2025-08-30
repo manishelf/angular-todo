@@ -156,7 +156,8 @@ export class TodoServiceService {
        item.subject = new Date().toISOString(); 
       }
       this.addService.addItem(this.db$, item, (suc)=>{
-          res((suc.target as IDBRequest).result);
+        res((suc.target as IDBRequest).result);
+        this.initializeItems();
         },
         (err)=>{
           this.toaster.error('error adding todo item!');
