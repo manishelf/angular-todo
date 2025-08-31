@@ -4,30 +4,32 @@
     </a>
     <input type="search" class="grow p-2 rounded-2xl outline-0 focus:ring-2 ring-inset sm:float-end order-0 md:order-1 text-center w-full md:w-auto" #searchBox tabindex="0" (input)="searchItems($event)" placeholder="Search for your notes"/>
     <div class="flex flex-row order-2">   
-    <div class="m-1 transition-all duration-1000 flex flex-row flex-wrap order-2 items-center justify-evenly w-full md:w-fit md:gap-x-2" [ngClass]="menuHidden?'max-w-0 max-h-0 opacity-0':'max-w-fit max-h-fit opacity-100'">
-        <div *ngIf="user != null || online" class="flex flex-row">
-            <select class="rounded p-1 m-1 max-w-30" style="background: var(--button-icon-background); color: var(--button-icon-color)" (change)="changeCurrentUser($event)" tabindex="1">
-                <option *ngFor="let recentUserEntry of recentLogins let i = index" [value]="i" [selected]="i == selectedUserIndex">{{recentUserEntry[0]}}</option>
-            </select>
-            <img *ngIf="user?.profilePicture" [src]="user?.profilePicture" class="w-10 p-1 rounded-[40%]" [title]="user?.email+'/'+user?.userGroup">
+    <div class="m-1 transition-all duration-1000 flex flex-row flex-wrap order-2 items-center justify-evenly w-full md:w-fit md:gap-x-2" [ngClass]="menuHidden?'opacity-0':'opacity-100'">
+        <div [ngClass]="menuHidden?'hidden':'visible'" class="flex">
+            <div *ngIf="user != null || online" class="flex flex-row">
+                <select class="rounded p-1 m-1 max-w-30" style="background: var(--button-icon-background); color: var(--button-icon-color)" (change)="changeCurrentUser($event)" tabindex="1">
+                    <option *ngFor="let recentUserEntry of recentLogins let i = index" [value]="i" [selected]="i == selectedUserIndex">{{recentUserEntry[0]}}</option>
+                </select>
+                <img *ngIf="user?.profilePicture" [src]="user?.profilePicture" class="w-10 p-1 rounded-[40%]" [title]="user?.email+'/'+user?.userGroup">
+            </div>
+            <app-bean-item (click)="toggleBackendConnection()" title="toggle connection">
+                    <mat-icon>{{!online?'cloud_off':'cloud_done'}}</mat-icon>
+            </app-bean-item>
+            <app-bean-item (click)="uploadNotes()" title="click to upload local backup">
+                    <mat-icon>cloud_upload</mat-icon>
+            </app-bean-item>
+            <app-bean-item (click)="syncNotes()" title="click to download as a local backup">
+                    <mat-icon>cloud_download</mat-icon>
+            </app-bean-item>
+            <app-bean-item>
+                <select class="max-w-10" style="background: var(--button-icon-background);" (change)="updateTheme($event)">
+                    <option>🎨</option>
+                    <optgroup *ngFor="let categoryKey of getCategories()" [label]="categoryKey">
+                        <option *ngFor="let theme of availableThemes[categoryKey]" [value]="theme">{{theme}}</option>
+                    </optgroup>
+                </select>
+            </app-bean-item>
         </div>
-        <app-bean-item (click)="toggleBackendConnection()" title="toggle connection">
-                <mat-icon>{{!online?'cloud_off':'cloud_done'}}</mat-icon>
-        </app-bean-item>
-        <app-bean-item (click)="uploadNotes()" title="click to upload local backup">
-                <mat-icon>cloud_upload</mat-icon>
-        </app-bean-item>
-        <app-bean-item (click)="syncNotes()" title="click to download as a local backup">
-                <mat-icon>cloud_download</mat-icon>
-        </app-bean-item>
-        <app-bean-item>
-            <select class="max-w-10" style="background: var(--button-icon-background);" (change)="updateTheme($event)">
-                <option>🎨</option>
-                <optgroup *ngFor="let categoryKey of getCategories()" [label]="categoryKey">
-                    <option *ngFor="let theme of availableThemes[categoryKey]" [value]="theme">{{theme}}</option>
-                </optgroup>
-            </select>
-        </app-bean-item>
     </div>
     <app-bean-item class="order-3 transition-all shrink mr-2" [ngClass]="menuHidden?'rotate-0':'rotate-90'" (click)="menuHidden = !menuHidden">
         <mat-icon>menu</mat-icon>

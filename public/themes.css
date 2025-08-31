@@ -1,4 +1,4 @@
-:root {
+root {
  --page-bg-color: rgb(61, 72, 89);
  --navbar-bg-color: rgb(76, 87, 103);
  --navbar-searchbox-bg-color: white;
@@ -24,10 +24,11 @@
  --global-font-family: 'Inter', sans-serif;
  --global-font-size: 16px;
  --global-line-height: 1.5;
+ --global-scrollbar-color: rgb(76, 87, 103) rgb(61, 72, 89);
+ --global-scrollbar-width: thin;
 }
 
-/* --- Specific Theme Variables --- */
-body[data-theme="tokyo-night"] {
+html[data-theme="tokyo-night"] {
  --page-bg-color: #1a1b26;
  --navbar-bg-color: #24283b;
  --navbar-searchbox-bg-color: #414868;
@@ -53,9 +54,11 @@ body[data-theme="tokyo-night"] {
  --global-font-family: 'Inter', sans-serif;
  --global-font-size: 15px;
  --global-line-height: 1.5;
+ --global-scrollbar-color: #414868 #1a1b26;
+ --global-scrollbar-width: thin;
 }
 
-body[data-theme="neon"] {
+html[data-theme="neon"] {
  --page-bg-color: #000000;
  --navbar-bg-color: #1a1a1a;
  --navbar-searchbox-bg-color: #333333;
@@ -81,9 +84,11 @@ body[data-theme="neon"] {
  --global-font-family: 'Orbitron', sans-serif;
  --global-font-size: 16px;
  --global-line-height: 1.5;
+ --global-scrollbar-color: #ff00ff #000000;
+ --global-scrollbar-width: thin;
 }
 
-body[data-theme="dark"] {
+html[data-theme="dark"] {
  --page-bg-color: #121212;
  --navbar-bg-color: #1e1e1e;
  --navbar-searchbox-bg-color: #2c2c2c;
@@ -109,9 +114,11 @@ body[data-theme="dark"] {
  --global-font-family: 'Inter', sans-serif;
  --global-font-size: 16px;
  --global-line-height: 1.5;
+ --global-scrollbar-color: #2c2c2c #121212;
+ --global-scrollbar-width: thin;
 }
 
-body[data-theme="hacker"] {
+html[data-theme="hacker"] {
  --page-bg-color: #000000;
  --navbar-bg-color: #0a0a0a;
  --navbar-searchbox-bg-color: #1a1a1a;
@@ -137,9 +144,11 @@ body[data-theme="hacker"] {
  --global-font-family: 'Space Mono', monospace;
  --global-font-size: 16px;
  --global-line-height: 1.5;
+ --global-scrollbar-color: #00ff00 #0a0a0a;
+ --global-scrollbar-width: thin;
 }
 
-body[data-theme="sunny"] {
+html[data-theme="sunny"] {
  --page-bg-color: #fffbe6;
  --navbar-bg-color: #ffe599;
  --navbar-searchbox-bg-color: #ffffff;
@@ -165,9 +174,11 @@ body[data-theme="sunny"] {
  --global-font-family: 'Poppins', sans-serif;
  --global-font-size: 16px;
  --global-line-height: 1.5;
+ --global-scrollbar-color: #ff9800 #ffe599;
+ --global-scrollbar-width: thin;
 }
 
-body[data-theme="minimal"] {
+html[data-theme="minimal"] {
  --page-bg-color: #f4f4f4;
  --navbar-bg-color: #e0e0e0;
  --navbar-searchbox-bg-color: #ffffff;
@@ -193,9 +204,11 @@ body[data-theme="minimal"] {
  --global-font-family: 'Inter', sans-serif;
  --global-font-size: 16px;
  --global-line-height: 1.5;
+ --global-scrollbar-color: #9e9e9e #e0e0e0;
+ --global-scrollbar-width: thin;
 }
 
-body[data-theme="white"] {
+html[data-theme="white"] {
  --page-bg-color: #ffffff;
  --navbar-bg-color: #f8f8f8;
  --navbar-searchbox-bg-color: #eeeeee;
@@ -221,9 +234,11 @@ body[data-theme="white"] {
  --global-font-family: 'Inter', sans-serif;
  --global-font-size: 16px;
  --global-line-height: 1.5;
+ --global-scrollbar-color: #bdc3c7 #f8f8f8;
+ --global-scrollbar-width: thin;
 }
 
-body[data-theme="lime"] {
+html[data-theme="lime"] {
  --page-bg-color: #1a1a1a;
  --navbar-bg-color: #2b2b2b;
  --navbar-searchbox-bg-color: #3a3a3a;
@@ -249,9 +264,11 @@ body[data-theme="lime"] {
  --global-font-family: 'Inter', sans-serif;
  --global-font-size: 16px;
  --global-line-height: 1.5;
+ --global-scrollbar-color: #c8ff00 #2b2b2b;
+ --global-scrollbar-width: thin;
 }
 
-body[data-theme="tropical"] {
+html[data-theme="tropical"] {
  --page-bg-color: #f4fcd9;
  --navbar-bg-color: #80d8da;
  --navbar-searchbox-bg-color: #ffffff;
@@ -277,9 +294,11 @@ body[data-theme="tropical"] {
  --global-font-family: 'Quicksand', sans-serif;
  --global-font-size: 16px;
  --global-line-height: 1.6;
+ --global-scrollbar-color: #80d8da #f4fcd9;
+ --global-scrollbar-width: thin;
 }
 
-body[data-theme="zen"] {
+html[data-theme="zen"] {
  --page-bg-color: #faf9f6;
  --navbar-bg-color: #e5e5e0;
  --navbar-searchbox-bg-color: #ffffff;
@@ -305,9 +324,11 @@ body[data-theme="zen"] {
  --global-font-family: 'Lora', serif;
  --global-font-size: 16px;
  --global-line-height: 1.7;
+ --global-scrollbar-color: #757471 #e5e5e0;
+ --global-scrollbar-width: thin;
 }
 
-body[data-theme="one-dark-pro"] {
+html[data-theme="one-dark-pro"] {
  --page-bg-color: #282c34;
  --navbar-bg-color: #323842;
  --navbar-searchbox-bg-color: #4b5263;
@@ -333,9 +354,11 @@ body[data-theme="one-dark-pro"] {
  --global-font-family: 'JetBrains Mono', monospace;
  --global-font-size: 15px;
  --global-line-height: 1.5;
+ --global-scrollbar-color: #61afef #282c34;
+ --global-scrollbar-width: thin;
 }
 
-body[data-theme="dracula"] {
+html[data-theme="dracula"] {
  --page-bg-color: #282a36;
  --navbar-bg-color: #44475a;
  --navbar-searchbox-bg-color: #6272a4;
@@ -361,9 +384,11 @@ body[data-theme="dracula"] {
  --global-font-family: 'Roboto Mono', monospace;
  --global-font-size: 15px;
  --global-line-height: 1.5;
+ --global-scrollbar-color: #bd93f9 #282a36;
+ --global-scrollbar-width: thin;
 }
 
-body[data-theme="nord"] {
+html[data-theme="nord"] {
  --page-bg-color: #2e3440;
  --navbar-bg-color: #3b4252;
  --navbar-searchbox-bg-color: #4c566a;
@@ -389,9 +414,11 @@ body[data-theme="nord"] {
  --global-font-family: 'Inter', sans-serif;
  --global-font-size: 16px;
  --global-line-height: 1.5;
+ --global-scrollbar-color: #81a1c1 #2e3440;
+ --global-scrollbar-width: thin;
 }
 
-body[data-theme="synthwave-84"] {
+html[data-theme="synthwave-84"] {
  --page-bg-color: #2b213a;
  --navbar-bg-color: #201b2a;
  --navbar-searchbox-bg-color: #3e305e;
@@ -417,9 +444,11 @@ body[data-theme="synthwave-84"] {
  --global-font-family: 'VT323', monospace;
  --global-font-size: 18px;
  --global-line-height: 1.2;
+ --global-scrollbar-color: #ff00a0 #2b213a;
+ --global-scrollbar-width: thin;
 }
 
-body[data-theme="monokai-pro"] {
+html[data-theme="monokai-pro"] {
  --page-bg-color: #2d2a2e;
  --navbar-bg-color: #3c3a3f;
  --navbar-searchbox-bg-color: #58545b;
@@ -445,92 +474,99 @@ body[data-theme="monokai-pro"] {
  --global-font-family: 'JetBrains Mono', monospace;
  --global-font-size: 15px;
  --global-line-height: 1.5;
+ --global-scrollbar-color: #fd971f #2d2a2e;
+ --global-scrollbar-width: thin;
 }
 
-body[data-theme="academic"] {
---page-bg-color: #f5f5f5;
---navbar-bg-color: #3b4252;
---navbar-searchbox-bg-color: #4c566a;
---navbar-searchbox-text-color: #eceff4;
---navbar-icon-bg-color: #88c0d0;
---navbar-icon-text-color: #2e3440;
---sidebar-bg-color: #3b4252;
---todo-item-text-color: #2e3440;
---todo-item-body-color: #eceff4;
---todo-item-normal-status-color: #ebcb8b;
---todo-item-reminder-status-color: #bf616a;
---todo-item-done-status-color: #a3be8c;
---todo-item-description-text-color: #2e3440;
---todo-item-description-body-color: #d8dee9;
---editor-input-container-bg-color: #d8dee9;
---editor-input-container-text-color: #2e3440;
---editor-subject-input-bg-color: #e5e9f0;
---editor-desc-input-bg-color: #e5e9f0;
---editor-desc-input-line-color: #5e81ac;
---button-icon-color: #2e3440;
---button-icon-background: #d8dee9;
---global-font-color: #2e3440;
---global-font-family: 'Georgia', 'Times New Roman', serif;
---global-font-size: 16px;
---global-line-height: 1.6;
+html[data-theme="academic"] {
+ --page-bg-color: #f5f5f5;
+ --navbar-bg-color: #3b4252;
+ --navbar-searchbox-bg-color: #4c566a;
+ --navbar-searchbox-text-color: #eceff4;
+ --navbar-icon-bg-color: #88c0d0;
+ --navbar-icon-text-color: #2e3440;
+ --sidebar-bg-color: #3b4252;
+ --todo-item-text-color: #2e3440;
+ --todo-item-body-color: #eceff4;
+ --todo-item-normal-status-color: #ebcb8b;
+ --todo-item-reminder-status-color: #bf616a;
+ --todo-item-done-status-color: #a3be8c;
+ --todo-item-description-text-color: #2e3440;
+ --todo-item-description-body-color: #d8dee9;
+ --editor-input-container-bg-color: #d8dee9;
+ --editor-input-container-text-color: #2e3440;
+ --editor-subject-input-bg-color: #e5e9f0;
+ --editor-desc-input-bg-color: #e5e9f0;
+ --editor-desc-input-line-color: #5e81ac;
+ --button-icon-color: #2e3440;
+ --button-icon-background: #d8dee9;
+ --global-font-color: #2e3440;
+ --global-font-family: 'Georgia', 'Times New Roman', serif;
+ --global-font-size: 16px;
+ --global-line-height: 1.6;
+ --global-scrollbar-color: #4c566a #f5f5f5;
+ --global-scrollbar-width: thin;
 }
 
-body[data-theme="newspaper"] {
---page-bg-color: #f7f3e9;
---navbar-bg-color: #212121;
---navbar-searchbox-bg-color: #3b3b3b;
---navbar-searchbox-text-color: #ffffff;
---navbar-icon-bg-color: #d32f2f;
---navbar-icon-text-color: #ffffff;
---sidebar-bg-color: #212121;
---todo-item-text-color: #212121;
---todo-item-body-color: #ffffff;
---todo-item-normal-status-color: #fbc02d;
---todo-item-reminder-status-color: #d32f2f;
---todo-item-done-status-color: #388e3c;
---todo-item-description-text-color: #212121;
---todo-item-description-body-color: #f5f5f5;
---editor-input-container-bg-color: #f5f5f5;
---editor-input-container-text-color: #212121;
---editor-subject-input-bg-color: #e0e0e0;
---editor-desc-input-bg-color: #e0e0e0;
---editor-desc-input-line-color: #1976d2;
---button-icon-color: #212121;
---button-icon-background: #e0e0e0;
---global-font-color: #212121;
---global-font-family: 'Times New Roman', 'Georgia', serif;
---global-font-size: 17px;
---global-line-height: 1.5;
+html[data-theme="newspaper"] {
+ --page-bg-color: #f7f3e9;
+ --navbar-bg-color: #212121;
+ --navbar-searchbox-bg-color: #3b3b3b;
+ --navbar-searchbox-text-color: #ffffff;
+ --navbar-icon-bg-color: #d32f2f;
+ --navbar-icon-text-color: #ffffff;
+ --sidebar-bg-color: #212121;
+ --todo-item-text-color: #212121;
+ --todo-item-body-color: #ffffff;
+ --todo-item-normal-status-color: #fbc02d;
+ --todo-item-reminder-status-color: #d32f2f;
+ --todo-item-done-status-color: #388e3c;
+ --todo-item-description-text-color: #212121;
+ --todo-item-description-body-color: #f5f5f5;
+ --editor-input-container-bg-color: #f5f5f5;
+ --editor-input-container-text-color: #212121;
+ --editor-subject-input-bg-color: #e0e0e0;
+ --editor-desc-input-bg-color: #e0e0e0;
+ --editor-desc-input-line-color: #1976d2;
+ --button-icon-color: #212121;
+ --button-icon-background: #e0e0e0;
+ --global-font-color: #212121;
+ --global-font-family: 'Times New Roman', 'Georgia', serif;
+ --global-font-size: 17px;
+ --global-line-height: 1.5;
+ --global-scrollbar-color: #d32f2f #212121;
+ --global-scrollbar-width: thin;
 }
 
-body[data-theme="compact"] {
---page-bg-color: #1f1d1e;
---navbar-bg-color: #2a282b;
---navbar-searchbox-bg-color: #4a474c;
---navbar-searchbox-text-color: #f3f3f3;
---navbar-icon-bg-color: #5d5a63;
---navbar-icon-text-color: #f3f3f3;
---sidebar-bg-color: #2a282b;
---todo-item-text-color: #f3f3f3;
---todo-item-body-color: #333034;
---todo-item-normal-status-color: #f1c40f;
---todo-item-reminder-status-color: #e74c3c;
---todo-item-done-status-color: #2ecc71;
---todo-item-description-text-color: #f3f3f3;
---todo-item-description-body-color: #1f1d1e;
---editor-input-container-bg-color: #1f1d1e;
---editor-input-container-text-color: #f3f3f3;
---editor-subject-input-bg-color: #333034;
---editor-desc-input-bg-color: #333034;
---editor-desc-input-line-color: #9b59b6;
---button-icon-color: #f3f3f3;
---button-icon-background: #333034;
---global-font-color: #f3f3f3;
---global-font-family: 'JetBrains Mono', monospace;
---global-font-size: 13px;
---global-line-height: 1.2;
+html[data-theme="compact"] {
+ --page-bg-color: #1f1d1e;
+ --navbar-bg-color: #2a282b;
+ --navbar-searchbox-bg-color: #4a474c;
+ --navbar-searchbox-text-color: #f3f3f3;
+ --navbar-icon-bg-color: #5d5a63;
+ --navbar-icon-text-color: #f3f3f3;
+ --sidebar-bg-color: #2a282b;
+ --todo-item-text-color: #f3f3f3;
+ --todo-item-body-color: #333034;
+ --todo-item-normal-status-color: #f1c40f;
+ --todo-item-reminder-status-color: #e74c3c;
+ --todo-item-done-status-color: #2ecc71;
+ --todo-item-description-text-color: #f3f3f3;
+ --todo-item-description-body-color: #1f1d1e;
+ --editor-input-container-bg-color: #1f1d1e;
+ --editor-input-container-text-color: #f3f3f3;
+ --editor-subject-input-bg-color: #333034;
+ --editor-desc-input-bg-color: #333034;
+ --editor-desc-input-line-color: #9b59b6;
+ --button-icon-color: #f3f3f3;
+ --button-icon-background: #333034;
+ --global-font-color: #f3f3f3;
+ --global-font-family: 'JetBrains Mono', monospace;
+ --global-font-size: 13px;
+ --global-line-height: 1.2;
+ --global-scrollbar-color: #5d5a63 #1f1d1e;
+ --global-scrollbar-width: thin;
 }
-
 
 
 ::view-transition-old(body) {

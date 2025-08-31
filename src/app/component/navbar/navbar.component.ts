@@ -385,7 +385,7 @@ export class NavbarComponent implements AfterViewInit {
   }
 
   changeTheme(themeName: string){
-    document.body.setAttribute('data-theme', themeName);
+    document.documentElement.setAttribute('data-theme', themeName);
   }
 
   updateTheme(event: Event){
