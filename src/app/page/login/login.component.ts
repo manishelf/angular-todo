@@ -128,7 +128,7 @@ export class LoginComponent {
         
       recentLogins = JSON.parse(recentLogins);
       if(this.rememberMe){
-        if(user != null && user.email && user.userGroup){
+        if(user.email && user.userGroup){
           recentLogins[user.email+'/'+user.userGroup]=user;
         } 
       }else{

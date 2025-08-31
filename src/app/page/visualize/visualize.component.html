@@ -1,15 +1,16 @@
 <div class="w-full h-full p-3 overflow-auto">
   <div class="w-full flex md:justify-end sm:justify-evenly my-2">
-    <div (click)="showFunctions = !showFunctions"  class="relative bg-gray-900 text-white p-3 mx-3 rounded-2xl hover:scale-110 hover:text-blue-300 cursor-pointer transition-all flex justify-center content-center">
+    <div (click)="showFunctions = !showFunctions" style="color:var(--button-icon-color); background: var(--button-icon-background);"  class="relative p-3 mx-3 rounded-2xl hover:scale-110 hover:text-blue-300 cursor-pointer transition-all flex justify-center content-center">
       <mat-icon>functions</mat-icon> {{selectedDataOperation$.value}}
-      <div *ngIf="showFunctions" class="flex flex-col absolute top-10  right-0 rounded-xl" style="background-color:#15162c;">
+      <div *ngIf="showFunctions" class="flex flex-col absolute top-10  right-0 rounded-xl" style="background-color: var(--button-icon-background)">
         <div *ngFor="let op of dataOperations" (click)="selectedDataOperation$.next(op)" class="w-fit p-1 cursor-pointer hover:scale-110 hover:underline">{{op}}</div>
       </div>
     </div>
     <div
       *ngFor="let chart of chartTypes"
       [title]="chart"
-      class="bg-gray-900 text-white p-3 mx-3 rounded-2xl hover:scale-110 hover:text-blue-300 cursor-pointer transition-all flex justify-center content-center"
+      class="p-3 mx-3 rounded-2xl hover:scale-110 hover:text-blue-300 cursor-pointer transition-all flex justify-center content-center"
+      style="color:var(--button-icon-color); background: var(--button-icon-background);"
       (click)="selectedChart$.next(chart)"
       >
       <mat-icon>{{ chart }}</mat-icon>
@@ -21,21 +22,23 @@
       <th class="border-none"></th>
       <th
         *ngFor="let header of fields"
-        class="text-blue-500 bg-gray-900 hover:text-white"
+        class=" hover:text-white"
       >
         <button
           (click)="toggleSortIndividual($event, header)"
-          class="cursor-pointer hover:text-white text-nowrap"
+          class="cursor-pointer text-nowrap"
           title="click to sort"
         >
-         ^ᵛ {{ header }} 
+        <a>
+          ^ᵛ {{ header }} 
+        </a>
         </button>
       </th>
     </thead>
     <tbody>
       <tr
         *ngFor="let item of reducedItemsFlat; let i = index"
-        class="text-white hover:text-lime-300"
+        style="color: var(--todo-item-text-color); background: var(--todo-item-description-body-color);"
       >
         <td
           class="w-4 cursor-pointer hover:text-green-500 hover:bg-gray-600 transition-all"

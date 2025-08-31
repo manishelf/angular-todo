@@ -1,7 +1,7 @@
-<div class="max-w-full overflow-clip overflow-ellipsis text-white rounded-2xl animate-flip" [title]="toolTipString">
-    <div [class]="`${bgColour} flex flex-row rounded-2xl justify-between p-2`">
+<div class="max-w-full overflow-clip overflow-ellipsis item-container rounded-2xl animate-flip" [title]="toolTipString">
+    <div [class]="`${borderColour} flex flex-row rounded-2xl justify-between p-2 border-1 border-e-2 border-s-2 `">
         <div class="flex-grow-1 text-2xl overflow-hidden overflow-ellipsis cursor-pointer animate-flip" title="edit">
-            <div class="border border-0 border-b-1 w-fit">{{item.subject}}</div> 
+            <div class="border-0 border-b-1 w-fit">{{item.subject}}</div> 
         </div>
         <div class="flex flex-shrink-0">
             <mat-icon (click)="optionsDisplayed=!optionsDisplayed" class="cursor-pointer hover:scale-120 option" title="options">
@@ -35,8 +35,9 @@
             </button>
         </div>
     </div>
-    <div [ngClass]="minimized?'hidden':'max-h-[500px] max-w-29/30 overflow-auto m-auto pt-2'"
-      class="transition-all duration-1000 ease-in-out"
-      [innerHtml]="parsedMD" class="match-braces rainbow-braces">
+    <div [ngClass]="minimized?'max-h-0 opacity-0':'max-h-[500px] max-w-29/30 opacity-100 overflow-auto m-auto pt-2 visible'"
+      class="transition-all duration-500 ease-in-out match-braces rainbow-braces todo-item-description rounded-md">
+      <div [ngClass]="minimized?'hidden':'visible'" [innerHtml]="parsedMD">
+      </div>
     </div>
 </div>

@@ -12,4 +12,8 @@ export interface User {
 	profilePicture?: string;
 
     token?: string;
+
+	preferences? : {
+		theme: string,
+	}
 }

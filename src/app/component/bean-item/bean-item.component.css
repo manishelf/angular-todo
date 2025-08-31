@@ -1,0 +1,11 @@
+.bean{
+    color: var(--button-icon-color);
+    background: var(--button-icon-background);
+    padding:0.5rem;
+    transition:all;
+    transition-duration: 0.5s;
+ }
+
+ .bean:hover{
+    transform: scale(1.1);
+ }

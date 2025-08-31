@@ -8,12 +8,13 @@
     border: none;
     outline: none;
     background: repeating-linear-gradient(
-        0deg,                
-        white,        
-        white 24px,  
-        #daf3fa 24px,     
-        #daf3fa 26px     
+        0deg,
+        var(--editor-desc-input-bg-color),
+        var(--editor-desc-input-bg-color) calc(var(--global-line-height) * var(--global-font-size) - 1px),
+        var(--editor-desc-input-line-color) calc(var(--global-line-height) * var(--global-font-size) - 1px),
+        var(--editor-desc-input-line-color) calc(var(--global-line-height) * var(--global-font-size))
     );
+
     /* background: repeating-linear-gradient(
         0deg,                
         blue,        background
@@ -22,14 +23,15 @@
         #00b515 26px     line height end
     ); */
     background-position: 0px 10px;
-    line-height: 26px;
+    line-height: calc(var(--global-line-height) * var(--global-font-size));
     white-space: pre-wrap;
     word-wrap: break-word;
 }
+
 .container__lines {
-    border-right: 1px solid rgb(203 213 225);
+    border-right: 1px solid var(--editor-desc-input-line-color);
     border-radius: 10px;
-    color: #0FF0FC;
+    color: var(--editor-desc-input-line-color);
     padding: 0.5rem;
     text-align: right;
     overflow: hidden;
@@ -41,7 +43,7 @@ button {
     padding-right: 0.5rem; 
     font-weight: 100;  
     border-radius: 0.25rem;
-    color: white;
+    color: var(--button-icon-color);
     width: 100%;
     height: 100%;
 }
@@ -59,3 +61,16 @@ button:hover {
         padding-right: 1rem;    
     }
 }
+.editor-input-container{
+    background: var(--editor-input-container-bg-color);
+    color:var(--editor-input-container-text-color);
+}
+.editor-subject-input{
+    background: var(--editor-subject-input-bg-color);
+}
+.markdown-container{
+    background:var(--editor-desc-input-bg-color);
+}
+.user-form-container{
+    color:var(--editor-input-container-text-color);
+}   

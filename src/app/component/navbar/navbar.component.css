@@ -1,0 +1,14 @@
+nav{
+    background: var(--navbar-bg-color);
+}
+
+input[type="search"]{
+    background: var(--navbar-searchbox-bg-color);
+    color: var(--navbar-searchbox-text-color);
+}
+
+.icon-link{
+    background: var(--navbar-icon-bg-color);
+    color: var(--navbar-icon-text-color);
+    margin:0 5px 0 5px;
+}

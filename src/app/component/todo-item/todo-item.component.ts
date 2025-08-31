@@ -32,7 +32,7 @@ export class TodoItemComponent implements OnInit, AfterViewChecked {
   toolTipString: string = '';
   parsedMD: SafeHtml = '';
   
-  bgColour: string = 'bg-gray-600 border-1 border-e-2 border-s-2 ';
+  borderColour: string = '';
   
   @Input() fromBin: boolean = false;
   @Input() optionsDisplayed: boolean = false;
@@ -44,12 +44,12 @@ export class TodoItemComponent implements OnInit, AfterViewChecked {
   constructor(private todoService: TodoServiceService, private route:ActivatedRoute, private router: Router, private sanitizer: DomSanitizer) {
   }
   ngOnInit(): void {
-    this.bgColour += 'border-amber-300';
+    this.borderColour += 'type-normal ';
     if (this.item.setForReminder) {
-      this.bgColour += ' '+'border-rose-500';
+      this.borderColour += 'type-reminder ';
     }
     if (this.item.completionStatus) {
-      this.bgColour += ' '+'border-lime-500';
+      this.borderColour += 'type-done ';
     }
 
     let markdown = marked.parse(this.item.description).toString();

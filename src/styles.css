@@ -7,7 +7,10 @@ body {
 }
 body {
   margin: 0;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-family: var(--global-font-family);
+  font-size: var(--global-font-size);
+  line-height: var(--global-line-height);
+  color: var(--global-font-color);
 }
 
 /* manual styling as tailwind overrides*/
@@ -88,11 +91,17 @@ input[type="checkbox"]{
   @apply p-2 text-2xl cursor-pointer
 }
 
+/* scroll bars*/
+
+*{
+  scrollbar-color:#5b5eff rgb(28, 29, 60);
+  scrollbar-width: thin;
+}
 
 /* styles for FullCalendar buttons */
 .fc-button {
-  background-color: rgba(102, 86, 86, 0.9) !important;
-  color: white !important;
+  background-color: var(--button-icon-background) !important;
+  color: var(--button-icon-color) !important;
   border: 1px solid #ffffff !important;
   border-radius: 4px !important;
   cursor: pointer !important;
@@ -105,6 +114,7 @@ input[type="checkbox"]{
     flex-direction: column !important;
   }
 }
+
 .fc-event:hover {
   box-shadow: 0px 0px 5px 3px rgb(255, 255, 255);
   -webkit-box-shadow: 0px 0px 5px 3px rgba(18, 18, 18, 0.2);
@@ -130,10 +140,9 @@ input[type="checkbox"]{
 .fc .fc-daygrid-day-number {
   font-size: 1rem;
   font-weight: 600;
-  color: #e2e8f0; /* Light gray for date numbers (adjust to your theme) */
+  color: var(--todo-item-text-color); /* Light gray for date numbers (adjust to your theme) */
   line-height: 1; /* Compact line height */
   padding: 2px 4px; /* Small padding around the number itself */
-  background-color: rgba(0, 0, 0, 0.1); /* Subtle background for visibility */
 }
 .fc .fc-col-header-cell {
   background-color: rgba(0, 0, 0, 0.1); /* Subtle background for visibility */
@@ -148,9 +157,8 @@ input[type="checkbox"]{
 }
 
 .fc-event {
-  background-color: #273037; /* A distinct blue for events (adjust to your theme) */
-  color: white;
-  border: 1px solid #2b6cb0; /* Darker blue border */
+  background-color: var(--todo-item-body-color);
+  color: var(--todo-item-text-color);
   border-radius: 6px; /* Rounded corners for event badges */
   margin-bottom: 2px; /* Space between events to prevent visual overlap */
   padding: 3px 6px; /* Padding inside the event badge */
@@ -212,8 +220,8 @@ input[type="checkbox"]{
 }
 
 .fc .fc-list-day-cushion{
-  background-color: rgba(255,255,255,1);
-  color:black;
+  background-color: var(--todo-item-description-body-color);
+  color:var(--todo-item-description-text-color);
 }
 .fc .fc-list-event{
   background-color: rgba(0,0,0,0.1);
@@ -232,11 +240,11 @@ input[type="checkbox"]{
   border-radius: 8px;
 }
 .fc .fc-popover-header {
-  background-color: rgb(40, 46, 61);
+  background-color: var(--todo-item-description-text-color);
 }
 
 .fc .fc-popover-body{
-  background-color: rgb(59, 64, 87);
+  background-color: var(--todo-item-description-body-color);
 }
 
 /*chartjs*/
@@ -305,4 +313,3 @@ ol ol ol ol li {
 ol ol ol ol ol li {
   list-style-type: lower-roman;
 }
-

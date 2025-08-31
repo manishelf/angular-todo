@@ -1,0 +1,21 @@
+.item-container{
+    color:var(--todo-item-text-color);
+    background: var(--todo-item-body-color);
+}
+
+.todo-item-description{
+    color:var(--todo-item-description-text-color);
+    background: var(--todo-item-description-body-color);
+}
+
+.type-normal{
+    border-color: var(--todo-item-normal-status-color);
+}
+
+.type-reminder{
+    border-color: var(--todo-item-reminder-status-color);
+}
+
+.type-done{
+    border-color: var(--todo-item-done-status-color);
+}

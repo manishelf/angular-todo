@@ -16,11 +16,12 @@ import { SortService } from './../../service/sort/sort.service';
 import { UserService } from '../../service/user/user.service';
 import { ConnectionService } from '../../service/connection/connection.service';
 import { User } from './../../models/User';
+import { BeanItemComponent } from '../bean-item/bean-item.component';
 
 @Component({
   selector: 'app-navbar',
-  imports: [MatIconModule, CommonModule],
-templateUrl: './navbar.component.html',
+  imports: [MatIconModule, CommonModule, BeanItemComponent],
+  templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css',
 })
 export class NavbarComponent implements AfterViewInit {
@@ -30,12 +31,33 @@ export class NavbarComponent implements AfterViewInit {
   lastQueryParams: any = null;
   online: boolean = false;
 
+  menuHidden: boolean = true;
+
   user: User | null = null;
 
   recentLogins: any = {};
   selectedUserIndex = 0;
   private lastUserLoginArrSize = 0;
 
+  availableThemes = [
+      'normal',
+      'dark',
+      'tokyo-night',
+      'neon',
+      'hacker',
+      'sunny',
+      'minimal',
+      'white',
+      'lime',
+      'tropical',
+      'zen',
+      'one-dark-pro',
+      'dracula',
+      'nord',
+      'synthwave-84',
+      'monokai-pro'
+  ];
+  
   constructor(
     private router: Router,
     private toaster: ToastService,
@@ -86,7 +108,6 @@ export class NavbarComponent implements AfterViewInit {
       this.recentLogins = Object.entries(recentLogins);
 
       if(this.lastUserLoginArrSize != this.recentLogins.length){
-        if(this.user)
         this.selectedUserIndex = this.recentLogins.length - 1; // in case a user is added pick the latest
       }
 
@@ -94,6 +115,16 @@ export class NavbarComponent implements AfterViewInit {
       for(let e of this.recentLogins){
         if(e[0] == user?.email+'/'+user?.userGroup){
           this.selectedUserIndex = i;
+          if(!e[1].preferences){
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if(prefersDark){
+              this.changeTheme('tokyo-night');
+            }else{
+              this.changeTheme('minimal');
+            }
+          }else{
+            this.changeTheme(e[1].preferences.theme);
+          }
           break;
         }
         i++;
@@ -336,5 +367,42 @@ export class NavbarComponent implements AfterViewInit {
     let user = this.recentLogins[i][1]; // reversed
     this.selectedUserIndex = i;
     this.userService.loggedInUser.next(user);
+  }
+
+  changeTheme(themeName: string){
+    document.body.setAttribute('data-theme', themeName);
+  }
+
+  updateTheme(event: Event){
+    let target = event.target as HTMLSelectElement;
+    let sel = target.value;
+    if(document.startViewTransition)
+    document.startViewTransition(()=>{
+      this.changeTheme(sel);    
+    });
+    else this.changeTheme(sel);
+    let user = this.userService.loggedInUser.value;
+    if(user.preferences){
+      user.preferences['theme'] = sel;
+    }
+    else{
+      user.preferences = {theme: sel};
+    }
+    let users = localStorage['recentLogins'];
+    let usersMap:any = {};
+    usersMap = JSON.parse(users);
+    if(users && usersMap){
+     usersMap[user.email+'/'+user.userGroup] = user;
+    }else {
+      usersMap = {'qtodo/local':{
+        email: 'qtodo',
+        userGroup: 'local',
+        preferences: {
+          theme: sel
+        }
+      }}
+    }
+    localStorage['recentLogins']=JSON.stringify(usersMap);
+    target.selectedIndex = 0;
   }
 }

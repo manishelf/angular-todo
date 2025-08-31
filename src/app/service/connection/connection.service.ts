@@ -40,13 +40,11 @@ export class ConnectionService {
     });
     
     this.userService.loggedInUser.subscribe(async (user)=>{
-      if(user){
         this.accessToken = user.token || '';
-      }else{
+ 
         if(this.accessToken != '')
         this.axios.post('/user/logout');
-      }
-    })
+    });
 
     this.axios.interceptors.request.use(async (config)=> {
         if(this.accessToken != '' && this.isTokenExpired(this.accessToken) && !config.url?.includes('/user/refresh')){

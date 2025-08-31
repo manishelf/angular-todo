@@ -43,12 +43,9 @@ export class TodoServiceService {
     private backendService: BackendCrudService
   ) {
     userService.loggedInUser$.subscribe((user)=>{
-      if(user && user.email && user.userGroup){
+      if(user.email && user.userGroup){
         this.lastLoggedUserEmail = user.email;
         this.lastLoggedUserGroup = user.userGroup;
-      }else{
-        this.lastLoggedUserEmail = 'qtodo';
-        this.lastLoggedUserGroup = 'local';
       }
       this.initializeItems();
     })

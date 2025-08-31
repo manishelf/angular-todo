@@ -1,0 +1,448 @@
+:root {
+ --page-bg-color: rgb(61, 72, 89);
+ --navbar-bg-color: rgb(76, 87, 103);
+ --navbar-searchbox-bg-color: white;
+ --navbar-searchbox-text-color: black;
+ --navbar-icon-bg-color: rgb(0, 167, 164);
+ --navbar-icon-text-color: white;
+ --sidebar-bg-color: rgb(112, 120, 135);
+ --todo-item-text-color: white;
+ --todo-item-body-color: rgb(69, 81, 99);
+ --todo-item-normal-status-color: rgb(255, 209, 43);
+ --todo-item-reminder-status-color: rgb(255, 28, 83);
+ --todo-item-done-status-color: rgb(133, 222, 0);
+ --todo-item-description-text-color: white;
+ --todo-item-description-body-color: rgb(62, 72, 89);
+ --editor-input-container-bg-color: #0b0025;
+ --editor-input-container-text-color: black;
+ --editor-subject-input-bg-color: white;
+ --editor-desc-input-bg-color: white;
+ --editor-desc-input-line-color: #00c0f5;
+ --button-icon-color: rgb(77, 89, 106);
+ --button-icon-background: rgb(227, 230, 235);
+ --global-font-color: white;
+ --global-font-family: 'Inter', sans-serif;
+ --global-font-size: 16px;
+ --global-line-height: 1.5;
+}
+
+/* --- Specific Theme Variables --- */
+body[data-theme="tokyo-night"] {
+ --page-bg-color: #1a1b26;
+ --navbar-bg-color: #24283b;
+ --navbar-searchbox-bg-color: #414868;
+ --navbar-searchbox-text-color: #c0caf5;
+ --navbar-icon-bg-color: #7aa2f7;
+ --navbar-icon-text-color: #ffffff;
+ --sidebar-bg-color: #24283b;
+ --todo-item-text-color: #c0caf5;
+ --todo-item-body-color: #2d3148;
+ --todo-item-normal-status-color: #bb9af7;
+ --todo-item-reminder-status-color: #f7768e;
+ --todo-item-done-status-color: #9ece6a;
+ --todo-item-description-text-color: #c0caf5;
+ --todo-item-description-body-color: #1a1b26;
+ --editor-input-container-bg-color: #1a1b26;
+ --editor-input-container-text-color: #c0caf5;
+ --editor-subject-input-bg-color: #2d3148;
+ --editor-desc-input-bg-color: #2d3148;
+ --editor-desc-input-line-color: #a9b1d6;
+ --button-icon-color: #c0caf5;
+ --button-icon-background: #414868;
+ --global-font-color: #c0caf5;
+ --global-font-family: 'Inter', sans-serif;
+ --global-font-size: 15px;
+ --global-line-height: 1.5;
+}
+
+body[data-theme="neon"] {
+ --page-bg-color: #000000;
+ --navbar-bg-color: #1a1a1a;
+ --navbar-searchbox-bg-color: #333333;
+ --navbar-searchbox-text-color: #00ffcc;
+ --navbar-icon-bg-color: #ff00ff;
+ --navbar-icon-text-color: #ffffff;
+ --sidebar-bg-color: #1a1a1a;
+ --todo-item-text-color: #00ffcc;
+ --todo-item-body-color: #222222;
+ --todo-item-normal-status-color: #ffdd00;
+ --todo-item-reminder-status-color: #ff0077;
+ --todo-item-done-status-color: #00ff00;
+ --todo-item-description-text-color: #00ffcc;
+ --todo-item-description-body-color: #000000;
+ --editor-input-container-bg-color: #000000;
+ --editor-input-container-text-color: #00ffcc;
+ --editor-subject-input-bg-color: #222222;
+ --editor-desc-input-bg-color: #222222;
+ --editor-desc-input-line-color: #00ffcc;
+ --button-icon-color: #00ffcc;
+ --button-icon-background: #444444;
+ --global-font-color: #00ffcc;
+ --global-font-family: 'Orbitron', sans-serif;
+ --global-font-size: 16px;
+ --global-line-height: 1.5;
+}
+
+body[data-theme="dark"] {
+ --page-bg-color: #121212;
+ --navbar-bg-color: #1e1e1e;
+ --navbar-searchbox-bg-color: #2c2c2c;
+ --navbar-searchbox-text-color: #ffffff;
+ --navbar-icon-bg-color: #0d9488;
+ --navbar-icon-text-color: #ffffff;
+ --sidebar-bg-color: #1e1e1e;
+ --todo-item-text-color: #e0e0e0;
+ --todo-item-body-color: #2c2c2c;
+ --todo-item-normal-status-color: #facc15;
+ --todo-item-reminder-status-color: #ef4444;
+ --todo-item-done-status-color: #22c55e;
+ --todo-item-description-text-color: #e0e0e0;
+ --todo-item-description-body-color: #121212;
+ --editor-input-container-bg-color: #121212;
+ --editor-input-container-text-color: #e0e0e0;
+ --editor-subject-input-bg-color: #2c2c2c;
+ --editor-desc-input-bg-color: #2c2c2c;
+ --editor-desc-input-line-color: #a3a3a3;
+ --button-icon-color: #d4d4d4;
+ --button-icon-background: #3d3d3d;
+ --global-font-color: #e0e0e0;
+ --global-font-family: 'Inter', sans-serif;
+ --global-font-size: 16px;
+ --global-line-height: 1.5;
+}
+
+body[data-theme="hacker"] {
+ --page-bg-color: #000000;
+ --navbar-bg-color: #0a0a0a;
+ --navbar-searchbox-bg-color: #1a1a1a;
+ --navbar-searchbox-text-color: #00ff00;
+ --navbar-icon-bg-color: #00ff00;
+ --navbar-icon-text-color: #000000;
+ --sidebar-bg-color: #0a0a0a;
+ --todo-item-text-color: #00ff00;
+ --todo-item-body-color: #1a1a1a;
+ --todo-item-normal-status-color: #ffff00;
+ --todo-item-reminder-status-color: #ff0000;
+ --todo-item-done-status-color: #00aaff;
+ --todo-item-description-text-color: #00ff00;
+ --todo-item-description-body-color: #000000;
+ --editor-input-container-bg-color: #000000;
+ --editor-input-container-text-color: #00ff00;
+ --editor-subject-input-bg-color: #1a1a1a;
+ --editor-desc-input-bg-color: #1a1a1a;
+ --editor-desc-input-line-color: #00ff00;
+ --button-icon-color: #00ff00;
+ --button-icon-background: #1a1a1a;
+ --global-font-color: #00ff00;
+ --global-font-family: 'Space Mono', monospace;
+ --global-font-size: 16px;
+ --global-line-height: 1.5;
+}
+
+body[data-theme="sunny"] {
+ --page-bg-color: #fffbe6;
+ --navbar-bg-color: #ffe599;
+ --navbar-searchbox-bg-color: #ffffff;
+ --navbar-searchbox-text-color: #333333;
+ --navbar-icon-bg-color: #ff9800;
+ --navbar-icon-text-color: #ffffff;
+ --sidebar-bg-color: #ffe599;
+ --todo-item-text-color: #333333;
+ --todo-item-body-color: #ffedd5;
+ --todo-item-normal-status-color: #ffc107;
+ --todo-item-reminder-status-color: #ff5722;
+ --todo-item-done-status-color: #8bc34a;
+ --todo-item-description-text-color: #333333;
+ --todo-item-description-body-color: #fffbe6;
+ --editor-input-container-bg-color: #fffbe6;
+ --editor-input-container-text-color: #333333;
+ --editor-subject-input-bg-color: #ffedd5;
+ --editor-desc-input-bg-color: #ffedd5;
+ --editor-desc-input-line-color: #ff9800;
+ --button-icon-color: #333333;
+ --button-icon-background: #fff8e1;
+ --global-font-color: #333333;
+ --global-font-family: 'Poppins', sans-serif;
+ --global-font-size: 16px;
+ --global-line-height: 1.5;
+}
+
+body[data-theme="minimal"] {
+ --page-bg-color: #f4f4f4;
+ --navbar-bg-color: #e0e0e0;
+ --navbar-searchbox-bg-color: #ffffff;
+ --navbar-searchbox-text-color: #333333;
+ --navbar-icon-bg-color: #4caf50;
+ --navbar-icon-text-color: #ffffff;
+ --sidebar-bg-color: #e0e0e0;
+ --todo-item-text-color: #555555;
+ --todo-item-body-color: #f0f0f0;
+ --todo-item-normal-status-color: #ffc107;
+ --todo-item-reminder-status-color: #f44336;
+ --todo-item-done-status-color: #8bc34a;
+ --todo-item-description-text-color: #555555;
+ --todo-item-description-body-color: #f4f4f4;
+ --editor-input-container-bg-color: #f4f4f4;
+ --editor-input-container-text-color: #333333;
+ --editor-subject-input-bg-color: #f0f0f0;
+ --editor-desc-input-bg-color: #f0f0f0;
+ --editor-desc-input-line-color: #9e9e9e;
+ --button-icon-color: #555555;
+ --button-icon-background: #e0e0e0;
+ --global-font-color: #555555;
+ --global-font-family: 'Inter', sans-serif;
+ --global-font-size: 16px;
+ --global-line-height: 1.5;
+}
+
+body[data-theme="white"] {
+ --page-bg-color: #ffffff;
+ --navbar-bg-color: #f8f8f8;
+ --navbar-searchbox-bg-color: #eeeeee;
+ --navbar-searchbox-text-color: #111111;
+ --navbar-icon-bg-color: #3498db;
+ --navbar-icon-text-color: #ffffff;
+ --sidebar-bg-color: #f0f0f0;
+ --todo-item-text-color: #222222;
+ --todo-item-body-color: #f5f5f5;
+ --todo-item-normal-status-color: #ffc107;
+ --todo-item-reminder-status-color: #e74c3c;
+ --todo-item-done-status-color: #2ecc71;
+ --todo-item-description-text-color: #222222;
+ --todo-item-description-body-color: #ffffff;
+ --editor-input-container-bg-color: #ffffff;
+ --editor-input-container-text-color: #111111;
+ --editor-subject-input-bg-color: #f5f5f5;
+ --editor-desc-input-bg-color: #f5f5f5;
+ --editor-desc-input-line-color: #bdc3c7;
+ --button-icon-color: #333333;
+ --button-icon-background: #f0f0f0;
+ --global-font-color: #222222;
+ --global-font-family: 'Inter', sans-serif;
+ --global-font-size: 16px;
+ --global-line-height: 1.5;
+}
+
+body[data-theme="lime"] {
+ --page-bg-color: #1a1a1a;
+ --navbar-bg-color: #2b2b2b;
+ --navbar-searchbox-bg-color: #3a3a3a;
+ --navbar-searchbox-text-color: #c8ff00;
+ --navbar-icon-bg-color: #c8ff00;
+ --navbar-icon-text-color: #1a1a1a;
+ --sidebar-bg-color: #2b2b2b;
+ --todo-item-text-color: #c8ff00;
+ --todo-item-body-color: #3a3a3a;
+ --todo-item-normal-status-color: #ffc107;
+ --todo-item-reminder-status-color: #ff4d4d;
+ --todo-item-done-status-color: #00e600;
+ --todo-item-description-text-color: #c8ff00;
+ --todo-item-description-body-color: #1a1a1a;
+ --editor-input-container-bg-color: #1a1a1a;
+ --editor-input-container-text-color: #c8ff00;
+ --editor-subject-input-bg-color: #3a3a3a;
+ --editor-desc-input-bg-color: #3a3a3a;
+ --editor-desc-input-line-color: #c8ff00;
+ --button-icon-color: #c8ff00;
+ --button-icon-background: #3a3a3a;
+ --global-font-color: #c8ff00;
+ --global-font-family: 'Inter', sans-serif;
+ --global-font-size: 16px;
+ --global-line-height: 1.5;
+}
+
+body[data-theme="tropical"] {
+ --page-bg-color: #f4fcd9;
+ --navbar-bg-color: #80d8da;
+ --navbar-searchbox-bg-color: #ffffff;
+ --navbar-searchbox-text-color: #333333;
+ --navbar-icon-bg-color: #ff6f61;
+ --navbar-icon-text-color: #ffffff;
+ --sidebar-bg-color: #80d8da;
+ --todo-item-text-color: #333333;
+ --todo-item-body-color: #c2e9e8;
+ --todo-item-normal-status-color: #ffc107;
+ --todo-item-reminder-status-color: #d84315;
+ --todo-item-done-status-color: #4caf50;
+ --todo-item-description-text-color: #333333;
+ --todo-item-description-body-color: #f4fcd9;
+ --editor-input-container-bg-color: #f4fcd9;
+ --editor-input-container-text-color: #333333;
+ --editor-subject-input-bg-color: #c2e9e8;
+ --editor-desc-input-bg-color: #c2e9e8;
+ --editor-desc-input-line-color: #ff6f61;
+ --button-icon-color: #333333;
+ --button-icon-background: #c2e9e8;
+ --global-font-color: #333333;
+ --global-font-family: 'Quicksand', sans-serif;
+ --global-font-size: 16px;
+ --global-line-height: 1.6;
+}
+
+body[data-theme="zen"] {
+ --page-bg-color: #faf9f6;
+ --navbar-bg-color: #e5e5e0;
+ --navbar-searchbox-bg-color: #ffffff;
+ --navbar-searchbox-text-color: #555555;
+ --navbar-icon-bg-color: #757471;
+ --navbar-icon-text-color: #ffffff;
+ --sidebar-bg-color: #e5e5e0;
+ --todo-item-text-color: #555555;
+ --todo-item-body-color: #f0f0e0;
+ --todo-item-normal-status-color: #d1b464;
+ --todo-item-reminder-status-color: #b07060;
+ --todo-item-done-status-color: #5f8670;
+ --todo-item-description-text-color: #555555;
+ --todo-item-description-body-color: #faf9f6;
+ --editor-input-container-bg-color: #faf9f6;
+ --editor-input-container-text-color: #555555;
+ --editor-subject-input-bg-color: #f0f0e0;
+ --editor-desc-input-bg-color: #f0f0e0;
+ --editor-desc-input-line-color: #757471;
+ --button-icon-color: #555555;
+ --button-icon-background: #e5e5e0;
+ --global-font-color: #555555;
+ --global-font-family: 'Lora', serif;
+ --global-font-size: 16px;
+ --global-line-height: 1.7;
+}
+
+body[data-theme="one-dark-pro"] {
+ --page-bg-color: #282c34;
+ --navbar-bg-color: #323842;
+ --navbar-searchbox-bg-color: #4b5263;
+ --navbar-searchbox-text-color: #abb2bf;
+ --navbar-icon-bg-color: #61afef;
+ --navbar-icon-text-color: #ffffff;
+ --sidebar-bg-color: #3e4451;
+ --todo-item-text-color: #abb2bf;
+ --todo-item-body-color: #3e4451;
+ --todo-item-normal-status-color: #e5c07b;
+ --todo-item-reminder-status-color: #e06c75;
+ --todo-item-done-status-color: #98c379;
+ --todo-item-description-text-color: #abb2bf;
+ --todo-item-description-body-color: #282c34;
+ --editor-input-container-bg-color: #282c34;
+ --editor-input-container-text-color: #abb2bf;
+ --editor-subject-input-bg-color: #3e4451;
+ --editor-desc-input-bg-color: #3e4451;
+ --editor-desc-input-line-color: #5c6370;
+ --button-icon-color: #abb2bf;
+ --button-icon-background: #3e4451;
+ --global-font-color: #abb2bf;
+ --global-font-family: 'JetBrains Mono', monospace;
+ --global-font-size: 15px;
+ --global-line-height: 1.5;
+}
+
+body[data-theme="dracula"] {
+ --page-bg-color: #282a36;
+ --navbar-bg-color: #44475a;
+ --navbar-searchbox-bg-color: #6272a4;
+ --navbar-searchbox-text-color: #f8f8f2;
+ --navbar-icon-bg-color: #bd93f9;
+ --navbar-icon-text-color: #ffffff;
+ --sidebar-bg-color: #3e4256;
+ --todo-item-text-color: #f8f8f2;
+ --todo-item-body-color: #44475a;
+ --todo-item-normal-status-color: #f1fa8c;
+ --todo-item-reminder-status-color: #ff5555;
+ --todo-item-done-status-color: #50fa7b;
+ --todo-item-description-text-color: #f8f8f2;
+ --todo-item-description-body-color: #282a36;
+ --editor-input-container-bg-color: #282a36;
+ --editor-input-container-text-color: #f8f8f2;
+ --editor-subject-input-bg-color: #44475a;
+ --editor-desc-input-bg-color: #44475a;
+ --editor-desc-input-line-color: #6272a4;
+ --button-icon-color: #f8f8f2;
+ --button-icon-background: #44475a;
+ --global-font-color: #f8f8f2;
+ --global-font-family: 'Roboto Mono', monospace;
+ --global-font-size: 15px;
+ --global-line-height: 1.5;
+}
+
+body[data-theme="nord"] {
+ --page-bg-color: #2e3440;
+ --navbar-bg-color: #3b4252;
+ --navbar-searchbox-bg-color: #4c566a;
+ --navbar-searchbox-text-color: #eceff4;
+ --navbar-icon-bg-color: #81a1c1;
+ --navbar-icon-text-color: #eceff4;
+ --sidebar-bg-color: #3b4252;
+ --todo-item-text-color: #eceff4;
+ --todo-item-body-color: #4c566a;
+ --todo-item-normal-status-color: #ebcb8b;
+ --todo-item-reminder-status-color: #bf616a;
+ --todo-item-done-status-color: #a3be8c;
+ --todo-item-description-text-color: #eceff4;
+ --todo-item-description-body-color: #2e3440;
+ --editor-input-container-bg-color: #2e3440;
+ --editor-input-container-text-color: #eceff4;
+ --editor-subject-input-bg-color: #4c566a;
+ --editor-desc-input-bg-color: #4c566a;
+ --editor-desc-input-line-color: #d8dee9;
+ --button-icon-color: #eceff4;
+ --button-icon-background: #4c566a;
+ --global-font-color: #eceff4;
+ --global-font-family: 'Inter', sans-serif;
+ --global-font-size: 16px;
+ --global-line-height: 1.5;
+}
+
+body[data-theme="synthwave-84"] {
+ --page-bg-color: #2b213a;
+ --navbar-bg-color: #201b2a;
+ --navbar-searchbox-bg-color: #3e305e;
+ --navbar-searchbox-text-color: #fff4d2;
+ --navbar-icon-bg-color: #ff00a0;
+ --navbar-icon-text-color: #ffffff;
+ --sidebar-bg-color: #201b2a;
+ --todo-item-text-color: #fff4d2;
+ --todo-item-body-color: #3e305e;
+ --todo-item-normal-status-color: #f5e43a;
+ --todo-item-reminder-status-color: #ff00a0;
+ --todo-item-done-status-color: #08f7fe;
+ --todo-item-description-text-color: #fff4d2;
+ --todo-item-description-body-color: #2b213a;
+ --editor-input-container-bg-color: #2b213a;
+ --editor-input-container-text-color: #fff4d2;
+ --editor-subject-input-bg-color: #3e305e;
+ --editor-desc-input-bg-color: #3e305e;
+ --editor-desc-input-line-color: #08f7fe;
+ --button-icon-color: #fff4d2;
+ --button-icon-background: #3e305e;
+ --global-font-color: #fff4d2;
+ --global-font-family: 'VT323', monospace;
+ --global-font-size: 18px;
+ --global-line-height: 1.2;
+}
+
+body[data-theme="monokai-pro"] {
+ --page-bg-color: #2d2a2e;
+ --navbar-bg-color: #3c3a3f;
+ --navbar-searchbox-bg-color: #58545b;
+ --navbar-searchbox-text-color: #fcfcfa;
+ --navbar-icon-bg-color: #fd971f;
+ --navbar-icon-text-color: #ffffff;
+ --sidebar-bg-color: #3c3a3f;
+ --todo-item-text-color: #fcfcfa;
+ --todo-item-body-color: #413f47;
+ --todo-item-normal-status-color: #ffe79a;
+ --todo-item-reminder-status-color: #e31c79;
+ --todo-item-done-status-color: #a6e22e;
+ --todo-item-description-text-color: #fcfcfa;
+ --todo-item-description-body-color: #2d2a2e;
+ --editor-input-container-bg-color: #2d2a2e;
+ --editor-input-container-text-color: #fcfcfa;
+ --editor-subject-input-bg-color: #413f47;
+ --editor-desc-input-bg-color: #413f47;
+ --editor-desc-input-line-color: #ae81ff;
+ --button-icon-color: #fcfcfa;
+ --button-icon-background: #413f47;
+ --global-font-color: #fcfcfa;
+ --global-font-family: 'JetBrains Mono', monospace;
+ --global-font-size: 15px;
+ --global-line-height: 1.5;
+}

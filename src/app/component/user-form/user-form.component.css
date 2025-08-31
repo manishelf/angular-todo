@@ -1,5 +1,11 @@
 tr {
-    border: 1px solid white;
+    border: 1px solid var(--editor-input-container-bg-color);
+    color:var(--editor-input-container-text-color);
+}
+
+select{
+    color:var(--editor-input-container-text-color);
+    background: var(--editor-subject-input-bg-color);
 }
 
 td{

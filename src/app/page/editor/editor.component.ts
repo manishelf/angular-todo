@@ -378,10 +378,18 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
   
   @HostListener('focusin')
   onEventForResize(): void {
-    if(this.descriptionArea){
-      this.descriptionArea.nativeElement.style.height = 'auto';
-      this.descriptionArea.nativeElement.style.height = this.descriptionArea.nativeElement.scrollHeight + 'px';
-      //this.descriptionArea.nativeElement.nextElementSibling?.scrollIntoView(true);
+    if (this.descriptionArea) {
+      const editorContainer = this.editorContainer.nativeElement;
+      const descriptionArea = this.descriptionArea.nativeElement;
+
+      const scrollBottom = editorContainer.scrollHeight - editorContainer.scrollTop;
+
+      descriptionArea.style.height = 'auto';
+
+      requestAnimationFrame(() => { // because setTimeout causes the text to jump up adn down
+        descriptionArea.style.height = descriptionArea.scrollHeight + 'px';
+        editorContainer.scrollTop = editorContainer.scrollHeight - scrollBottom;
+      });
     }
   }
   
@@ -487,7 +495,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
           editorContainer.scrollTop = newScrollTop;
         },50);
     }, 300);
-}
+  }
 
   onOptionClick() {
     this.onOptionClickOnDelayClearTimeout();

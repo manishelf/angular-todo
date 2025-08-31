@@ -8,7 +8,10 @@ import { Route, Router } from '@angular/router';
   providedIn: 'root',
 })
 export class UserService {
-  loggedInUser = new BehaviorSubject<User | null>(null);
+  loggedInUser = new BehaviorSubject<User>({
+    email: 'qtodo',
+    userGroup: 'local'
+  });
   loggedInUser$ = this.loggedInUser.asObservable();
 
   constructor(
@@ -32,6 +35,9 @@ export class UserService {
   }
 
   logoutUser() {
-    this.loggedInUser.next(null);
+    this.loggedInUser.next({
+      email: 'qtodo',
+      userGroup: 'local'
+    });
   }
 }

@@ -1,6 +1,6 @@
 <div class="h-full md:m-4 md:p-4 overflow-auto" #editorContainer>
   <div class="flex flex-row flex-wrap md:flex-nowrap justify-center md:justify-between pb-1">
-    <div class="m-2">
+    <div class="m-2 user-form-container">
         <app-user-form #userForm *ngIf="customFormSchema?.fields" [data]="customFormData" [schema]="customFormSchema"></app-user-form>
     </div>
     <div class="flex justify-evenly space-x-2">
@@ -70,11 +70,11 @@
       </button>
       </div>
   </div>
-  <div class="bg-[#0b0025] rounded-lg shadow-md p-4" (focusout)="onOptionClickOnDelay($event)" (focusin)="onOptionClickOnDelayClearTimeout()">
+  <div class="editor-input-container rounded-lg shadow-md p-4" (focusout)="onOptionClickOnDelay($event)" (focusin)="onOptionClickOnDelayClearTimeout()">
     <input
     type="text"
     #subjectTxt
-    class="w-full bg-white p-3 rounded-lg text-lg outline-0 ring-2 ring-inset focus:ring-blue-600"
+    class="w-full editor-subject-input p-3 rounded-lg text-lg outline-0 ring-2 ring-inset focus:ring-blue-600"
     id="editor-subject-input"
     [(ngModel)]="todoItem.subject"
     placeholder="Enter a title for your note (must be unique)"
@@ -88,13 +88,13 @@
         [(ngModel)]="todoItem.description"
         placeholder="Enter your note here (supports markdown)"
         (keydown)="handleKeydownForDescription($event)"
-        class="w-full rounded-lg p-3 m-2 input-textarea resize-vertical overflow-hidden ring-2 ring-inset focus:ring-blue-600"
+        class="w-full transition-all duration-1000 rounded-lg p-3 m-2 input-textarea resize-vertical overflow-hidden ring-2 ring-inset focus:ring-blue-600"
         #descriptionArea
       ></textarea>
       </div>
     </div>
     <div *ngIf="option !== 'Preview'" id='editor-markdown-div' (click)="onOptionClickOnDelay($event)" [innerHTML]="convertedMarkdown" 
-      class="match-braces rainbow-braces m-2 p-3 rounded-lg ring-2 ring-inset bg-white ring-[#8900ff]">
+      class="match-braces rainbow-braces overflow-ellipsis m-2 p-3 rounded-lg ring-2 ring-inset markdown-container ring-[#8900ff]">
     </div>
   </div>
   <footer class="w-full h-20"></footer>
