@@ -446,3 +446,119 @@ body[data-theme="monokai-pro"] {
  --global-font-size: 15px;
  --global-line-height: 1.5;
 }
+
+body[data-theme="academic"] {
+--page-bg-color: #f5f5f5;
+--navbar-bg-color: #3b4252;
+--navbar-searchbox-bg-color: #4c566a;
+--navbar-searchbox-text-color: #eceff4;
+--navbar-icon-bg-color: #88c0d0;
+--navbar-icon-text-color: #2e3440;
+--sidebar-bg-color: #3b4252;
+--todo-item-text-color: #2e3440;
+--todo-item-body-color: #eceff4;
+--todo-item-normal-status-color: #ebcb8b;
+--todo-item-reminder-status-color: #bf616a;
+--todo-item-done-status-color: #a3be8c;
+--todo-item-description-text-color: #2e3440;
+--todo-item-description-body-color: #d8dee9;
+--editor-input-container-bg-color: #d8dee9;
+--editor-input-container-text-color: #2e3440;
+--editor-subject-input-bg-color: #e5e9f0;
+--editor-desc-input-bg-color: #e5e9f0;
+--editor-desc-input-line-color: #5e81ac;
+--button-icon-color: #2e3440;
+--button-icon-background: #d8dee9;
+--global-font-color: #2e3440;
+--global-font-family: 'Georgia', 'Times New Roman', serif;
+--global-font-size: 16px;
+--global-line-height: 1.6;
+}
+
+body[data-theme="newspaper"] {
+--page-bg-color: #f7f3e9;
+--navbar-bg-color: #212121;
+--navbar-searchbox-bg-color: #3b3b3b;
+--navbar-searchbox-text-color: #ffffff;
+--navbar-icon-bg-color: #d32f2f;
+--navbar-icon-text-color: #ffffff;
+--sidebar-bg-color: #212121;
+--todo-item-text-color: #212121;
+--todo-item-body-color: #ffffff;
+--todo-item-normal-status-color: #fbc02d;
+--todo-item-reminder-status-color: #d32f2f;
+--todo-item-done-status-color: #388e3c;
+--todo-item-description-text-color: #212121;
+--todo-item-description-body-color: #f5f5f5;
+--editor-input-container-bg-color: #f5f5f5;
+--editor-input-container-text-color: #212121;
+--editor-subject-input-bg-color: #e0e0e0;
+--editor-desc-input-bg-color: #e0e0e0;
+--editor-desc-input-line-color: #1976d2;
+--button-icon-color: #212121;
+--button-icon-background: #e0e0e0;
+--global-font-color: #212121;
+--global-font-family: 'Times New Roman', 'Georgia', serif;
+--global-font-size: 17px;
+--global-line-height: 1.5;
+}
+
+body[data-theme="compact"] {
+--page-bg-color: #1f1d1e;
+--navbar-bg-color: #2a282b;
+--navbar-searchbox-bg-color: #4a474c;
+--navbar-searchbox-text-color: #f3f3f3;
+--navbar-icon-bg-color: #5d5a63;
+--navbar-icon-text-color: #f3f3f3;
+--sidebar-bg-color: #2a282b;
+--todo-item-text-color: #f3f3f3;
+--todo-item-body-color: #333034;
+--todo-item-normal-status-color: #f1c40f;
+--todo-item-reminder-status-color: #e74c3c;
+--todo-item-done-status-color: #2ecc71;
+--todo-item-description-text-color: #f3f3f3;
+--todo-item-description-body-color: #1f1d1e;
+--editor-input-container-bg-color: #1f1d1e;
+--editor-input-container-text-color: #f3f3f3;
+--editor-subject-input-bg-color: #333034;
+--editor-desc-input-bg-color: #333034;
+--editor-desc-input-line-color: #9b59b6;
+--button-icon-color: #f3f3f3;
+--button-icon-background: #333034;
+--global-font-color: #f3f3f3;
+--global-font-family: 'JetBrains Mono', monospace;
+--global-font-size: 13px;
+--global-line-height: 1.2;
+}
+
+
+
+::view-transition-old(body) {
+    animation: zoom-out-and-fade .2s ease-in-out forwards;
+}
+
+::view-transition-new(body) {
+    animation: zoom-in-and-fade .2s ease-in-out forwards;
+}
+
+@keyframes zoom-out-and-fade {
+    from {
+        opacity: 1;
+        transform: scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: scale(1.05);
+    }
+}
+
+@keyframes zoom-in-and-fade {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}

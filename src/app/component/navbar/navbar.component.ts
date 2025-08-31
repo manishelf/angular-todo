@@ -39,24 +39,39 @@ export class NavbarComponent implements AfterViewInit {
   selectedUserIndex = 0;
   private lastUserLoginArrSize = 0;
 
-  availableThemes = [
-      'normal',
-      'dark',
-      'tokyo-night',
-      'neon',
-      'hacker',
-      'sunny',
-      'minimal',
-      'white',
-      'lime',
-      'tropical',
-      'zen',
-      'one-dark-pro',
-      'dracula',
-      'nord',
-      'synthwave-84',
-      'monokai-pro'
-  ];
+  availableThemes: any = {
+    "classic-professional": [
+    "white",
+    "minimal",
+    "academic",
+    "normal",
+    "newspaper"
+    ],
+    "vibrant-nature": [
+    "zen",
+    "sunny",
+    "lime",
+    "tropical"
+    ],
+    "cool-tones": [
+    "nord"
+    ],
+    "minimal-dark": [
+    "dark",
+    "compact"
+    ],
+    "developer-palettes": [
+    "tokyo-night",
+    "dracula",
+    "one-dark-pro",
+    "monokai-pro"
+    ],
+    "retro-futuristic": [
+    "synthwave-84",
+    "hacker",
+    "neon"
+    ]
+  };
   
   constructor(
     private router: Router,
@@ -376,10 +391,13 @@ export class NavbarComponent implements AfterViewInit {
   updateTheme(event: Event){
     let target = event.target as HTMLSelectElement;
     let sel = target.value;
-    if(document.startViewTransition)
-    document.startViewTransition(()=>{
-      this.changeTheme(sel);    
-    });
+    if(document.startViewTransition){
+      document.startViewTransition(()=>{
+        this.changeTheme(sel);    
+      });
+      console.log(1);
+      
+    }
     else this.changeTheme(sel);
     let user = this.userService.loggedInUser.value;
     if(user.preferences){
@@ -404,5 +422,9 @@ export class NavbarComponent implements AfterViewInit {
     }
     localStorage['recentLogins']=JSON.stringify(usersMap);
     target.selectedIndex = 0;
+  }
+
+  getCategories(): string[] {
+    return Object.keys(this.availableThemes);
   }
 }
