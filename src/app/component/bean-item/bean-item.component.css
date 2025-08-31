@@ -4,8 +4,52 @@
     padding:0.5rem;
     transition:all;
     transition-duration: 0.5s;
+    position: relative;
+    overflow: clip;
  }
 
  .bean:hover{
     transform: scale(1.1);
+ }
+/*https://www.youtube.com/watch?v=e3w9liPXSi4*/
+ .bean > span{
+   background: transparent;
+   padding: 0.6rem;
+   height: 100%;
+   position: absolute;
+   z-index: -1;
+ }
+
+ .bean>:first-child{
+   top:0;
+   left: 0;
+ }
+ .bean>:last-child{
+   top:0;
+   right: 0;
+ }
+
+ .bean::before{
+   content:'';
+   position: absolute;
+   background: var(--button-icon-color);
+   mix-blend-mode: difference;
+   width: 10%;
+   aspect-ratio: 1;
+   border-radius: 50%;
+   z-index: -1;
+   opacity: 0;
+   transition: transform 0.5s;
+ }
+
+ .bean:active::before{
+   transform: scale(50);
+   opacity: 1;
+ }
+
+ .bean:has(:first-child:active)::before{
+   left:0
+ }
+ .bean:has(:last-child:active)::before{
+   right: 0;
  }

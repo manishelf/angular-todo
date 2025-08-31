@@ -3,7 +3,7 @@
         <span class="text-3xl ml-3 mr-3" >qtodo</span>
     </a>
     <input type="search" class="grow p-2 rounded-2xl outline-0 focus:ring-2 ring-inset sm:float-end order-0 md:order-1 text-center w-full md:w-auto" #searchBox tabindex="0" (input)="searchItems($event)" placeholder="Search for your notes"/>
-    <div class="flex flex-row order-2">   
+    <div class="flex flex-row order-2 options">   
     <div class="m-1 transition-all duration-1000 flex flex-row flex-wrap order-2 items-center justify-evenly w-full md:w-fit md:gap-x-2" [ngClass]="menuHidden?'opacity-0':'opacity-100'">
         <div [ngClass]="menuHidden?'hidden':'visible'" class="flex">
             <div *ngIf="user != null || online" class="flex flex-row">
