@@ -534,31 +534,14 @@ body[data-theme="compact"] {
 
 
 ::view-transition-old(body) {
-    animation: zoom-out-and-fade .2s ease-in-out forwards;
+    animation: .5s;
 }
 
 ::view-transition-new(body) {
-    animation: zoom-in-and-fade .2s ease-in-out forwards;
+    animation: move-in .5s;
 }
 
-@keyframes zoom-out-and-fade {
-    from {
-        opacity: 1;
-        transform: scale(1);
-    }
-    to {
-        opacity: 0;
-        transform: scale(1.05);
-    }
-}
-
-@keyframes zoom-in-and-fade {
-    from {
-        opacity: 0;
-        transform: scale(0.95);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
+@keyframes move-in {
+  from { translate: 0 -100%; }
+  to { translate: 0  0; }
 }

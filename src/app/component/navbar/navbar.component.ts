@@ -408,7 +408,9 @@ export class NavbarComponent implements AfterViewInit {
     }
     let users = localStorage['recentLogins'];
     let usersMap:any = {};
-    usersMap = JSON.parse(users);
+    if(users && users != 'null'){
+      usersMap = JSON.parse(users);
+    }
     if(users && usersMap){
      usersMap[user.email+'/'+user.userGroup] = user;
     }else {
