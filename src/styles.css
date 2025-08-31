@@ -94,8 +94,8 @@ input[type="checkbox"]{
 /* scroll bars*/
 
 *{
-  scrollbar-color:#5b5eff rgb(28, 29, 60);
-  scrollbar-width: thin;
+  scrollbar-color: var(--global-scrollbar-color);
+  scrollbar-width: var(--global-scrollbar-width);
 }
 
 /* styles for FullCalendar buttons */
