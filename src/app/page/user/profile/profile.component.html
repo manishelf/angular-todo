@@ -1,0 +1,26 @@
+<div [formGroup]="form" class="flex flex-col items-center justify-center">
+    <h1>Hello {{user.firstName}} {{user.lastName}}!</h1>
+    <div>
+        <img src="abc.com">
+    </div>
+    <div>
+        <div *ngIf="profilePicDataUrl == null">
+            <mat-icon class="scale-200" >person_pin</mat-icon>
+            <mat-icon class="absolute scale-70" style="top:-15px; right:-15px;">edit</mat-icon>
+        </div>
+        <input type="file" #profilePicEle accept="image/png, image/jpeg" class="hidden" (change)="saveProfilePic($event)">
+        <img [src]="profilePicDataUrl" class="w-10 rounded-[40%]">
+    </div>
+    <div class="flex flex-col p-20 gap-y-5">
+        <div>
+            <label>First Name</label><input type="text" formControlName="firstName">
+        </div>
+        <div>
+            <label>Last Name</label><input type="text" formControlName="lastName">
+        </div>
+        <div>
+            <label>Update password</label><input type="password" formControlName="ConfirmNewPassword">
+        </div>
+    </div>
+    <button class="bg-blue-600 p-3 rounded-xl"><app-bean-item>Update</app-bean-item></button>
+</div>

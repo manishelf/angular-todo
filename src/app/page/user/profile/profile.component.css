@@ -1,0 +1,10 @@
+input[type="text"],input[type="password"]{
+    width: full;
+    background: white;
+    border: 1px solid rgb(18, 30, 51);
+    border-radius: 1vw;
+    padding: 0.5rem;
+    margin-left: 0.5rem;
+    float:right;
+}
+

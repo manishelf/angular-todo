@@ -29,8 +29,12 @@ import { Subscription } from 'rxjs';
   styleUrl: './calendar.component.css',
 })
 export class CalendarComponent {
+  
   calendarVisible = signal(true);
   initialEvents: EventInput[] = [];
+  viewByUpdationTimestamp = signal(false);
+  itemList: TodoItem[] = [];
+
   calendarOptions = signal<CalendarOptions>({
     plugins: [interactionPlugin, dayGridPlugin, timeGridPlugin, listPlugin],
     headerToolbar: {
@@ -42,13 +46,14 @@ export class CalendarComponent {
     events: (fetchInfo, successCallback, failureCallback) => {
       this.todoService.getAll().subscribe({
         next: (result) => {
+          this.itemList = result;
           const events: EventInput[] = result.map((item) => ({
             id: item.id.toString(),
             title: item.subject,
             start: item.eventStart ? item.eventStart : item.creationTimestamp,
             end: item.eventEnd ? item.eventEnd : item.creationTimestamp,
             allDay: item.eventFullDay,
-            color: ``,
+            color: item.setForReminder?'orange':(item.completionStatus?'green':''),
           }));
           successCallback(events);
         },
@@ -164,5 +169,25 @@ export class CalendarComponent {
   handleEvents(events: EventApi[]) {
     this.currentEvents.set(events);
     this.changeDetector.detectChanges();
+  }
+
+  handleViewByUpdationTimestampToggle(){
+    
+    this.viewByUpdationTimestamp.update(s=>!s);
+
+    this.calendarOptions.update((curr)=>{
+      curr.events=(fetchInfo, successCallback, failureCallback) => {
+        const events: EventInput[] = this.itemList.map((item) => ({
+          id: item.id.toString(),
+          title: item.subject,
+          start: item.eventStart ? item.eventStart : this.viewByUpdationTimestamp() ? item.updationTimestamp : item.creationTimestamp,
+          end: item.eventEnd ? item.eventEnd : item.creationTimestamp,
+          allDay: item.eventFullDay,
+          color: item.setForReminder?'orange':(item.completionStatus?'green':''),
+        }));
+        successCallback(events);
+      };
+      return curr;
+    })
   }
 }

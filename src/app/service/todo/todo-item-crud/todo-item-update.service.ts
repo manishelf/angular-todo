@@ -16,7 +16,7 @@ export class TodoItemUpdateService {
         let request = this.todoItemUtils.getObjectStoreRW(db, 'todo_items').get(todoItem.id);
         if(request){
           request.onsuccess = (event)=>{
-            let target = event.target as IDBRequest<TodoItem>;            
+            let target = event.target as IDBRequest<TodoItem>;                        
             if(target.result.tags.join(',') !== todoItem.tags.join(',')){
               this.updateTags(db$, todoItem);
             }

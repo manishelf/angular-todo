@@ -2,6 +2,15 @@
 <div class='w-full flex flex-col-reverse md:flex-row h-full side-pannel'>
   <div class='rotate-180 flex-4/12 resize overflow-auto border-e-2 border-s-1'>
     <div class="rotate-180">
+      <div class='p-5 overflow-auto'>
+        <ul>
+          <li *ngFor='let event of currentEvents()' style="background: var(--todo-item-body-color); color: var(--todo-item-text-color)" class="m-1">
+            <b class="block">{{event.startStr.split('.')[0]}}</b>
+            <i>{{event.title}}</i>
+          </li>
+        </ul>
+        <h2>All Events ({{currentEvents().length}})</h2>
+      </div>
       <div class='p-5'>
         <h2>Instructions</h2>
         <ul>
@@ -30,15 +39,15 @@
           toggle weekends
         </label>
       </div>
-      <div class='p-5 overflow-auto'>
-        <h2>All Events ({{currentEvents().length}})</h2>
-        <ul>
-          <li *ngFor='let event of currentEvents()'>
-            <b>{{event.startStr.split('.')[0]}}</b>
-            <br>
-            <i>{{event.title}}</i>
-          </li>
-        </ul>
+      <div class='p-5'>
+        <label>
+          <input
+            type='checkbox'
+            [checked]='viewByUpdationTimestamp()'
+            (change)='handleViewByUpdationTimestampToggle()'
+          />
+          show based on event updation
+        </label>
       </div>
     </div>
   </div>

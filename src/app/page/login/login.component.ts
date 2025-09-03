@@ -145,10 +145,12 @@ export class LoginComponent {
 
   addUserGroup(){
     let usergroup = (prompt('Enter your group title') || '');
-    this.userGroupList.push(usergroup);
-    let val = this.formGroup.value;
-    val['usergroup']= usergroup;
-    this.formGroup.setValue(val);
+    if(usergroup != ''){
+      this.userGroupList.push(usergroup);
+      let val = this.formGroup.value;
+      val['usergroup']= usergroup;
+      this.formGroup.setValue(val);
+    }
   }
 
   selectImageFile(){

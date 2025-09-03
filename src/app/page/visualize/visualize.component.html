@@ -1,19 +1,23 @@
 <div class="w-full h-full p-3 overflow-auto">
   <div class="w-full flex md:justify-end sm:justify-evenly my-2">
-    <div (click)="showFunctions = !showFunctions" style="color:var(--button-icon-color); background: var(--button-icon-background);"  class="relative p-3 mx-3 rounded-2xl hover:scale-110 hover:text-blue-300 cursor-pointer transition-all flex justify-center content-center">
-      <mat-icon>functions</mat-icon> {{selectedDataOperation$.value}}
-      <div *ngIf="showFunctions" class="flex flex-col absolute top-10  right-0 rounded-xl" style="background-color: var(--button-icon-background)">
+    <div (click)="showFunctions = !showFunctions" class="relative">
+      <app-bean-item>
+        <mat-icon>functions</mat-icon> {{selectedDataOperation$.value}}
+      </app-bean-item>
+      <div *ngIf="showFunctions" class="flex flex-col absolute top-10  right-0 rounded-xl z-3" style="background-color: var(--button-icon-background)">
         <div *ngFor="let op of dataOperations" (click)="selectedDataOperation$.next(op)" class="w-fit p-1 cursor-pointer hover:scale-110 hover:underline">{{op}}</div>
       </div>
     </div>
     <div
       *ngFor="let chart of chartTypes"
       [title]="chart"
-      class="p-3 mx-3 rounded-2xl hover:scale-110 hover:text-blue-300 cursor-pointer transition-all flex justify-center content-center"
+      class="mx-3 rounded-[30vw]"
       style="color:var(--button-icon-color); background: var(--button-icon-background);"
       (click)="selectedChart$.next(chart)"
       >
-      <mat-icon>{{ chart }}</mat-icon>
+      <app-bean-item>
+        <mat-icon>{{ chart }}</mat-icon>
+      </app-bean-item>
     </div>
   </div>
 
@@ -29,9 +33,9 @@
           class="cursor-pointer text-nowrap"
           title="click to sort"
         >
-        <a>
-          ^ᵛ {{ header }} 
-        </a>
+        <app-bean-item>
+          {{ header }} 
+        </app-bean-item>
         </button>
       </th>
     </thead>
@@ -41,11 +45,12 @@
         style="color: var(--todo-item-text-color); background: var(--todo-item-description-body-color);"
       >
         <td
-          class="w-4 cursor-pointer hover:text-green-500 hover:bg-gray-600 transition-all"
           (click)="onItemGoToClicked($event, i)"
           title="go to"
         >
-          <mat-icon>navigate_next</mat-icon>
+          <app-bean-item>
+            <mat-icon>navigate_next</mat-icon>
+          </app-bean-item>
         </td>
         <td *ngFor="let val of item[1]">
           {{ val }}

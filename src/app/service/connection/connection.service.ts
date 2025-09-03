@@ -41,9 +41,11 @@ export class ConnectionService {
     
     this.userService.loggedInUser.subscribe(async (user)=>{
         this.accessToken = user.token || '';
+        console.log(user);
  
-        if(this.accessToken != '')
-        this.axios.post('/user/logout');
+        if(this.accessToken && this.accessToken != ''){
+          this.axios.post('/user/logout');
+        }
     });
 
     this.axios.interceptors.request.use(async (config)=> {

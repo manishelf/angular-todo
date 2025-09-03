@@ -5,6 +5,7 @@ import { CalendarComponent } from './page/calendar/calendar.component';
 import { AboutComponent } from './page/about/about.component';
 import { VisualizeComponent } from './page/visualize/visualize.component';
 import { LoginComponent } from './page/login/login.component';
+import { ProfileComponent } from './page/user/profile/profile.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -24,5 +25,6 @@ export const routes: Routes = [
   { path: 'calendar', component: CalendarComponent },
   { path: 'about', component: AboutComponent },
   { path: 'login', component: LoginComponent},
-  { path: 'signup', component: LoginComponent}
+  { path: 'signup', component: LoginComponent},
+  { path: 'user/profile', component: ProfileComponent},
 ];

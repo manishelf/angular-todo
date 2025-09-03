@@ -7,10 +7,13 @@
     <div class="m-1 transition-all duration-1000 flex flex-row flex-wrap order-2 items-center justify-evenly w-full md:w-fit md:gap-x-2" [ngClass]="menuHidden?'opacity-0':'opacity-100'">
         <div [ngClass]="menuHidden?'hidden':'visible'" class="flex">
             <div *ngIf="user != null || online" class="flex flex-row">
-                <select class="rounded p-1 m-1 max-w-30" style="background: var(--button-icon-background); color: var(--button-icon-color)" (change)="changeCurrentUser($event)" tabindex="1">
+                <select class="rounded p-1 m-1 max-w-30 overflow-ellipsis" style="background: var(--button-icon-background); color: var(--button-icon-color)" (change)="changeCurrentUser($event)" tabindex="1">
                     <option *ngFor="let recentUserEntry of recentLogins let i = index" [value]="i" [selected]="i == selectedUserIndex">{{recentUserEntry[0]}}</option>
                 </select>
-                <img *ngIf="user?.profilePicture" [src]="user?.profilePicture" class="w-10 p-1 rounded-[40%]" [title]="user?.email+'/'+user?.userGroup">
+                <app-bean-item *ngIf="user?.profilePicture" routerLink="/user/profile">
+                    <div class="w-6 h-6"></div>
+                    <img [src]="user?.profilePicture" class="w-10 absolute top-0 right-0"  [title]="user?.email+'/'+user?.userGroup">
+                </app-bean-item>
             </div>
             <app-bean-item (click)="toggleBackendConnection()" title="toggle connection">
                     <mat-icon>{{!online?'cloud_off':'cloud_done'}}</mat-icon>

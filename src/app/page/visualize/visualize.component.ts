@@ -9,13 +9,14 @@ import { BehaviorSubject } from 'rxjs';
 import { MatIcon } from '@angular/material/icon';
 import { reduceToFields } from './helpers';
 import { drawBarChart, drawLineChart, drawPieChart, loadCharJS} from './charts';
+import { BeanItemComponent } from '../../component/bean-item/bean-item.component';
 
 declare var CanvasJS: any;
 
 
 @Component({
   selector: 'app-visualize',
-  imports: [CommonModule, MatIcon],
+  imports: [CommonModule, MatIcon, BeanItemComponent],
   templateUrl: './visualize.component.html',
   styleUrl: './visualize.component.css',
 })
