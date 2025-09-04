@@ -120,12 +120,12 @@ html[data-theme="dark"] {
 
 html[data-theme="hacker"] {
  --page-bg-color: #000000;
- --navbar-bg-color: #0a0a0a;
+ --navbar-bg-color: #0a0a1f;
  --navbar-searchbox-bg-color: #1a1a1a;
  --navbar-searchbox-text-color: #00ff00;
  --navbar-icon-bg-color: #00ff00;
  --navbar-icon-text-color: #000000;
- --sidebar-bg-color: #0a0a0a;
+ --sidebar-bg-color: #0a0a1f;
  --todo-item-text-color: #00ff00;
  --todo-item-body-color: #1a1a1a;
  --todo-item-normal-status-color: #ffff00;
