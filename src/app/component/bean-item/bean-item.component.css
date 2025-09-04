@@ -12,13 +12,6 @@
     overflow: clip;
  }
 
-@container (max-width: 100px) {
-  .bean {
-    padding: 50%; 
-    border-radius: 50%; 
-  }
-}
-
 
  .link-active{
   filter: invert();
