@@ -1,12 +1,24 @@
+.bean-container{
+  container-type: inline-size;
+}
+
 .bean{
     color: var(--button-icon-color);
     background: var(--button-icon-background);
-    padding:10% 20%;
+    padding: 0.1rem 0.5rem;
     transition:all;
     transition-duration: 0.3s;
     position: relative;
     overflow: clip;
  }
+
+@container (max-width: 50px) {
+  .bean {
+    padding: 50%; 
+    border-radius: 50%; 
+  }
+}
+
 
  .link-active{
   filter: invert();
