@@ -1,16 +1,18 @@
 
-<div class='w-full flex flex-col-reverse md:flex-row h-full side-pannel'>
-  <div class='rotate-180 flex-4/12 resize overflow-auto border-e-2 border-s-1'>
-    <div class="rotate-180">
-      <div class='p-5 overflow-auto'>
-        <ul>
-          <li *ngFor='let event of currentEvents()' style="background: var(--todo-item-body-color); color: var(--todo-item-text-color)" class="m-1">
-            <b class="block">{{event.startStr.split('.')[0]}}</b>
-            <i>{{event.title}}</i>
-          </li>
-        </ul>
-        <h2>All Events ({{currentEvents().length}})</h2>
-      </div>
+<div class='w-full flex flex-col md:flex-row h-full side-pannel overflow-auto md:overflow-hidden'>
+  <div *ngIf='calendarVisible()' [ngClass]="calendarVisible()?'grow p-2 md:p-8':''"> 
+    <full-calendar [options]='calendarOptions()' class="h-full">
+      <ng-template #eventContent let-arg>
+        <div class="text-center">
+          <b>{{ arg.timeText }}&nbsp;</b>
+          <i>{{ arg.event.title }}</i>
+        </div>
+      </ng-template>
+    </full-calendar>
+    <footer class="w-full h-20"></footer>
+  </div>
+  <div class="h-2 w-full md:w-auto md:h-full border-1 resizebar" (click)="handleResize($event)"></div>
+  <div class='order-1 md:overflow-auto' *ngIf="eventListVisible()" [ngClass]="calendarVisible()?'shrink':'grow'">
       <div class='px-5 pt-1'>
         <h2>Instructions</h2>
         <ul>
@@ -26,7 +28,7 @@
             [checked]='calendarVisible()'
             (change)='handleCalendarToggle()'
           />
-          toggle whole calendar
+          toggle calendar
         </label>
       </div>
       <div class='px-5 pt-1'>
@@ -49,18 +51,25 @@
           show based on event updation
         </label>
       </div>
-      <footer class="w-full h-10" ></footer>
+      <div class='px-5 pt-1'>
+        <label>
+          <input
+            type='checkbox'
+            (change)='handleHideEventList()'
+          />
+          hide event list
+        </label>
+      </div>
+      <div class='p-5'>
+        <h2>All Events ({{currentEvents().length}})</h2>
+        <div *ngFor='let event of currentEvents()'
+          style="background: var(--todo-item-body-color); color: var(--todo-item-text-color)" 
+          class="mt-1 flex flex-row flex-wrap items-center rounded-md hover:scale-105 transition-all cursor-pointer" 
+          (click)="openItemInEditor(event.id)">
+          <b class="pr-4">{{event.startStr.split('.')[0]}}</b>
+          <i>{{event.title}}</i>
+        </div>
+        <footer class="w-full h-10" ></footer>
+      </div>
     </div>
   </div>
-  <div class='w-full rotate-180 flex-auto resize overflow-auto'> 
-    <full-calendar *ngIf='calendarVisible()' [options]='calendarOptions()' class="h-screen md:h-full p-2 md:p-7 rotate-180">
-      <ng-template #eventContent let-arg>
-        <div class="text-center">
-          <b>{{ arg.timeText }}&nbsp;</b>
-          <i>{{ arg.event.title }}</i>
-        </div>
-      </ng-template>
-    </full-calendar>
-  </div>
-</div>
-<footer class="w-full h-10" ></footer>

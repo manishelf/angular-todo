@@ -124,10 +124,14 @@ input[type="checkbox"]{
 .fc .fc-scrollgrid {
   border-radius: 8px;
 }
+.fc .fc-view-harness{
+}
 .fc .fc-daygrid-day {
   padding: 1rem;
   overflow: ellipsis;
+  cursor: cell;
 }
+
 .fc .fc-daygrid-day-top {
   padding-bottom: 2px;
 }

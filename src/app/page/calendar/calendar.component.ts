@@ -1,4 +1,4 @@
-import { Component, signal, ChangeDetectorRef } from '@angular/core';
+import { Component, signal, ChangeDetectorRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FullCalendarModule } from '@fullcalendar/angular';
 import {
@@ -33,6 +33,8 @@ export class CalendarComponent {
   calendarVisible = signal(true);
   initialEvents: EventInput[] = [];
   viewByUpdationTimestamp = signal(false);
+  eventListVisible = signal(true);
+  startResize = false;
   itemList: TodoItem[] = [];
 
   calendarOptions = signal<CalendarOptions>({
@@ -55,6 +57,7 @@ export class CalendarComponent {
             allDay: item.eventFullDay,
             color: item.setForReminder?'orange':(item.completionStatus?'green':''),
           }));
+          this.forceFullCalendarResize();
           successCallback(events);
         },
         error: (error) => {
@@ -88,15 +91,23 @@ export class CalendarComponent {
     this.todoService.fromBin = false;
   }
 
+  forceFullCalendarResize(){
+    //force view update for full calendar
+    this.handleWeekendsToggle();
+    requestAnimationFrame(()=>{
+      this.handleWeekendsToggle();
+    });
+  }
+
   handleCalendarToggle() {
     this.calendarVisible.update((bool) => !bool);
   }
 
   handleWeekendsToggle() {
-    this.calendarOptions.update((options) => ({
-      ...options,
-      weekends: !options.weekends,
-    }));
+    this.calendarOptions.update((options) =>{
+      options.weekends = !options.weekends;
+      return options;
+    });
   }
 
   handleDateSelect(selectInfo: any) {
@@ -134,6 +145,7 @@ export class CalendarComponent {
       });
     }
   }
+
   handleEventClick(clickInfo: EventClickArg) {
     this.todoService
       .getItemById(Number.parseInt(clickInfo.event.id))
@@ -189,5 +201,18 @@ export class CalendarComponent {
       };
       return curr;
     })
+  }
+
+  openItemInEditor(id: string){    
+    this.router.navigate(['/edit'],{queryParams:{id}});
+  }
+  
+  handleHideEventList(){
+    this.eventListVisible.update((cur)=>!cur); 
+    this.forceFullCalendarResize();
+  }
+
+  handleResize(event:Event){
+    
   }
 }

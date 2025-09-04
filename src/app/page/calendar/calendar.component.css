@@ -1,3 +1,9 @@
 .side-pannel{
   color: var(--todo-item-text-color);
 }
+.resizebar{
+  cursor: nw-resize;
+}
+.resizebar:hover{
+  padding: 0 0.2rem;
+}
