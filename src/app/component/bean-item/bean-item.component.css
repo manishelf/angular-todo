@@ -11,13 +11,13 @@
     position: relative;
     overflow: clip;
  }
-
+/*
 @container (width > 2rem ) {
   .bean {
     padding: 10% 20%; 
   }
 }
-
+*/
  .link-active{
   filter: invert();
 }
