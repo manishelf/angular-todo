@@ -1,4 +1,4 @@
-import { Component, signal, ChangeDetectorRef, AfterViewInit } from '@angular/core';
+import { Component, signal, ChangeDetectorRef, AfterViewInit, viewChild, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FullCalendarModule } from '@fullcalendar/angular';
 import {
@@ -36,6 +36,9 @@ export class CalendarComponent {
   eventListVisible = signal(true);
   startResize = false;
   itemList: TodoItem[] = [];
+
+  @ViewChild('calanderContainer') calanderContainer!: ElementRef;
+  @ViewChild('panelContainer') panelContainer!: ElementRef;
 
   calendarOptions = signal<CalendarOptions>({
     plugins: [interactionPlugin, dayGridPlugin, timeGridPlugin, listPlugin],
@@ -212,7 +215,10 @@ export class CalendarComponent {
     this.forceFullCalendarResize();
   }
 
-  handleResize(event:Event){
-    
+  handleResize(event:MouseEvent){
+  }
+  toggleEventListVisible(){
+    this.eventListVisible.update(cur=>!cur);
+    this.forceFullCalendarResize();
   }
 }

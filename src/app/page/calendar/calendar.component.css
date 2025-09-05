@@ -2,8 +2,16 @@
   color: var(--todo-item-text-color);
 }
 .resizebar{
-  cursor: nw-resize;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-right: 1px solid;
+  border-radius: 20px;
+  padding: 0.5rem;
+  font-size: xx-large;
 }
-.resizebar:hover{
-  padding: 0 0.2rem;
+
+.resizebar::before{
+  content: '+'
 }
