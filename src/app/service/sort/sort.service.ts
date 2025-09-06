@@ -53,7 +53,7 @@ export class SortService {
     if (x.setForReminder && !y.setForReminder) return -1;
     if (!x.setForReminder && y.setForReminder) return 1;
 
-    return 0;
+    return Date.parse(y.updationTimestamp) - Date.parse(x.updationTimestamp); // latest first
   }
   sortItems(order: string[], items: TodoItem[], limit:number | null | undefined = Number.MAX_SAFE_INTEGER): Observable<TodoItem[]> {  
     limit = limit?limit:Number.MAX_SAFE_INTEGER;

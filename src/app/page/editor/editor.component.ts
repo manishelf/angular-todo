@@ -3,9 +3,12 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
+  EventEmitter,
   HostListener,
+  Input,
   OnChanges,
   OnInit,
+  Output,
   ViewChild,
 } from '@angular/core';
 import * as marked from 'marked';

@@ -98,6 +98,8 @@ export class UserFormComponent implements OnChanges {
 
   ngOnChanges(): void {
     if (this.data) {
+      this.schema = structuredClone(this.schema);//to stop the default value of original being set
+
       let data = new Map(Object.entries(this.data));
       this.schema?.fields?.forEach((field) => {
         field.default = data.get(field.name) as string;

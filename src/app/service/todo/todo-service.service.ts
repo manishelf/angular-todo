@@ -189,7 +189,6 @@ export class TodoServiceService {
   }
 
   addItem(item: Omit<TodoItem, 'id'>) : Promise<number>{
-    let start = Date.now();
     return new Promise<number>((res,rej)=>{
       if(item.subject.trim()===''){
        item.subject = new Date().toISOString(); 
@@ -202,8 +201,6 @@ export class TodoServiceService {
         let savedItem = item as any;
         savedItem.id = id;
         this.changedItem.next(savedItem);
-        console.log(Date.now()-start);
-        
         },
         (err)=>{
           this.toaster.error('error adding todo item!');

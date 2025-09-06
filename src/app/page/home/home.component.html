@@ -1,21 +1,17 @@
 <div tabindex="1"  class="h-full overflow-y-auto justify-center pt-2 pb-10">
-    <div class="w-full flex flex-col justify-center" *ngIf="itemList.length === 0 || fromBin">
+    <div class="w-full flex flex-col justify-center" *ngIf="fromBin">
         <div class="mb-8">
-            <span *ngIf="fromBin" class="block text-center text-3xl font-semibold text-amber-600 m-4">
+            <span class="block text-center text-3xl font-semibold text-amber-600 m-4">
                 Local Recycle Bin
                 <a routerLink="/bin/clear" routerLinkActive="active" ariaCurrentWhenActive="page" title="Clear the recycle bin" class="ml-4 text-2xl text-gray-500 hover:text-amber-800 transition-colors duration-200">Clear</a>
-            </span>
-            <span *ngIf="itemList.length === 0" class="block text-center font-semibold text-emerald-600">
-                <div class="mb-4 text-4xl">No Notes Yet!</div>
-                <div>Checkout the <a routerLink="/about" routerLinkActive="active" ariaCurrentWhenActive="page" title="about">about</a> section for more info</div>
             </span>
         </div>
     </div>
     <div class="h-fit w-full flex flex-row flex-wrap">
-        <div tabindex="0" (keydown)="onKeyDownTodoItem($event)" 
-        (click)="onClickTodoItem($event, i)" 
+        <div tabindex="0" (keydown)="onKeyDownTodoItem($event, todoItem)" 
+        (click)="onClickTodoItem($event, todoItem)" 
          focus="this.style.float='top'"
-        *ngFor="let todoItem of itemList; let i = index" [id]="i"  
+        *ngFor="let todoItem of itemList$ | async; let i = index; trackBy: trackById" [id]="i"  
         class="flex-auto max-w-full h-fit mx-2 my-1 rounded-2xl focus:outline-2 hover:outline-2 hover:shadow-lg
          shadow-gray-50 outline-offset-2 outline-white transition-all animate-focus
          ">

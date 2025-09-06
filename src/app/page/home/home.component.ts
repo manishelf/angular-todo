@@ -11,20 +11,20 @@ import {
   RouterLink,
   RouterLinkActive,
 } from '@angular/router';
-import { last, Subscription } from 'rxjs';
+import { last, Observable, of, Subscription, switchMap } from 'rxjs';
+import { EditorComponent } from '../editor/editor.component';
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, TodoItemComponent, RouterLink, RouterLinkActive],
+  imports: [CommonModule, TodoItemComponent, RouterLink, RouterLinkActive, EditorComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
 })
 export class HomeComponent implements OnInit, OnDestroy {
-  itemList: TodoItem[] = [];
+  itemList$: Observable<TodoItem[]> = of([])
   fromBin: boolean = false;
-  fromSearch: boolean = false;
-  private todoItemsSubscription: Subscription | undefined;
-  private queryParamsSubscription: Subscription | undefined;
+
+  private queryParamSubscription!: Subscription;
 
   constructor(
     private todoService: TodoServiceService,
@@ -64,7 +64,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.todoService.initializeItems();
     
-    this.queryParamsSubscription = this.route.queryParams.subscribe(
+    this.queryParamSubscription = this.route.queryParams.subscribe(
       (params: Params) => {
         let order = params['ord'] ? params['ord'] : [];
         let exact = params['abs'] ? params['abs'] === 'true' : false;
@@ -76,32 +76,24 @@ export class HomeComponent implements OnInit, OnDestroy {
         if (limit || order.length != 0 || searchQuery !== '' || tags.length > 0 || searchTerms.length > 0) {
           this.todoService
             .searchTodos(searchQuery, tags, searchTerms, exact)
-            .subscribe(
-              (itemList) => {
-                this.fromSearch = true;
-                this.todoService.sortTodoItems(order, itemList, limit).subscribe(items=>this.itemList = items);
-              },
-              (error) => {
-                console.error('error fetching tasks ', error);
-              }
+            .pipe(
+              switchMap((itemList) => {
+                return this.todoService.sortTodoItems(order, itemList, limit);
+              })
             );
         } else {
           this.router.navigate([]);
-          this.fromSearch = false;
-          this.todoItemsSubscription = this.todoService.todoItems$.subscribe(
-            (itemList) => {
-              this.todoService.sortTodoItems(order, itemList).subscribe(items=>this.itemList = items);
-            },
-            (error) => {
-              console.error('error fetching tasks ', error);
-            }
+          this.itemList$ = this.todoService.todoItems$.pipe(
+            switchMap((itemList) => {
+              return this.todoService.sortTodoItems(order, itemList)
+            })
           );
         }
       }
     );
   }
 
-   onClickTodoItem(event: Event, id: number) {
+   onClickTodoItem(event: Event, item: TodoItem) {
     let targetItem = event.target as HTMLElement;
    
     let sel = window.getSelection();
@@ -110,12 +102,11 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
 
     this.route.queryParams.subscribe((query, todoItem = this) => {
-      let item = this.itemList[id];
       if (item) {
         this.router.navigate(['/edit'], {
           state: {
-            item: item,
-            query: query,
+            item,
+            query,
           },
         });
       }
@@ -185,7 +176,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     nextEle?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
-  onKeyDownTodoItem(event: KeyboardEvent) {
+  onKeyDownTodoItem(event: KeyboardEvent, item: TodoItem) {
     let leftDirKey = ['ArrowLeft', 'a', 'h'];
     let rightDirKey = ['ArrowRight', 'd', 'l'];
     let upDirKey = ['ArrowUp', 'w', 'j'];
@@ -210,15 +201,18 @@ export class HomeComponent implements OnInit, OnDestroy {
     } else if (downDirKey.includes(event.key)) {
       this.verticalFocusTravel(targetItem, true);
     } else if (event.key === 'Enter') {
-      this.onClickTodoItem(event, Number.parseInt(targetItem.id));
+      this.onClickTodoItem(event, item);
     }
   }
   ngOnDestroy(): void {
-    if (this.todoItemsSubscription) {
-      this.todoItemsSubscription.unsubscribe();
+    if (this.queryParamSubscription) {
+      this.queryParamSubscription.unsubscribe();
     }
-    if (this.queryParamsSubscription) {
-      this.queryParamsSubscription.unsubscribe();
-    }
+  }
+
+  //called on each view check
+  //to optimize rendering
+  trackById(i: number, item: any): number{
+    return item.id;
   }
 }
