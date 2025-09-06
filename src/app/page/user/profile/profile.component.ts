@@ -19,6 +19,8 @@ export class ProfileComponent implements OnInit{
 
   form: FormGroup;
 
+  isOwner: boolean = false;
+
   constructor(private userService: UserService){
     
     let formBuilder = new FormBuilder();
@@ -32,13 +34,19 @@ export class ProfileComponent implements OnInit{
     this.form = formBuilder.group(formControls);
     
     userService.loggedInUser$.subscribe((user)=>{
-      console.log(user);
-      
       this.user = user;
       if(user.profilePicture){
         this.profilePicDataUrl = user.profilePicture;
+      }else{
+        this.profilePicDataUrl = '';
       }
       this.form.setValue({'alias':user.alias, 'newPassword':'*****'});
+      let payload = this.userService.getPayloadFromAccessToken();
+      if(payload?.permissions.includes('UG_OWNER')){
+        this.isOwner = true;
+      }else{
+        this.isOwner = false;
+      }
     });
   }
 
@@ -47,6 +55,15 @@ export class ProfileComponent implements OnInit{
   }
 
   saveProfilePic(event:Event){
-
+    let ele = event.target as any;
+    let file = ele.files[0];
+    if(file){
+      let reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (e)=>{
+        let url = e.target?.result;
+        this.profilePicDataUrl = url?.toString() || '';
+      }
+    }
   }
 }

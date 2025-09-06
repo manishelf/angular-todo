@@ -3,11 +3,13 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import * as marked from 'marked';
 import { UserService } from './../../service/user/user.service';
 import { ConnectionService } from './../../service/connection/connection.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-about',
   templateUrl: './about.component.html',
-  styleUrl: './about.component.css'
+  styleUrl: './about.component.css',
+  imports: [CommonModule]
 })
 export class AboutComponent implements OnInit{
 /**
@@ -17,11 +19,16 @@ export class AboutComponent implements OnInit{
   parsedMD: SafeHtml = '';
   swaggerConsoleUrl = '';
   h2ConsoleUrl = '';
+  allowDevConsole: boolean = false;
 
   constructor(private domSanitizer: DomSanitizer, private userService: UserService, private connectionService: ConnectionService){
     userService.loggedInUser$.subscribe((user)=>{
       this.swaggerConsoleUrl = connectionService.backendUrl+'/swagger-ui/index.html?sessionToken='+user?.token;
       this.h2ConsoleUrl = connectionService.backendUrl+'/qtodo-h2-console?sessionToken='+user?.token;
+      let payload = this.userService.getPayloadFromAccessToken();
+      if(payload?.permissions.includes('SERVER_TOOLS')){
+        this.allowDevConsole = true;
+      }
     });
   }
 

@@ -47,6 +47,13 @@ export class TodoServiceService {
         this.lastLoggedUserEmail = user.email;
         this.lastLoggedUserGroup = user.userGroup;
       }
+      if(user.email !== localUser.email && user.userGroup !== localUser.userGroup){
+        if(this.backendService.connected){
+          this.backendService.getAll().then((items)=>{
+            this.addMany(items);
+          });
+        }
+      }
       this.initializeItems();
     })
   }

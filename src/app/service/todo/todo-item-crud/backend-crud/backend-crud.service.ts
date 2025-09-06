@@ -55,6 +55,16 @@ export class BackendCrudService {
   //   });
   // }
 
+  getAll(): Promise<TodoItem[]>{
+    if(!this.connected) return Promise.resolve([]);
+
+    return new Promise((res,rej)=>{
+      this.connectionService.axios.get('/item/all').then((result)=>{
+          res(result.data.items);
+      }).catch((e)=>rej(e));
+    })
+  }
+
   addItem(item: Omit<TodoItem, 'id'>){
     if(!this.connected) return;
 
@@ -85,7 +95,6 @@ export class BackendCrudService {
       (dirtyItem as any).subjectBeforeUpdate = item.subject;
       this.updateManyItems([dirtyItem]); 
       console.log(item);
-      
     });
   }
 

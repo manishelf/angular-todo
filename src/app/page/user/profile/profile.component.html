@@ -1,12 +1,12 @@
-<div [formGroup]="form" class="flex flex-col items-center justify-center mt-4">
+<div [formGroup]="form" class="flex flex-col flex-wrap md:max-h-100 items-center justify-center mt-4">
     <h1>Hello {{user.alias}}!</h1>
-    <app-bean-item class="mt-10">
+    <app-bean-item class="mt-10" title="change profile picture" (click)="profilePicEle.click()">
         <div>
             <mat-icon class="scale-200" >person_pin</mat-icon>
             <mat-icon class="absolute scale-70" style="top:-15px; right:-15px;">edit</mat-icon>
         </div>
         <input type="file" #profilePicEle accept="image/png, image/jpeg" class="hidden" (change)="saveProfilePic($event)">
-        <img [src]="profilePicDataUrl" class="max-w-10 rounded-[40%]">
+        <img [src]="profilePicDataUrl" class="w-10 absolute top-0 right-0 rounded-[40%]">
     </app-bean-item>
     <div class="flex flex-col p-10 gap-y-5">
         <div>
@@ -16,5 +16,25 @@
             <label>Update password</label><input type="password" formControlName="newPassword">
         </div>
     </div>
+    <div class="flex flex-col justify-center gap-y-6" *ngIf="isOwner">
+        <h2 class="text-center text">User Group details</h2>
+        <div>
+            <label>description &nbsp;&nbsp;&nbsp;</label><textarea class="outline-2 rounded-xl p-2"></textarea>
+        </div>
+        <div class="flex justify-between">
+            <label>Group banner</label>
+            <app-bean-item title="change group banner">
+                <mat-icon>people</mat-icon>
+            </app-bean-item>
+        </div>
+        <div>
+            <label>is open for joining</label><input type="checkbox">
+        </div>
+        <div>
+            <label>is colaboration</label><input type="checkbox">
+        </div>
+    </div>
+</div>
+<div class="mt-2 flex items-center justify-center">
     <button class="bg-blue-600 p-3 rounded-xl"><app-bean-item>Update</app-bean-item></button>
 </div>

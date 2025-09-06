@@ -1,4 +1,4 @@
-<div class="flex flex-row justify-evenly items-center" style="color: var(--todo-item-text-color);">
+<div class="flex flex-row justify-evenly items-center" style="color: var(--todo-item-text-color);" *ngIf="allowDevConsole">
     DEV CONSOLE - 
     <a [href]="swaggerConsoleUrl" target="_blank">SWAGGER UI</a>
     <a [href]="h2ConsoleUrl" target="_blank">H2 CONSOLE</a>

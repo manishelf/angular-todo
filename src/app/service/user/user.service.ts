@@ -21,6 +21,7 @@ export class UserService {
     private toaster: ToastService,
     private router: Router,
   ) {
+    
   }
 
   signinUser() {
@@ -39,5 +40,15 @@ export class UserService {
 
   softLogoutUser() {
     this.loggedInUser.next(localUser);
+  }
+
+  getPayloadFromAccessToken(): any{
+    const payloadBase64 = (this.loggedInUser.value.token || '').split('.')[1];
+    if(payloadBase64){
+      const decodedPayload = atob(payloadBase64);
+      const payload = JSON.parse(decodedPayload);
+      return payload;
+    }
+    return null;
   }
 }

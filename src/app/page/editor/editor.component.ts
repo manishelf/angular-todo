@@ -121,6 +121,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
     setTimeout(() => {
       this.subjectTxt.nativeElement.focus();
     }, 300);
+    this.convertedMarkdown = '';
   }
 
   ngAfterViewChecked(): void {

@@ -1,4 +1,4 @@
-input[type="text"],input[type="password"]{
+input{
     width: full;
     background: white;
     border: 1px solid rgb(18, 30, 51);
