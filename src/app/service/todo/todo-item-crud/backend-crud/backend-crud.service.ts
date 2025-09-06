@@ -89,9 +89,9 @@ export class BackendCrudService {
     });
   }
 
-  updateItem(db$:Observable<IDBDatabase>,dirtyItem: TodoItem){
+  updateItem(db: IDBDatabase,dirtyItem: TodoItem){
     if(!this.connected) return;
-    this.localGetService.getItemById(db$,dirtyItem.id).subscribe(item=>{
+    this.localGetService.getItemById(db,dirtyItem.id).subscribe(item=>{
       (dirtyItem as any).subjectBeforeUpdate = item.subject;
       this.updateManyItems([dirtyItem]); 
       console.log(item);

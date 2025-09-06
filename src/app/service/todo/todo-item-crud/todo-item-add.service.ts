@@ -21,8 +21,7 @@ export class TodoItemAddService {
     private updateService: TodoItemUpdateService
   ) {}
 
-  addItem(db$: Observable<IDBDatabase>, todoItem: Omit<TodoItem, 'id'>, handleSuc = (e:Event)=>{}, handleErr = (e:Event)=>{}) {
-    db$.subscribe((db) => {
+  addItem(db: IDBDatabase, todoItem: Omit<TodoItem, 'id'>, handleSuc = (e:Event)=>{}, handleErr = (e:Event)=>{}) {
       let request = this.todoItemUtils
         .getObjectStoreRW(db, 'todo_items')
         .add(todoItem);
@@ -34,23 +33,20 @@ export class TodoItemAddService {
             id: id,
             ...todoItem,
           };
-          this.updateService.updateTags(db$, todoItemSaved);
+          this.updateService.updateTags(db, todoItemSaved);
           handleSuc(event);
         };
         request.onerror = (e)=>{console.error(e);handleErr(e);}
       }
-    });
   }
 
-  addCustom(db$: Observable<IDBDatabase>, tag: string, item: any, handleSucc = (e:Event)=>{}, handleErr = (e:Event)=>{}): void {
-    db$.subscribe((db) => {
-      let request = this.todoItemUtils
-        .getObjectStoreRW(db, 'custom_items')
-        .add({ tag, item });
-      if (request) {
-        request.onsuccess = handleSucc;
-        request.onerror = (e) => {console.error(e); handleErr(e);};
-      }
-    });
+  addCustom(db: IDBDatabase, tag: string, item: any, handleSucc = (e:Event)=>{}, handleErr = (e:Event)=>{}): void {
+    let request = this.todoItemUtils
+      .getObjectStoreRW(db, 'custom_items')
+      .add({ tag, item });
+    if (request) {
+      request.onsuccess = handleSucc;
+      request.onerror = (e) => {console.error(e); handleErr(e);};
+    }
   }
 }

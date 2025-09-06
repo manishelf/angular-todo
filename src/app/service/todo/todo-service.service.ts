@@ -23,6 +23,8 @@ export class TodoServiceService {
   fromBin: boolean = false;
   lastLoggedUserEmail: string = localUser.email || '';
   lastLoggedUserGroup: string = localUser.userGroup || '';
+
+  db!: IDBDatabase;
   public db$: Observable<IDBDatabase> = new Observable<IDBDatabase>(
     (subscriber) => {
       this.initializeIndexDB(subscriber, this.lastLoggedUserEmail,this.lastLoggedUserGroup);
@@ -31,6 +33,8 @@ export class TodoServiceService {
 
   private todoItemsSubject = new BehaviorSubject<TodoItem[]>([]);
   todoItems$ = this.todoItemsSubject.asObservable();
+  private changedItem = new BehaviorSubject<TodoItem|null>(null);
+  changedItem$ = this.changedItem.asObservable();
 
   constructor(
     private addService: TodoItemAddService,
@@ -55,7 +59,36 @@ export class TodoServiceService {
         }
       }
       this.initializeItems();
-    })
+    });
+
+    this.changedItem$.subscribe((changedItem)=>{
+      if(!changedItem) return;      
+
+      let listUpdated = false;
+      /*
+      JavaScript's design, combined with Angular's architecture,
+      is optimized for UI rendering efficiency, not for raw memory efficiency. 
+      The "inefficient" data manipulation is a small price to pay :> fu wd
+       */
+      const updatedList = this.todoItemsSubject.value.map((item)=>{
+        if(item.id == changedItem.id){
+          if(changedItem.deleted){
+            listUpdated = true;
+            return null;
+          }
+          else{
+            listUpdated = true;                        
+            return {...changedItem};
+          }
+        }
+        return item;
+      }).filter(item=>item!=null);
+
+      if(!listUpdated){ 
+        updatedList.push(changedItem);
+      }
+      this.todoItemsSubject.next(updatedList);        
+    });
   }
 
 
@@ -94,6 +127,7 @@ export class TodoServiceService {
 
     request.onsuccess = (event) => {
       let db = (event.target as IDBOpenDBRequest).result;
+      this.db = db;
       db.onerror = (err) => {
         throw (err as any).srcElement.error;
       };
@@ -155,14 +189,21 @@ export class TodoServiceService {
   }
 
   addItem(item: Omit<TodoItem, 'id'>) : Promise<number>{
+    let start = Date.now();
     return new Promise<number>((res,rej)=>{
       if(item.subject.trim()===''){
        item.subject = new Date().toISOString(); 
       }
-      this.addService.addItem(this.db$, item, (suc)=>{
-        res((suc.target as IDBRequest).result);
+      this.addService.addItem(this.db, item, (suc)=>{
+        let id = (suc.target as IDBRequest).result;
+        res(id);
         this.backendService.addItem(item);
-        this.initializeItems();
+        // this.initializeItems();
+        let savedItem = item as any;
+        savedItem.id = id;
+        this.changedItem.next(savedItem);
+        console.log(Date.now()-start);
+        
         },
         (err)=>{
           this.toaster.error('error adding todo item!');
@@ -183,7 +224,7 @@ export class TodoServiceService {
   }
 
   addCustom(tag: string, item: any) {
-    this.addService.addCustom(this.db$, tag, item,(suc)=>{
+    this.addService.addCustom(this.db, tag, item,(suc)=>{
       this.toaster.success('saved ' + tag);
     },
     (e)=>{
@@ -193,21 +234,22 @@ export class TodoServiceService {
   }
 
   getItemById(id: number): Observable<TodoItem> {
-    return this.getService.getItemById(this.db$, id);
+    return this.getService.getItemById(this.db, id);
   }
 
   getCustom(tag: string): Observable<any> {
-    return this.getService.getCustom(this.db$, tag);
+    return this.getService.getCustom(this.db, tag);
   }
 
   getAllCustom(tags: Tag[]): Observable<any[]> {
-    return this.getService.getAllCustom(this.db$, tags);
+    return this.getService.getAllCustom(this.db, tags);
   }
 
   updateItem(item: TodoItem): void {
-    this.backendService.updateItem(this.db$, item);// order is important as subject can change
-    this.updateService.updateItem(this.db$, item, (suc)=>{
-      this.initializeItems();
+    this.backendService.updateItem(this.db, item);// order is important as subject can change
+    this.updateService.updateItem(this.db, item, (suc)=>{
+      // this.initializeItems();
+      this.changedItem.next(item);
       this.toaster.success('todo item updated');
     },(e)=>{
       this.toaster.error('error updating todo item');
@@ -216,7 +258,7 @@ export class TodoServiceService {
   }
 
   updateCustom(tag: string, item: any): void {
-    this.updateService.updateCustom(this.db$, tag, item, (suc)=>{
+    this.updateService.updateCustom(this.db, tag, item, (suc)=>{
       this.toaster.success('updated ' + tag);
     },(e)=>{
       this.toaster.error('error updating ' + tag);
@@ -226,8 +268,10 @@ export class TodoServiceService {
 
   deleteItem(item: TodoItem): void {
     try {
-      this.deleteService.deleteItem(this.db$, item, this.fromBin);
-      this.initializeItems();
+      this.deleteService.deleteItem(this.db, item, this.fromBin);
+      // this.initializeItems();
+      item.deleted = true;
+      this.changedItem.next(item);
       this.backendService.deleteItem(item);
       this.toaster.success('todo item deleted');
     } catch (e) {
@@ -237,7 +281,7 @@ export class TodoServiceService {
   }
 
   deleteItemById(id: number): void {
-    this.getService.getItemById(this.db$, id).subscribe((item) => {
+    this.getService.getItemById(this.db, id).subscribe((item) => {
       this.deleteItem(item);
     });
   }
