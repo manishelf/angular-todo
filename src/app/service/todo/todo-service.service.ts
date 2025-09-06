@@ -48,11 +48,11 @@ export class TodoServiceService {
         this.lastLoggedUserGroup = user.userGroup;
       }
       if(user.email !== localUser.email && user.userGroup !== localUser.userGroup){
-        if(this.backendService.connected){
-          this.backendService.getAll().then((items)=>{
-            this.addMany(items);
-          });
-        }
+        // if(this.backendService.connected){
+        //   this.backendService.getAll().then((items)=>{
+        //     this.addMany(items);
+        //   });
+        // }
       }
       this.initializeItems();
     })
