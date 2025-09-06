@@ -10,17 +10,13 @@ export class TodoItemDeleteService {
 
   constructor(private todoItemUtils: TodoItemUtils) { }
   
-  deleteItem(db$:Observable<IDBDatabase>, item: TodoItem, fromBin?: boolean):void{
-    db$.subscribe(
-      (db)=>{
-        if(!fromBin){
-          item.deleted = true;
-          this.todoItemUtils.getObjectStoreRW(db, 'deleted_todo_items').add(item);
-          this.todoItemUtils.getObjectStoreRW(db, 'todo_items').delete(item.id);
-        }else{
-          this.todoItemUtils.getObjectStoreRW(db, 'deleted_todo_items').delete(item.id);
-        }
-      }
-    );
+  deleteItem(db:IDBDatabase, item: TodoItem, fromBin?: boolean):void{
+    if(!fromBin){
+      item.deleted = true;
+      this.todoItemUtils.getObjectStoreRW(db, 'deleted_todo_items').add(item);
+      this.todoItemUtils.getObjectStoreRW(db, 'todo_items').delete(item.id);
+    }else{
+      this.todoItemUtils.getObjectStoreRW(db, 'deleted_todo_items').delete(item.id);
+    }
   }
 }
