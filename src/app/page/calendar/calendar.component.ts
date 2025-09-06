@@ -192,14 +192,16 @@ export class CalendarComponent {
 
     this.calendarOptions.update((curr)=>{
       curr.events=(fetchInfo, successCallback, failureCallback) => {
-        const events: EventInput[] = this.itemList.map((item) => ({
-          id: item.id.toString(),
-          title: item.subject,
-          start: item.eventStart ? item.eventStart : this.viewByUpdationTimestamp() ? item.updationTimestamp : item.creationTimestamp,
-          end: item.eventEnd ? item.eventEnd : item.creationTimestamp,
-          allDay: item.eventFullDay,
-          color: item.setForReminder?'orange':(item.completionStatus?'green':''),
-        }));
+        const events: EventInput[] = this.itemList.map((item) => {
+          return {
+            id: item.id.toString(),
+            title: item.subject,
+            start: item.eventStart ? item.eventStart : this.viewByUpdationTimestamp() ? item.updationTimestamp : item.creationTimestamp,
+            end: item.eventEnd ? item.eventEnd : item.creationTimestamp,
+            allDay: item.eventFullDay,
+            color: item.setForReminder?'orange':(item.completionStatus?'green':''),
+          }
+        });
         successCallback(events);
       };
       return curr;

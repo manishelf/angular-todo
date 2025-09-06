@@ -1,7 +1,5 @@
 export interface User {
-    firstName?: string;
-
-	lastName?: string;
+    alias: string | null;
 
 	email: string | null;
 

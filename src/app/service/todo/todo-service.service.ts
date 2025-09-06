@@ -11,7 +11,7 @@ import { TodoItemDeleteService } from './todo-item-crud/todo-item-delete.service
 import { TodoItemGetService } from './todo-item-crud/todo-item-get.service';
 import { ToastService } from 'angular-toastify';
 import { SortService } from '../sort/sort.service';
-import { UserService } from '../user/user.service';
+import { UserService , localUser} from '../user/user.service';
 import { User } from '../../models/User';
 import { BackendCrudService } from './todo-item-crud/backend-crud/backend-crud.service';
 import { Tag } from '../../models/tag';
@@ -21,8 +21,8 @@ import { Tag } from '../../models/tag';
 })
 export class TodoServiceService {
   fromBin: boolean = false;
-  lastLoggedUserEmail: string = "qtodo";
-  lastLoggedUserGroup: string = "local";
+  lastLoggedUserEmail: string = localUser.email || '';
+  lastLoggedUserGroup: string = localUser.userGroup || '';
   public db$: Observable<IDBDatabase> = new Observable<IDBDatabase>(
     (subscriber) => {
       this.initializeIndexDB(subscriber, this.lastLoggedUserEmail,this.lastLoggedUserGroup);
@@ -154,6 +154,7 @@ export class TodoServiceService {
       }
       this.addService.addItem(this.db$, item, (suc)=>{
         res((suc.target as IDBRequest).result);
+        this.backendService.addItem(item);
         this.initializeItems();
         },
         (err)=>{
@@ -197,6 +198,7 @@ export class TodoServiceService {
   }
 
   updateItem(item: TodoItem): void {
+    this.backendService.updateItem(this.db$, item);// order is important as subject can change
     this.updateService.updateItem(this.db$, item, (suc)=>{
       this.initializeItems();
       this.toaster.success('todo item updated');
@@ -219,6 +221,7 @@ export class TodoServiceService {
     try {
       this.deleteService.deleteItem(this.db$, item, this.fromBin);
       this.initializeItems();
+      this.backendService.deleteItem(item);
       this.toaster.success('todo item deleted');
     } catch (e) {
       this.toaster.error('error deleting todo item');

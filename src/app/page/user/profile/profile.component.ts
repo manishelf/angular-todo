@@ -24,13 +24,10 @@ export class ProfileComponent implements OnInit{
     let formBuilder = new FormBuilder();
 
     const formControls: { [key: string]: FormControl } = {};
-    formControls['firstName'] = formBuilder.control('', Validators.required);
-    formControls['lastName'] = formBuilder.control('', Validators.required);
+    formControls['alias'] = formBuilder.control('', Validators.required);
 
     let passwordRegex = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{5,}$";
-    formControls['OldPassword'] = formBuilder.control('', Validators.pattern(passwordRegex));
-    formControls['NewPassword'] = formBuilder.control('', Validators.pattern(passwordRegex));
-    formControls['ConfirmNewPassword'] = formBuilder.control('', Validators.pattern(passwordRegex));
+    formControls['newPassword'] = formBuilder.control('', Validators.pattern(passwordRegex));
 
     this.form = formBuilder.group(formControls);
     
@@ -41,7 +38,7 @@ export class ProfileComponent implements OnInit{
       if(user.profilePicture){
         this.profilePicDataUrl = user.profilePicture;
       }
-      this.form.setValue({'firstName':user.firstName, 'lastName':user.lastName});
+      this.form.setValue({'alias':user.alias, 'newPassword':'*****'});
     });
   }
 

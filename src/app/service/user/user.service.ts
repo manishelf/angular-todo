@@ -4,14 +4,17 @@ import { User } from '../../models/User';
 import { ToastService } from 'angular-toastify';
 import { Route, Router } from '@angular/router';
 
+export const localUser:User = {
+  email: 'qtodo',
+  userGroup: 'local',
+  alias: 'local'
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
-  loggedInUser = new BehaviorSubject<User>({
-    email: 'qtodo',
-    userGroup: 'local'
-  });
+  loggedInUser = new BehaviorSubject<User>(localUser);
   loggedInUser$ = this.loggedInUser.asObservable();
 
   constructor(
@@ -22,22 +25,19 @@ export class UserService {
 
   signinUser() {
     if (this.loggedInUser.value != null) {
-      this.logoutUser();
+      this.softLogoutUser();
     }
     this.router.navigate(['/signup']);
   }
 
   loginUser() {
     if (this.loggedInUser.value != null) {
-      this.logoutUser();
+      this.softLogoutUser();
     }
     this.router.navigate(['/login']);
   }
 
-  logoutUser() {
-    this.loggedInUser.next({
-      email: 'qtodo',
-      userGroup: 'local'
-    });
+  softLogoutUser() {
+    this.loggedInUser.next(localUser);
   }
 }

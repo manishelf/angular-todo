@@ -64,8 +64,8 @@ export class TodoItemComponent implements OnInit, AfterViewChecked {
     this.parsedMD = this.sanitizer.bypassSecurityTrustHtml(markdown);
 
     const neverUpdated = this.item.creationTimestamp === this.item.updationTimestamp;
-    this.toolTipString = neverUpdated ? 'created on - ' + this.item.creationTimestamp :
-                                        'last updated on - ' + this.item.updationTimestamp;
+    this.toolTipString = neverUpdated ? 'created on - ' + new Date(this.item.creationTimestamp).toLocaleString() :
+                                        'last updated on - ' + new Date(this.item.updationTimestamp).toLocaleString();
 
     this.todoService.fromBin = this.fromBin;
   }

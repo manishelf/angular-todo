@@ -1,5 +1,5 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
-import { UserService } from './../../service/user/user.service';
+import { UserService,localUser } from './../../service/user/user.service';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
@@ -65,6 +65,9 @@ export class LoginComponent {
         "qtodo"
       ),
     };
+    if(!this.asLogin){
+      formControls['alias']=formBuilder.control('',Validators.required);
+    }
     this.formGroup = this.formBuilder.group(formControls);
 
     this.connectionService.connectToBackend().catch((e)=>{
@@ -81,6 +84,10 @@ export class LoginComponent {
         errors.set('password', control?.errors);
         control = this.formGroup.get('rememberMe');
         errors.set('rememberMe', control?.errors);
+        if(!this.asLogin){
+          control = this.formGroup.get('alias');
+          errors.set('alias',control?.errors);
+        }
         errors.forEach((val,key)=>{
           if(val)
           this.toaster.error(key+'->'+JSON.stringify(val));
@@ -89,8 +96,7 @@ export class LoginComponent {
       }
     let data = this.formGroup.value;
     let user: User = {
-      firstName: this.firstName,
-      lastName: this.lastName,
+      alias: data['alias'],
       email: data['email'],
       password: data['password'],
       userGroup: data['usergroup'],
@@ -115,15 +121,14 @@ export class LoginComponent {
       user.profilePicture = this.profilePicDataUrl || '';
       if(this.asLogin){
         user.token = resp.data?.userDetails.accessToken;
-        user.firstName = resp.data?.userDetails.firstName; 
-        user.lastName = resp.data?.userDetails.lastName;
+        user.alias = resp.data?.userDetails.alias;
         if(resp.data?.userDetails.profilePicture)
         user.profilePicture = atob(resp.data?.userDetails.profilePicture);
       }
       user.password = "";
       let recentLogins = localStorage["recentLogins"];
       if(!recentLogins || recentLogins == 'null'){
-        recentLogins = '{"qtodo/local":{"email":"qtodo","userGroup":"local"}}';
+        recentLogins = `{"${localUser.email}/${localUser.userGroup}":${JSON.stringify(localUser)}}`;
       }
         
       recentLogins = JSON.parse(recentLogins);

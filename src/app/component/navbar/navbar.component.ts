@@ -13,7 +13,7 @@ import { TodoServiceService } from '../../service/todo/todo-service.service';
 import { filter } from 'rxjs';
 import { TodoItem } from '../../models/todo-item';
 import { SortService } from './../../service/sort/sort.service';
-import { UserService } from '../../service/user/user.service';
+import { UserService , localUser} from '../../service/user/user.service';
 import { ConnectionService } from '../../service/connection/connection.service';
 import { User } from './../../models/User';
 import { BeanItemComponent } from '../bean-item/bean-item.component';
@@ -116,7 +116,7 @@ export class NavbarComponent implements AfterViewInit {
       
       let recentLogins = localStorage["recentLogins"];
       if(!recentLogins || recentLogins == 'null'){
-        recentLogins = '{"qtodo/local":{"email":"qtodo","userGroup":"local"}}';
+        recentLogins = `{"${localUser.email}/${localUser.userGroup}":${JSON.stringify(localUser)}}`;
       }
       
       recentLogins = JSON.parse(recentLogins);
@@ -368,7 +368,7 @@ export class NavbarComponent implements AfterViewInit {
   toggleBackendConnection(){
     if(this.online){
       this.online = false;
-      this.userService.logoutUser();
+      this.userService.softLogoutUser();
     }else{
       this.online = true;
       this.userService.loginUser();

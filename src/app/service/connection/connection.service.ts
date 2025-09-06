@@ -3,7 +3,7 @@ import { ToastService } from 'angular-toastify';
 import { BehaviorSubject } from 'rxjs';
 
 import {Axios} from 'axios';
-import { UserService } from './../user/user.service';
+import { UserService , localUser} from './../user/user.service';
 import { Route, Router } from '@angular/router';
 
 @Injectable({
@@ -24,7 +24,16 @@ export class ConnectionService {
     if (this.backendUrl && this.backendUrl !== 'null') {
       this.connectToBackend().then(
         (con)=>{
-          if(con) this.router.navigate(['/login']);
+          if(!con) return;
+          let recentLogins = localStorage['recentLogins'];
+          if(recentLogins == 'null') {
+            this.router.navigate(['/login']);
+            return;
+          }
+          recentLogins = JSON.parse(recentLogins);
+          recentLogins = Object.values(recentLogins);
+          let lastUser = recentLogins.reverse()[0];
+          this.userService.loggedInUser.next(lastUser);
         }
       );
     }
@@ -39,19 +48,23 @@ export class ConnectionService {
       }
     });
     
-    this.userService.loggedInUser.subscribe(async (user)=>{
+    this.userService.loggedInUser.subscribe((user)=>{
+      if(user.email == localUser.email && user.userGroup == localUser.userGroup){
+        
+      }else{
         this.accessToken = user.token || '';
-        console.log(user);
- 
-        if(this.accessToken && this.accessToken != ''){
-          this.axios.post('/user/logout');
-        }
+      }
     });
 
     this.axios.interceptors.request.use(async (config)=> {
-        if(this.accessToken != '' && this.isTokenExpired(this.accessToken) && !config.url?.includes('/user/refresh')){
+        if(this.accessToken != '' && this.isTokenExpired(this.accessToken)
+           && !(config.url?.includes('/user/refresh') || config.url?.includes('/user/logout'))){
           let resp = await this.axios.get('/user/refresh');
-          this.accessToken = resp.data.accessToken;
+          if(resp.status == 200){
+            this.accessToken = resp.data.accessToken;
+          }else{
+            this.logoutUser();
+          }
         }
         config.headers.Authorization = 'Bearer '+ this.accessToken;
         config.data = JSON.stringify(config.data);
@@ -72,6 +85,10 @@ export class ConnectionService {
         if(resp.status == 200)
         this.toaster.success(resp.data.responseMessage);
         else if(resp.status == 400 || resp.status == 500){
+          if(resp.data.responseMessage.includes('Invalid JWT') && !resp.config.url?.includes('/user/logout')){
+            this.logoutUser();
+            this.userService.loginUser();
+          }
           this.toaster.error(resp.data.responseMessage);
         } else if(resp.status == 403){
           this.toaster.error('403 -> forbidden')
@@ -154,5 +171,11 @@ export class ConnectionService {
       localStorage['qtodo_backend_url'] = null;
       res(true);
     });
+  }
+
+  logoutUser(){
+    this.axios.post('/user/logout');
+    this.accessToken = '';
+    this.userService.loggedInUser.next(localUser);
   }
 }
