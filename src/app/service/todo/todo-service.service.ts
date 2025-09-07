@@ -20,6 +20,7 @@ import { UserService , localUser} from '../user/user.service';
 import { User } from '../../models/User';
 import { BackendCrudService } from './todo-item-crud/backend-crud/backend-crud.service';
 import { Tag } from '../../models/tag';
+import { SearchService } from '../search/search.service';
 
 @Injectable({
   providedIn: 'root',
@@ -39,6 +40,7 @@ export class TodoServiceService {
     private updateService: TodoItemUpdateService,
     private deleteService: TodoItemDeleteService,
     private getService: TodoItemGetService,
+    private searchService: SearchService,
     private sortService: SortService,
     private toaster: ToastService,
     private userService: UserService,
@@ -173,7 +175,7 @@ export class TodoServiceService {
     searchTerms: string[] = [],
     exact = false,
   ): Observable<TodoItem[]> {
-    return this.getService.searchTodos(
+    return this.searchService.searchTodos(
       this.db,
       subjectQuery,
       tagFilter,

@@ -36,6 +36,7 @@ export class ConnectionService {
             let lastUser = recentLogins.reverse()[0];
             this.userService.loggedInUser.next(lastUser);
           }, 200);
+
         }
       );
     }

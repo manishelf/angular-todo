@@ -5,7 +5,7 @@ import { TodoServiceService } from '../../service/todo/todo-service.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TodoItem } from '../../models/todo-item';
 import { CommonModule } from '@angular/common';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, switchMap } from 'rxjs';
 import { MatIcon } from '@angular/material/icon';
 import { reduceToFields } from './helpers';
 import { drawBarChart, drawLineChart, drawPieChart, loadCharJS} from './charts';
@@ -108,41 +108,33 @@ export class VisualizeComponent implements OnInit {
         tags.length > 0 ||
         searchTerms.length > 0
       ) {
-        this.todoService.initializeItems();
-        this.todoService
-          .searchTodos(searchQuery, tags, searchTerms, exact)
-          .subscribe(
-            (itemList) => {
-              this.todoService
-                .sortTodoItems(order, itemList, limit)
-                .subscribe((items) => {
-                  this.itemList = items;
-                  this.populateItems(items);
-                  this.selectedChart$.next(this.selectedChart$.value); // refresh chart
-                });
-            },
-            (error) => {
-              console.error('error fetching tasks ', error);
-            }
-          );
+        this.todoService.todoItems$.pipe( // only so that the latest changes are used
+          switchMap((items)=>{
+            return this.todoService.searchTodos(searchQuery, tags, searchTerms, exact) 
+          })
+        ).pipe(
+            switchMap((itemList) => {
+              return this.todoService.sortTodoItems(order, itemList, limit)
+            })
+          ).subscribe((items) => {
+              this.itemList = items;
+              this.populateItems(items);
+              this.selectedChart$.next(this.selectedChart$.value); // refresh chart
+            });
       } else {
         this.router.navigate([]);
-        this.todoService.initializeItems();
-        this.todoService.todoItems$.subscribe(
-          (itemList) => {
-            this.todoService
+        this.todoService.todoItems$.pipe(
+          switchMap((itemList) => {
+            return this.todoService
               .sortTodoItems(order, itemList)
-              .subscribe((items) => {
-                this.itemList = items;
-                this.populateItems(items);
-                this.selectedChart$.next(this.selectedChart$.value); // refresh chart
-              });
-          },
-          (error) => {
-            console.error('error fetching tasks ', error);
-          }
-        );
-      }
+            })
+          )
+          .subscribe((items) => {
+            this.itemList = items;
+            this.populateItems(items);
+            this.selectedChart$.next(this.selectedChart$.value); // refresh chart
+          });
+        }
     });
   }
   populateItems(items: TodoItem[]) {
