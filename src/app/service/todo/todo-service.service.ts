@@ -197,7 +197,6 @@ export class TodoServiceService {
         let id = (suc.target as IDBRequest).result;
         res(id);
         this.backendService.addItem(item);
-        // this.initializeItems();
         let savedItem = item as any;
         savedItem.id = id;
         this.changedItem.next(savedItem);
@@ -245,7 +244,6 @@ export class TodoServiceService {
   updateItem(item: TodoItem): void {
     this.backendService.updateItem(this.db, item);// order is important as subject can change
     this.updateService.updateItem(this.db, item, (suc)=>{
-      // this.initializeItems();
       this.changedItem.next(item);
       this.toaster.success('todo item updated');
     },(e)=>{
@@ -266,7 +264,6 @@ export class TodoServiceService {
   deleteItem(item: TodoItem): void {
     try {
       this.deleteService.deleteItem(this.db, item, this.fromBin);
-      // this.initializeItems();
       item.deleted = true;
       this.changedItem.next(item);
       this.backendService.deleteItem(item);

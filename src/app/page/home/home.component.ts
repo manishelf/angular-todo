@@ -74,7 +74,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         let limit = params['lim'] ? params['lim'] : null;
 
         if (limit || order.length != 0 || searchQuery !== '' || tags.length > 0 || searchTerms.length > 0) {
-          this.todoService
+          this.itemList$ = this.todoService
             .searchTodos(searchQuery, tags, searchTerms, exact)
             .pipe(
               switchMap((itemList) => {
