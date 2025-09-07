@@ -1,4 +1,4 @@
-import { Component, signal, ChangeDetectorRef, AfterViewInit, viewChild, ElementRef, ViewChild } from '@angular/core';
+import { Component, signal, ChangeDetectorRef, AfterViewInit, viewChild, ElementRef, ViewChild, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FullCalendarModule } from '@fullcalendar/angular';
 import {
@@ -28,7 +28,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './calendar.component.html',
   styleUrl: './calendar.component.css',
 })
-export class CalendarComponent {
+export class CalendarComponent  implements OnInit{
   
   calendarVisible = signal(true);
   initialEvents: EventInput[] = [];
@@ -37,7 +37,7 @@ export class CalendarComponent {
   startResize = false;
   itemList: TodoItem[] = [];
 
-  @ViewChild('calanderContainer') calanderContainer!: ElementRef;
+  @ViewChild('calanderContainer') calendarContainer!: ElementRef;
   @ViewChild('panelContainer') panelContainer!: ElementRef;
 
   calendarOptions = signal<CalendarOptions>({
@@ -48,26 +48,6 @@ export class CalendarComponent {
       right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek',
     },
     initialView: 'dayGridMonth',
-    events: (fetchInfo, successCallback, failureCallback) => {
-      this.todoService.getAll().subscribe({
-        next: (result) => {
-          this.itemList = result;
-          const events: EventInput[] = result.map((item) => ({
-            id: item.id.toString(),
-            title: item.subject,
-            start: item.eventStart ? item.eventStart : item.creationTimestamp,
-            end: item.eventEnd ? item.eventEnd : item.creationTimestamp,
-            allDay: item.eventFullDay,
-            color: item.setForReminder?'orange':(item.completionStatus?'green':''),
-          }));
-          this.forceFullCalendarResize();
-          successCallback(events);
-        },
-        error: (error) => {
-          failureCallback(error);
-        },
-      });
-    },
     weekends: true,
     editable: true,
     selectable: true,
@@ -92,6 +72,31 @@ export class CalendarComponent {
     private router: Router
   ) {
     this.todoService.fromBin = false;
+  }
+
+  ngOnInit(): void {
+    this.todoService.todoItems$.subscribe((items)=>{
+      this.calendarOptions.update((curr)=>{
+        let events = (fetchInfo: any, successCallback: any, failureCallback: any) => {
+              this.itemList = items;
+              const events: EventInput[] = items.map((item) => {
+                return {
+                    id: item.id.toString(),
+                    title: item.subject,
+                    start: item.eventStart ? item.eventStart : item.creationTimestamp,
+                    end: item.eventEnd ? item.eventEnd : item.creationTimestamp,
+                    allDay: item.eventFullDay,
+                    color: item.setForReminder?'orange':(item.completionStatus?'green':''),
+                  }
+                }
+              )
+              this.forceFullCalendarResize();
+              successCallback(events);
+          }
+          curr.events = events;
+          return curr;
+        });
+    });
   }
 
   forceFullCalendarResize(){

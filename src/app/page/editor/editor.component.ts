@@ -562,7 +562,8 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
       this.todoServie.addItem(this.todoItem);
     }
 
-    this.router.navigate(['/home'], { queryParams: this.queryParams });
+    history.back();
+    // this.router.navigate(['/home'], { queryParams: this.queryParams });
   }
 
   onUpdateTags(tags: Tag[]) {

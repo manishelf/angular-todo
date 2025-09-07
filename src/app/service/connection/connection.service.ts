@@ -30,10 +30,12 @@ export class ConnectionService {
             this.router.navigate(['/login']);
             return;
           }
-          recentLogins = JSON.parse(recentLogins);
-          recentLogins = Object.values(recentLogins);
-          let lastUser = recentLogins.reverse()[0];
-          this.userService.loggedInUser.next(lastUser);
+          setTimeout(()=>{ // allow the ui to render
+            recentLogins = JSON.parse(recentLogins);
+            recentLogins = Object.values(recentLogins);
+            let lastUser = recentLogins.reverse()[0];
+            this.userService.loggedInUser.next(lastUser);
+          }, 200);
         }
       );
     }

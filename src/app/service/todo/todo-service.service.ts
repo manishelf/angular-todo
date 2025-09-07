@@ -7,6 +7,7 @@ import {
   timeout,
   bufferTime,
   debounceTime,
+  switchMap,
 } from 'rxjs';
 import { TodoItem } from '../../models/todo-item';
 import { TodoItemAddService } from './todo-item-crud/todo-item-add.service';
@@ -44,7 +45,7 @@ export class TodoServiceService {
     private backendService: BackendCrudService
   ) {
 
-    userService.loggedInUser$.pipe(debounceTime(100)).subscribe((user)=>{
+    userService.loggedInUser$.subscribe((user)=>{
       
       if(user.email !== localUser.email && user.userGroup !== localUser.userGroup){
         // if(this.backendService.connected){
