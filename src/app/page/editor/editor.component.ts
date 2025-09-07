@@ -61,7 +61,6 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
   customFormData: any;
   editiorLinesLoaded: boolean = false;
 
-  onOptionDelayTimer: number = -1;
   leftIndentSpcaeCount: number = 0;
 
 
@@ -121,11 +120,14 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
 
 
   ngAfterViewInit(): void {
-    setTimeout(() => {
+    requestAnimationFrame(() => {
       this.subjectTxt.nativeElement.focus();
       this.subjectTxt.nativeElement.scrollIntoView();
-    }, 200);
-    this.convertedMarkdown = '';
+    });
+    setTimeout(()=>{
+      this.subjectTxt.nativeElement.focus();
+    },100); // requestAnimationFrame does not focus
+    this.convertedMarkdown = '';    
   }
 
   ngAfterViewChecked(): void {
@@ -309,12 +311,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
     childItem.tags.push({name});
     this.onAddClick(); 
     this.todoServie.addItem(childItem).then((id)=>{
-      this.router.navigate(['/edit/child'],{state:{item:{id: id, ...childItem}, params: this.queryParams}, queryParams:{id}})
-      .then((val)=>{
-          setTimeout(()=>{
-            this.subjectTxt.nativeElement.focus();
-          },300);
-        });
+      this.router.navigate(['/edit/child'],{state:{item:{id: id, ...childItem}, params: this.queryParams}, queryParams:{id}});
     });
   }
 
@@ -328,10 +325,10 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
     else {
        this.router.navigate(['/home'], {queryParams:this.queryParams});
     }
-    setTimeout(()=>{
+    requestAnimationFrame(()=>{
       this.descriptionArea?.nativeElement.focus();
       this.onEventForResize();
-    }, 200);
+    });
   }
 
   createChildTreeview(parentSubject: string, hierarchy: Map<string, {item:TodoItem, children: Set<TodoItem>}>): string{
@@ -393,7 +390,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
 
       requestAnimationFrame(() => { // because setTimeout causes the text to jump up and down
         descriptionArea.style.height = descriptionArea.scrollHeight + 'px';
-        if(document.activeElement?.isSameNode(document.getElementById('editor-description-input')))
+        if(!document.activeElement?.isSameNode(document.getElementById('editor-subject-input')))
         editorContainer.scrollTop = editorContainer.scrollHeight - scrollBottom;
       });
     }
@@ -477,12 +474,9 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
         }
       };
     });
-    setTimeout(()=>this.onEventForResize(),10);
+    requestAnimationFrame(()=>this.onEventForResize());
   }
 
-  onOptionClickOnDelayClearTimeout(){
-    clearTimeout(this.onOptionDelayTimer);
-  }
 
   onOptionClickOnDelay(event: Event){
     let selection = window.getSelection();
@@ -493,45 +487,44 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
     const editorContainer = this.editorContainer.nativeElement;
     const scrollPercentage = editorContainer.scrollTop / editorContainer.scrollHeight;
 
-    this.onOptionClickOnDelayClearTimeout();
-    this.onOptionDelayTimer = setTimeout(()=>{
+    requestAnimationFrame(()=>{
         this.onOptionClick();
-        setTimeout(()=>{
+        requestAnimationFrame(()=>{
           const newScrollTop = editorContainer.scrollHeight * scrollPercentage;
           editorContainer.scrollTop = newScrollTop;
-        },50);
-    }, 300);
+        });
+    });
   }
 
   onOptionClick() {
-    this.onOptionClickOnDelayClearTimeout();
-
     if(this.todoItem.subject === '' && this.todoItem.description === ''){
       return;
     }  
 
     if (this.option == 'Preview') {
-      this.editiorLinesLoaded = false;
-      let markdown = marked.parse(this.todoItem.description).toString();
+      requestAnimationFrame(()=>{
+        this.editiorLinesLoaded = false;
+        let markdown = marked.parse(this.todoItem.description).toString();
 
-      let code =
-        markdown.match(/<code class="language-(\w+)">([\s\S]*?)<\/code>/g) ||
-        markdown.match(/<code>([\s\S]*?)<\/code>/);
+        let code =
+          markdown.match(/<code class="language-(\w+)">([\s\S]*?)<\/code>/g) ||
+          markdown.match(/<code>([\s\S]*?)<\/code>/);
 
-        if (code) {
-          for (let i = 0; i < code.length; i++) {
-          let snippet = code[i];
-          markdown = markdown.replace(snippet, snippet.replace(/<br>/g, '\n'));
+          if (code) {
+            for (let i = 0; i < code.length; i++) {
+            let snippet = code[i];
+            markdown = markdown.replace(snippet, snippet.replace(/<br>/g, '\n'));
+          }
+          requestAnimationFrame(() => {
+            Prism.highlightAll();
+          });
         }
-        setTimeout(() => {
-          Prism.highlightAll();
-        }, 200);
-      }
-      this.convertedMarkdown =
-        this.domSanitizer.bypassSecurityTrustHtml(markdown);
-      if (this.todoItem.subject.trim().length != 0) {
-        this.convertedMarkdown = this.domSanitizer.bypassSecurityTrustHtml(markdown);
-      }
+        this.convertedMarkdown =
+          this.domSanitizer.bypassSecurityTrustHtml(markdown);
+        if (this.todoItem.subject.trim().length != 0) {
+          this.convertedMarkdown = this.domSanitizer.bypassSecurityTrustHtml(markdown);
+        }
+      });
     }else{
       requestAnimationFrame(()=>{
         this.onEventForResize()
