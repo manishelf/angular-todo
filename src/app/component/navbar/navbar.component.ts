@@ -396,8 +396,6 @@ export class NavbarComponent implements AfterViewInit {
       document.startViewTransition(()=>{
         this.changeTheme(sel);    
       });
-      console.log(1);
-      
     }
     else this.changeTheme(sel);
     let user = this.userService.loggedInUser.value;
@@ -415,9 +413,10 @@ export class NavbarComponent implements AfterViewInit {
     if(users && usersMap){
      usersMap[user.email+'/'+user.userGroup] = user;
     }else {
-      usersMap = {'qtodo/local':{
-        email: 'qtodo',
-        userGroup: 'local',
+      let key = `${localUser.email}/${localUser.userGroup}`;
+      usersMap = { key:{
+        email: localUser.email,
+        userGroup: localUser.userGroup,
         preferences: {
           theme: sel
         }
