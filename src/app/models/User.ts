@@ -1,9 +1,9 @@
 export interface User {
     alias: string | null;
 
-	email: string | null;
+	email: string;
 
-	userGroup: string | null;
+	userGroup: string;
 
 	password?: string;
 

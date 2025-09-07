@@ -50,9 +50,11 @@ export class ConnectionService {
     
     this.userService.loggedInUser.subscribe((user)=>{
       if(user.email == localUser.email && user.userGroup == localUser.userGroup){
-        
+        this.accessToken = ''; 
+        this.connected.next(false);
       }else{
         this.accessToken = user.token || '';
+        this.connected.next(true);
       }
     });
 

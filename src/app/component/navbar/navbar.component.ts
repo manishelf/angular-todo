@@ -3,6 +3,7 @@ import {
   Component,
   ElementRef,
   HostListener,
+  Input,
   ViewChild,
 } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
@@ -33,7 +34,7 @@ export class NavbarComponent implements AfterViewInit {
 
   menuHidden: boolean = true;
 
-  user: User | null = null;
+  @Input() user: User | null = null;
 
   recentLogins: any = {};
   selectedUserIndex = 0;

@@ -12,11 +12,10 @@ import {
   RouterLinkActive,
 } from '@angular/router';
 import { last, Observable, of, Subscription, switchMap } from 'rxjs';
-import { EditorComponent } from '../editor/editor.component';
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, TodoItemComponent, RouterLink, RouterLinkActive, EditorComponent],
+  imports: [CommonModule, TodoItemComponent, RouterLink, RouterLinkActive],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
 })
@@ -62,8 +61,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.todoService.initializeItems();
-    
     this.queryParamSubscription = this.route.queryParams.subscribe(
       (params: Params) => {
         let order = params['ord'] ? params['ord'] : [];
