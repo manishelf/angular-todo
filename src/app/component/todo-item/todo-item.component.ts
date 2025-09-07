@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ChangeDetectorRef, AfterViewInit, HostListener, ViewChild, ElementRef, AfterViewChecked, OnChanges } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectorRef, AfterViewInit, HostListener, ViewChild, ElementRef, AfterViewChecked, OnChanges, AfterContentChecked } from '@angular/core';
 import { TodoItem } from '../../models/todo-item';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
@@ -17,7 +17,7 @@ declare var Prism : any;
   templateUrl: './todo-item.component.html',
   styleUrl: './todo-item.component.css'
 })
-export class TodoItemComponent implements OnChanges, AfterViewChecked {
+export class TodoItemComponent implements OnChanges, AfterContentChecked{
   @Input() item: TodoItem = {
     id:0,
     subject: "",
@@ -59,11 +59,10 @@ export class TodoItemComponent implements OnChanges, AfterViewChecked {
     this.todoService.fromBin = this.fromBin;
   }
 
-  ngAfterViewChecked() {
+  ngAfterContentChecked() {
     if(!this.minimized && !this.markdownHighlighted){
-      setTimeout(()=>{Prism.highlightAll()},500);
       this.markdownHighlighted = true;
-  
+      
       let markdown = marked.parse(this.item.description).toString();
       markdown = markdown.replace(/\n\n/g, '<br>');
       let code = markdown.match(/<code class="language-(\w+)">([\s\S]*?)<\/code>/g) || markdown.match(/<code>([\s\S]*?)<\/code>/);
@@ -74,6 +73,7 @@ export class TodoItemComponent implements OnChanges, AfterViewChecked {
         }
       }
       this.parsedMD = this.sanitizer.bypassSecurityTrustHtml(markdown);
+      requestAnimationFrame(()=>{Prism.highlightAll()});
     } 
   } 
 

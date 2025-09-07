@@ -153,6 +153,8 @@ export class TodoServiceService {
       }?\n [ Y | N ]`
     );
     if (res === 'Y')
+    {
+      this.todoItemsSubject.next([]);
       this.getService
       .getAllItems(this.db$, this.fromBin)
       .subscribe((items) => {
@@ -166,6 +168,8 @@ export class TodoServiceService {
         this.toaster.error('error deleting all items');
         console.error(error);
       });
+    }
+   
   }
 
   searchTodos(
