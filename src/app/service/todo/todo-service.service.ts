@@ -50,11 +50,11 @@ export class TodoServiceService {
     userService.loggedInUser$.subscribe((user)=>{
       
       if(user.email !== localUser.email && user.userGroup !== localUser.userGroup){
-        // if(this.backendService.connected){
-        //   this.backendService.getAll().then((items)=>{
-        //     this.addMany(items);
-        //   });
-        // }
+        if(this.backendService.connected){
+          this.backendService.getAll().then((items)=>{
+            this.addMany(items);
+          });
+        }
       }      
       
       this.initializeIndexDB(user.email,user.userGroup)
@@ -195,12 +195,13 @@ export class TodoServiceService {
        item.subject = new Date().toISOString(); 
       }
       this.addService.addItem(this.db, item, (suc)=>{
-        let id = (suc.target as IDBRequest).result;
-        res(id);
-        this.backendService.addItem(item);
-        let savedItem = item as any;
-        savedItem.id = id;
-        this.changedItem.next(savedItem);
+          let id = (suc.target as IDBRequest).result;
+          res(id);
+          this.backendService.addItem(item);
+          let savedItem = item as any;
+          savedItem.id = id;
+          this.changedItem.next(savedItem);
+          this.toaster.success('item saved');
         },
         (err)=>{
           this.toaster.error('error adding todo item!');

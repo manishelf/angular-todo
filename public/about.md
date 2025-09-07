@@ -1,6 +1,7 @@
 # <a id="features">Features of this app V1.00</a>
 ---
 ### [Download demo todo items to play around](/demo)
+#### build as ng build --configuration production --base-href /ang/ --deploy-url /ang/
 ---
 
 ## <a id="general-features">General Features</a>

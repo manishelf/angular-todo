@@ -3,7 +3,7 @@
     <div class="m-2 user-form-container">
         <app-user-form #userForm *ngIf="customFormSchema?.fields" [data]="customFormData" [schema]="customFormSchema"></app-user-form>
     </div>
-    <div class="flex justify-evenly space-x-2">
+    <div class="flex justify-evenly space-x-2 mt-2">
       <button
         (click)="onOptionClick()"
         class="bg-blue-500"
