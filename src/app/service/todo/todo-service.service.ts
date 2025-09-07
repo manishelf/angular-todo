@@ -3,6 +3,10 @@ import {
   Observable,
   BehaviorSubject,
   Subscriber,
+  timeInterval,
+  timeout,
+  bufferTime,
+  debounceTime,
 } from 'rxjs';
 import { TodoItem } from '../../models/todo-item';
 import { TodoItemAddService } from './todo-item-crud/todo-item-add.service';
@@ -21,15 +25,8 @@ import { Tag } from '../../models/tag';
 })
 export class TodoServiceService {
   fromBin: boolean = false;
-  lastLoggedUserEmail: string = localUser.email || '';
-  lastLoggedUserGroup: string = localUser.userGroup || '';
 
   db!: IDBDatabase;
-  public db$: Observable<IDBDatabase> = new Observable<IDBDatabase>(
-    (subscriber) => {
-      this.initializeIndexDB(subscriber, this.lastLoggedUserEmail,this.lastLoggedUserGroup);
-    }
-  );
 
   private todoItemsSubject = new BehaviorSubject<TodoItem[]>([]);
   todoItems$ = this.todoItemsSubject.asObservable();
@@ -46,19 +43,18 @@ export class TodoServiceService {
     private userService: UserService,
     private backendService: BackendCrudService
   ) {
-    userService.loggedInUser$.subscribe((user)=>{
-      if(user.email && user.userGroup){
-        this.lastLoggedUserEmail = user.email;
-        this.lastLoggedUserGroup = user.userGroup;
-      }
+
+    userService.loggedInUser$.pipe(debounceTime(100)).subscribe((user)=>{
+      
       if(user.email !== localUser.email && user.userGroup !== localUser.userGroup){
         // if(this.backendService.connected){
         //   this.backendService.getAll().then((items)=>{
         //     this.addMany(items);
         //   });
         // }
-      }
-      this.initializeItems();
+      }      
+      
+      this.initializeIndexDB(user.email,user.userGroup)
     });
 
     this.changedItem$.subscribe((changedItem)=>{
@@ -92,10 +88,9 @@ export class TodoServiceService {
   }
 
 
-  initializeIndexDB(subscriber: Subscriber<IDBDatabase>, userEmail: string, userGroup: string){
+  initializeIndexDB(userEmail: string, userGroup: string){
     const request = indexedDB.open('todo_items_db_'+userEmail+'@'+userGroup, 1);
     request.onerror = (error) => {
-      subscriber.error(error);
       this.toaster.error('error connecting to local idexedDB!');
       console.error('Error opening IndexedDB:', error);
     };
@@ -130,9 +125,8 @@ export class TodoServiceService {
       this.db = db;
       db.onerror = (err) => {
         throw (err as any).srcElement.error;
-      };
-      subscriber.next(db);
-      subscriber.complete();
+      };            
+      this.initializeItems();
     };
   }
 
@@ -143,7 +137,7 @@ export class TodoServiceService {
   }
 
   getAll(): Observable<TodoItem[]> {
-    return  this.getService.getAllItems(this.db$, this.fromBin);
+    return  this.getService.getAllItems(this.db, this.fromBin);
   }
 
   deleteAll(): void {
@@ -156,7 +150,7 @@ export class TodoServiceService {
     {
       this.todoItemsSubject.next([]);
       this.getService
-      .getAllItems(this.db$, this.fromBin)
+      .getAllItems(this.db, this.fromBin)
       .subscribe((items) => {
         items.forEach((item) => {
           this.deleteItem(item);
@@ -179,7 +173,7 @@ export class TodoServiceService {
     exact = false,
   ): Observable<TodoItem[]> {
     return this.getService.searchTodos(
-      this.db$,
+      this.db,
       subjectQuery,
       tagFilter,
       searchTerms,
