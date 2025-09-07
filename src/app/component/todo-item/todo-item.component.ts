@@ -43,7 +43,10 @@ export class TodoItemComponent implements OnChanges, AfterViewChecked {
 
   constructor(private todoService: TodoServiceService, private route:ActivatedRoute, private router: Router, private sanitizer: DomSanitizer) {
   }
+  
   ngOnChanges(): void {
+    console.log(1);
+    
     this.borderColour += 'type-normal ';
     if (this.item.setForReminder) {
       this.borderColour += 'type-reminder ';
@@ -51,18 +54,6 @@ export class TodoItemComponent implements OnChanges, AfterViewChecked {
     if (this.item.completionStatus) {
       this.borderColour += 'type-done ';
     }
-
-    let markdown = marked.parse(this.item.description).toString();
-    markdown = markdown.replace(/\n\n/g, '<br>');
-    let code = markdown.match(/<code class="language-(\w+)">([\s\S]*?)<\/code>/g) || markdown.match(/<code>([\s\S]*?)<\/code>/);
-    if (code) {
-      for (let i = 0; i < code.length; i++) {
-        let snippet = code[i];
-        markdown = markdown.replace(snippet,  snippet.replace(/<br>/g,'\n').replace(/&lt;br&gt;/g, '<br>'));
-      }
-    }
-    this.parsedMD = this.sanitizer.bypassSecurityTrustHtml(markdown);
-
     const neverUpdated = this.item.creationTimestamp === this.item.updationTimestamp;
     this.toolTipString = neverUpdated ? 'created on - ' + new Date(this.item.creationTimestamp).toLocaleString() :
                                         'last updated on - ' + new Date(this.item.updationTimestamp).toLocaleString();
@@ -74,6 +65,17 @@ export class TodoItemComponent implements OnChanges, AfterViewChecked {
     if(!this.minimized && !this.markdownHighlighted){
       setTimeout(()=>{Prism.highlightAll()},500);
       this.markdownHighlighted = true;
+  
+      let markdown = marked.parse(this.item.description).toString();
+      markdown = markdown.replace(/\n\n/g, '<br>');
+      let code = markdown.match(/<code class="language-(\w+)">([\s\S]*?)<\/code>/g) || markdown.match(/<code>([\s\S]*?)<\/code>/);
+      if (code) {
+        for (let i = 0; i < code.length; i++) {
+          let snippet = code[i];
+          markdown = markdown.replace(snippet,  snippet.replace(/<br>/g,'\n').replace(/&lt;br&gt;/g, '<br>'));
+        }
+      }
+      this.parsedMD = this.sanitizer.bypassSecurityTrustHtml(markdown);
     } 
   } 
 
