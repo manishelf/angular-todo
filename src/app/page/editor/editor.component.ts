@@ -123,7 +123,8 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
   ngAfterViewInit(): void {
     setTimeout(() => {
       this.subjectTxt.nativeElement.focus();
-    }, 300);
+      this.subjectTxt.nativeElement.scrollIntoView();
+    }, 200);
     this.convertedMarkdown = '';
   }
 
@@ -390,8 +391,9 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
 
       descriptionArea.style.height = 'auto';
 
-      requestAnimationFrame(() => { // because setTimeout causes the text to jump up adn down
+      requestAnimationFrame(() => { // because setTimeout causes the text to jump up and down
         descriptionArea.style.height = descriptionArea.scrollHeight + 'px';
+        if(document.activeElement?.isSameNode(document.getElementById('editor-description-input')))
         editorContainer.scrollTop = editorContainer.scrollHeight - scrollBottom;
       });
     }
@@ -531,9 +533,9 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
         this.convertedMarkdown = this.domSanitizer.bypassSecurityTrustHtml(markdown);
       }
     }else{
-      setTimeout(()=>{
+      requestAnimationFrame(()=>{
         this.onEventForResize()
-      }, 5);
+      });
     }
     
     this.option = this.option === 'Preview' ? 'Editor' : 'Preview';
