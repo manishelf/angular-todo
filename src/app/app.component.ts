@@ -4,6 +4,7 @@ import { NavbarComponent } from './component/navbar/navbar.component';
 import { SidebarComponent } from './component/sidebar/sidebar.component';
 import { AngularToastifyModule } from 'angular-toastify';
 import { filter } from 'rxjs';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 
 @Component({
   selector: 'app-root',
@@ -12,6 +13,7 @@ import { filter } from 'rxjs';
   NavbarComponent,
   SidebarComponent,
   AngularToastifyModule,
+  ScrollingModule
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'

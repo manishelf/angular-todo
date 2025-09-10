@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, HostListener } from '@angular/core';
+import { Component, OnDestroy, OnInit, HostListener, AfterViewInit } from '@angular/core';
 import { TodoItem } from './../../models/todo-item';
 import { TodoServiceService } from '../../service/todo/todo-service.service';
 import { CommonModule } from '@angular/common';
@@ -12,14 +12,15 @@ import {
   RouterLinkActive,
 } from '@angular/router';
 import { last, Observable, of, Subscription, switchMap } from 'rxjs';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, TodoItemComponent, RouterLink, RouterLinkActive],
+  imports: [CommonModule, TodoItemComponent, RouterLink, RouterLinkActive, ScrollingModule],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
 })
-export class HomeComponent implements OnInit, OnDestroy {
+export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
   itemList$: Observable<TodoItem[]> = of([])
   fromBin: boolean = false;
 
@@ -58,6 +59,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
     this.fromBin = url.substring(0, 4) === '/bin';
     this.todoService.fromBin = this.fromBin;
+    console.log('ctor', Date.now());
   }
 
   ngOnInit(): void {
@@ -88,6 +90,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         }
       }
     );
+    console.log('init', Date.now());
   }
 
    onClickTodoItem(event: Event, item: TodoItem) {
@@ -201,10 +204,15 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.onClickTodoItem(event, item);
     }
   }
+  ngAfterViewInit(): void {
+    console.log('view init', Date.now());
+  }
   ngOnDestroy(): void {
     if (this.queryParamSubscription) {
       this.queryParamSubscription.unsubscribe();
     }
+    console.log('Destroy', Date.now());
+    
   }
 
   //called on each view check

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ChangeDetectorRef, AfterViewInit, HostListener, ViewChild, ElementRef, AfterViewChecked, OnChanges, AfterContentChecked } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectorRef, AfterViewInit, HostListener, ViewChild, ElementRef, AfterViewChecked, OnChanges, AfterContentChecked, ChangeDetectionStrategy } from '@angular/core';
 import { TodoItem } from '../../models/todo-item';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
@@ -15,7 +15,8 @@ declare var Prism : any;
   selector: 'app-todo-item',
   imports: [MatIconModule, CommonModule, TagListComponent],
   templateUrl: './todo-item.component.html',
-  styleUrl: './todo-item.component.css'
+  styleUrl: './todo-item.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TodoItemComponent implements OnChanges, AfterContentChecked{
   @Input() item: TodoItem = {

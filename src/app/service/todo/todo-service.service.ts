@@ -8,6 +8,7 @@ import {
   bufferTime,
   debounceTime,
   switchMap,
+  tap,
 } from 'rxjs';
 import { TodoItem } from '../../models/todo-item';
 import { TodoItemAddService } from './todo-item-crud/todo-item-add.service';
@@ -135,12 +136,15 @@ export class TodoServiceService {
 
   initializeItems(): void {
     this.getAll().subscribe((items)=>{
+      console.log('DB fetch', Date.now());
       this.todoItemsSubject.next(items);
     });
   }
 
   getAll(): Observable<TodoItem[]> {
-    return  this.getService.getAllItems(this.db, this.fromBin);
+    console.log('Get all', Date.now());
+    
+    return  this.getService.getAllItems(this.db, this.fromBin).pipe(tap(()=>console.log('Get all done', Date.now())));
   }
 
   deleteAll(): void {
@@ -182,11 +186,15 @@ export class TodoServiceService {
       searchTerms,
       this.fromBin,
       exact,
-    );
+    ).pipe(tap(()=>{
+      console.log('search', Date.now());
+    }));
   }
 
   sortTodoItems(order: string[], items: TodoItem[], limit = null): Observable<TodoItem[]> {
-    return this.sortService.sortItems(order, items, limit);
+    return this.sortService.sortItems(order, items, limit).pipe(tap(()=>{
+      console.log('sort',Date.now());
+    }));
   }
 
   addItem(item: Omit<TodoItem, 'id'>) : Promise<number>{

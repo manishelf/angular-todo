@@ -1,4 +1,4 @@
-<div tabindex="1"  class="h-full overflow-y-auto justify-center pt-2 pb-10">
+<div tabindex="1"  class="h-full overflow-y-auto justify-center pt-2">
     <div class="w-full flex flex-col justify-center" *ngIf="fromBin">
         <div class="mb-8">
             <span class="block text-center text-3xl font-semibold text-amber-600 m-4">
@@ -7,16 +7,18 @@
             </span>
         </div>
     </div>
-    <div class="h-fit w-full flex flex-row flex-wrap">
+    <cdk-virtual-scroll-viewport itemSize="autosize" class="h-full">
+        <div class="flex flex-row flex-wrap">
         <div tabindex="0" (keydown)="onKeyDownTodoItem($event, todoItem)" 
         (click)="onClickTodoItem($event, todoItem)" 
          focus="this.style.float='top'"
-        *ngFor="let todoItem of itemList$ | async; let i = index; trackBy: trackById" [id]="i"  
-        class="flex-auto max-w-full h-fit mx-2 my-1 rounded-2xl focus:outline-2 hover:outline-2 hover:shadow-lg
+        *cdkVirtualFor="let todoItem of itemList$ | async; let i = index; trackBy: trackById" [id]="i"  
+        class="flex-auto max-w-full w-fit h-fit mx-2 my-1 rounded-2xl focus:outline-2 hover:outline-2 hover:shadow-lg
          shadow-gray-50 outline-offset-2 outline-white transition-all animate-focus
          ">
             <app-todo-item [item]="todoItem" [fromBin]="fromBin"/>
         </div>
-    </div>
-    <footer class="w-full h-10" ></footer>
+        </div>
+        <footer class="w-full h-10" ></footer>
+    </cdk-virtual-scroll-viewport>
 </div>    
