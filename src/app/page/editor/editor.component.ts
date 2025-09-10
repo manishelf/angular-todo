@@ -390,7 +390,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
 
       requestAnimationFrame(() => { // because setTimeout causes the text to jump up and down
         descriptionArea.style.height = descriptionArea.scrollHeight + 'px';
-        if(!document.activeElement?.isSameNode(document.getElementById('editor-subject-input')))
+        if(document.activeElement?.isSameNode(document.getElementById('editor-description-input')))
         editorContainer.scrollTop = editorContainer.scrollHeight - scrollBottom;
       });
     }
