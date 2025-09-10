@@ -12,7 +12,7 @@
                 </select>
                 <app-bean-item routerLink="/user/profile">
                     <mat-icon>person_pin</mat-icon>
-                    <img [src]="user?.profilePicture" class="w-10 absolute top-0 right-0"  [title]="user?.email+'/'+user?.userGroup">
+                    <img *ngIf="user?.profilePicture" [src]="user?.profilePicture" class="w-10 absolute top-0 right-0"  [title]="user?.email+'/'+user?.userGroup">
                 </app-bean-item>
             </div>
             <app-bean-item (click)="toggleBackendConnection()" title="toggle connection">
