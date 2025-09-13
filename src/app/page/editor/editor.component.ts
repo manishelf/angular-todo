@@ -123,7 +123,8 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
     requestAnimationFrame(() => {
       this.subjectTxt.nativeElement.focus();
       this.subjectTxt.nativeElement.scrollIntoView();
-    });
+      this.onEventForResize();
+    })
     setTimeout(()=>{
       this.subjectTxt.nativeElement.focus();
     },100); // requestAnimationFrame does not focus
@@ -378,20 +379,14 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
 
   }
   
-  @HostListener('focusin')
   onEventForResize(): void {
     if (this.descriptionArea) {
-      const editorContainer = this.editorContainer.nativeElement;
-      const descriptionArea = this.descriptionArea.nativeElement;
-
-      const scrollBottom = editorContainer.scrollHeight - editorContainer.scrollTop;
+      const descriptionArea = this.descriptionArea.nativeElement; 
 
       descriptionArea.style.height = 'auto';
-
+      
       requestAnimationFrame(() => { // because setTimeout causes the text to jump up and down
-        descriptionArea.style.height = descriptionArea.scrollHeight + 'px';
-        if(document.activeElement?.isSameNode(document.getElementById('editor-description-input')))
-        editorContainer.scrollTop = editorContainer.scrollHeight - scrollBottom;
+        descriptionArea.style.height = descriptionArea.scrollHeight + 'px';  
       });
     }
   }
@@ -453,17 +448,14 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
           if (data.file.type.startsWith('image')) {
             field.type = 'image';
           }
-          if (this.customFormSchema && this.customFormSchema.fields) {
-            this.customFormSchema.fields = [
-              ...this.customFormSchema.fields,
-              field,
-            ];
-          } else {
-            this.customFormSchema = { fields: [field] };
-          }
+          
+          this.appendCustomSchemaFields([field]);
+          
           let formData: any = {};
-          formData[field.name] = target.result;
+          formData[field.name] = target.result;          
+
           this.customFormData = { ...this.customFormData, ...formData };
+          
           const cursorPosition = descArea.selectionStart;
           this.todoItem.description =
             this.todoItem.description.substring(0, cursorPosition) +
@@ -486,13 +478,13 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
 
     const editorContainer = this.editorContainer.nativeElement;
     const scrollPercentage = editorContainer.scrollTop / editorContainer.scrollHeight;
-
+    
     requestAnimationFrame(()=>{
-        this.onOptionClick();
-        requestAnimationFrame(()=>{
-          const newScrollTop = editorContainer.scrollHeight * scrollPercentage;
-          editorContainer.scrollTop = newScrollTop;
-        });
+      this.onOptionClick();
+      setTimeout(()=>{
+        const newScrollTop = editorContainer.scrollHeight * scrollPercentage;
+        editorContainer.scrollTop = newScrollTop;
+      },100); // needs to be timeout instead of requAnimFrame as ther is timing issue otherwise
     });
   }
 
@@ -527,7 +519,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
       });
     }else{
       requestAnimationFrame(()=>{
-        this.onEventForResize()
+        this.onEventForResize();
       });
     }
     

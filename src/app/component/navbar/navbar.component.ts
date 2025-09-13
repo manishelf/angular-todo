@@ -226,6 +226,11 @@ export class NavbarComponent implements AfterViewInit {
   searchItems(event: Event): void {
     let searchQuery = (event.target as HTMLInputElement).value;
 
+    if(searchQuery.trim() === ''){
+      this.router.navigate([]);
+      return;
+    }
+
     let tagList: string[] = [];
     let input = [''];
     let exact = false;

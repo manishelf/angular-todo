@@ -36,6 +36,7 @@ export class UserFormComponent implements OnChanges {
   inputTagTypes: (string | undefined)[];
 
   @Input() schema: FormSchema | undefined;
+  schemaInternal: FormSchema | undefined;
   @Input() data: any;
 
   isValid: boolean = false;
@@ -47,7 +48,7 @@ export class UserFormComponent implements OnChanges {
   fileControlsId: string[] = [];
 
   async state(): Promise<Map<string, any>> {
-    if (!this.schema?.fields) return new Map();
+    if (!this.schemaInternal?.fields) return new Map();
 
     if (this.dynamicForm?.valid) {
       let data = this.dynamicForm.value;
@@ -76,14 +77,13 @@ export class UserFormComponent implements OnChanges {
         });
       }
       
-
       return new Promise((res)=>res(data));
     } else {
       let errors = new Map();
-      for (let i = 0; i < this.schema.fields.length; i++) {
-        let control = this.dynamicForm?.get(this.schema.fields[i].name);
+      for (let i = 0; i < this.schemaInternal.fields.length; i++) {
+        let control = this.dynamicForm?.get(this.schemaInternal.fields[i].name);
         if (control) {
-          errors.set(this.schema.fields[i].name, control.errors);
+          errors.set(this.schemaInternal.fields[i].name, control.errors);
         }
       }
       return errors;
@@ -97,13 +97,14 @@ export class UserFormComponent implements OnChanges {
    }
 
   ngOnChanges(): void {
+    this.schemaInternal = structuredClone(this.schema);
     if (this.data) {
-      this.schema = structuredClone(this.schema);//to stop the default value of original being set
-
       let data = new Map(Object.entries(this.data));
-      this.schema?.fields?.forEach((field) => {
-        field.default = data.get(field.name) as string;
-      });
+      if(this.schemaInternal){
+        this.schemaInternal?.fields?.forEach((field) => {
+          field.default = data.get(field.name) as string;
+        });
+      }
     }
     this.createForm();
   }
@@ -116,10 +117,10 @@ export class UserFormComponent implements OnChanges {
 
   createForm(): void {
     const formControls: { [key: string]: FormControl | FormArray } = {};
-    if (this.schema && this.schema.fields) {
-      for (let i = 0; i < this.schema.fields.length; i++) {
+    if (this.schemaInternal && this.schemaInternal.fields) {
+      for (let i = 0; i < this.schemaInternal.fields.length; i++) {
         const validators = [];
-        const field: FormField = this.schema.fields[i];
+        const field: FormField = this.schemaInternal.fields[i];
         const type = field.type;
         const {
           require,
@@ -216,13 +217,13 @@ export class UserFormComponent implements OnChanges {
   }
 
   filterDuplicateFields() {
-    if (!this.schema || !this.schema.fields) return;
-    this.schema.fields;
+    if (!this.schemaInternal || !this.schemaInternal.fields) return;
+    this.schemaInternal.fields;
     let uniqueFields = new Map<string, FormField>();
-    for (const f of this.schema.fields) {
+    for (const f of this.schemaInternal.fields) {
       uniqueFields.set(f.name, f);
     }
-    this.schema.fields = Array.from(uniqueFields.values());
+    this.schemaInternal.fields = Array.from(uniqueFields.values());
   }
 
   openFileBrowserFor(id: string){

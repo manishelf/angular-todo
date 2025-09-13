@@ -23,6 +23,7 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
   itemList$: Observable<TodoItem[]> = of([])
   fromBin: boolean = false;
+  fromSearch: boolean = false;
 
   private queryParamSubscription!: Subscription;
 
@@ -80,6 +81,7 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
                 return this.todoService.sortTodoItems(order, itemList, limit);
               })
             );
+            this.fromSearch=true;
         } else {
           this.router.navigate([]);
           this.itemList$ = this.todoService.todoItems$.pipe(
@@ -87,6 +89,7 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
               return this.todoService.sortTodoItems(order, itemList)
             })
           );
+          this.fromSearch=false;
         }
       }
     );

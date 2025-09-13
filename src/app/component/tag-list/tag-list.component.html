@@ -1,5 +1,5 @@
 <div class="flex flex-row items-center flex-wrap option" style="color:var(--todo-item-text-color)">
-    <div *ngFor="let item of tagsList; let i = index" class="bg-blue-700 hover:outline-1 m-0.5 pl-1 pr-1 rounded-md flex items-center option" >
+    <div *ngFor="let item of tagsList; let i = index" style="background: var(--todo-item-body-color);" class="hover:outline-1 m-0.5 pl-1 pr-1 rounded-md flex items-center option" >
         <div class="w-fit option field-sizing-content" *ngIf="editing != i"(click)="editable && (editing = i)">
             {{item.name}}
         </div>
