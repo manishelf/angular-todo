@@ -13,7 +13,7 @@ export class SearchService {
 
   constructor(private todoItemUtils: TodoItemUtils, private getService: TodoItemGetService) { }
 
-   searchTodosByQuery(
+  searchTodosByQuery(
     db: IDBDatabase,
     subjectQuery: string,
     fromBin: boolean
