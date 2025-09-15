@@ -29,4 +29,17 @@ export class TodoItemUtils {
       };
     });
   }
+
+  createPromise<T>(request:IDBRequest): Promise<T>{
+    return new Promise<T>((res, rej)=>{
+      request.onsuccess = (event) => {
+        const target = event.target as IDBRequest;
+        res(target.result as T);
+      };
+      request.onerror = (event) => {
+        const target = event.target as IDBRequest;
+        rej(target.error);
+      };
+    });
+  }
 }

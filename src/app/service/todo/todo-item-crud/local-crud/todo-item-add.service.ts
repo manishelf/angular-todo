@@ -8,9 +8,10 @@ import {
   tap,
   subscribeOn,
 } from 'rxjs';
-import { TodoItem } from '../../../models/todo-item';
+import { TodoItem } from '../../../../models/todo-item';
 import { TodoItemUtils } from './todo-item-utils';
 import { TodoItemUpdateService } from './todo-item-update.service';
+import { v4 } from 'uuid';
 
 @Injectable({
   providedIn: 'root',
@@ -21,23 +22,28 @@ export class TodoItemAddService {
     private updateService: TodoItemUpdateService
   ) {}
 
-  addItem(db: IDBDatabase, todoItem: Omit<TodoItem, 'id'>, handleSuc = (e:Event)=>{}, handleErr = (e:Event)=>{}) {
-      let request = this.todoItemUtils
-        .getObjectStoreRW(db, 'todo_items')
-        .add(todoItem);
-      if (request) {
-        request.onsuccess = (event) => {
-          let target = event.target as IDBRequest;
-          let id = target.result;
-          let todoItemSaved: TodoItem = {
-            id: id,
-            ...todoItem,
-          };
-          this.updateService.updateTags(db, todoItemSaved);
-          handleSuc(event);
+  addItem(db: IDBDatabase, todoItem: Omit<TodoItem, 'id'>, handleSuc = (e:Event)=>{}, handleErr = (e:Event)=>{}) {  
+    if(!todoItem.uuid || todoItem.uuid.trim() === ''){
+      todoItem.uuid = v4();
+    }
+
+    let request = this.todoItemUtils
+      .getObjectStoreRW(db, 'todo_items')
+      .add(todoItem);
+    
+    if (request) {
+      request.onsuccess = (event) => {
+        let target = event.target as IDBRequest;
+        let id = target.result;
+        let todoItemSaved: TodoItem = {
+          id: id,
+          ...todoItem,
         };
-        request.onerror = (e)=>{console.error(e);handleErr(e);}
-      }
+        this.updateService.updateTags(db, todoItemSaved);
+        handleSuc(event);
+      };
+      request.onerror = (e)=>{console.error(e);handleErr(e);}
+    }
   }
 
   addCustom(db: IDBDatabase, tag: string, item: any, handleSucc = (e:Event)=>{}, handleErr = (e:Event)=>{}): void {

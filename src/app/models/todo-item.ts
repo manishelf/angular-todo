@@ -3,8 +3,10 @@ import { UserDefinedType } from './userdefined-type';
 
 export interface TodoItem {
     id: number;
+    uuid: string;
     subject: string;
     description: string;
+    version: number;
     tags: Tag[];
     completionStatus: boolean;
     setForReminder: boolean;

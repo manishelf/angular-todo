@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Observable, from, BehaviorSubject, throwError, switchMap, tap, mergeMap, toArray, max, take, of } from 'rxjs';
-import { TodoItem } from '../../../models/todo-item';
+import { TodoItem } from '../../../../models/todo-item';
 import { TodoItemUtils } from './todo-item-utils';
-import { Tag } from '../../../models/tag';
+import { Tag } from '../../../../models/tag';
 
 @Injectable({
   providedIn: 'root',
@@ -14,6 +14,13 @@ export class TodoItemGetService {
     const storeName = fromBin ? 'deleted_todo_items' : 'todo_items';
     const store = this.todoItemUtils.getObjectStoreRO(db, storeName);
     const request = store.get(id);
+    return this.todoItemUtils.createObservable<TodoItem>(request);
+  }
+
+  getItemByUUID(db: IDBDatabase, uuid: string, fromBin: boolean = false): Observable<TodoItem>{
+    const storeName = fromBin ? 'deleted_todo_items' : 'todo_items';
+    const store = this.todoItemUtils.getObjectStoreRO(db, storeName);
+    const request = store.index('uuidIndex').get(uuid);
     return this.todoItemUtils.createObservable<TodoItem>(request);
   }
 

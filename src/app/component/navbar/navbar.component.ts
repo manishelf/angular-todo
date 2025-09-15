@@ -40,6 +40,8 @@ export class NavbarComponent implements AfterViewInit {
   selectedUserIndex = 0;
   private lastUserLoginArrSize = 0;
 
+  userProfilePicture: string | null = null;
+
   availableThemes: any = {
     "classic-professional": [
     "white",
@@ -115,6 +117,14 @@ export class NavbarComponent implements AfterViewInit {
     userService.loggedInUser$.subscribe((user)=>{
       this.user = user;
       
+      if(this.user.profilePicture){
+        if(this.user.profilePicture.startsWith('/item/doc/')){
+          this.userProfilePicture = this.connectionService.backendUrl+this.user.profilePicture;
+        }else{
+          this.userProfilePicture = this.user.profilePicture;
+        }
+      }
+
       let recentLogins = localStorage["recentLogins"];
       if(!recentLogins || recentLogins == 'null'){
         recentLogins = `{"${localUser.email}/${localUser.userGroup}":${JSON.stringify(localUser)}}`;
@@ -335,16 +345,9 @@ export class NavbarComponent implements AfterViewInit {
   }
 
   save(list: TodoItem[]){
-    this.todoService.serializeManyToJson(list).subscribe((json) => {
-        let blob = new Blob([json], { type: 'application/json' });
-        let url = URL.createObjectURL(blob);
-        let a = document.createElement('a');
-        a.href = url;
-        a.download = `todo-${Date.now()}.json`;
-        a.click();
-        this.toaster.success(list.length+' Notes downloaded successfully');
-        URL.revokeObjectURL(url);
-      });
+    this.toaster.info('Merging '+list.length+' items');
+    
+    this.todoService.downloadTodoItemsAsJson(list);
   }
 
   uploadNotes() {
@@ -363,7 +366,6 @@ export class NavbarComponent implements AfterViewInit {
             .deserializeManyFromJson(jsonBuffer.toString())
             .subscribe((itemList) => {
               this.todoService.addMany(itemList);
-              this.toaster.success('Notes loaded successfully');
             });
           }
       };

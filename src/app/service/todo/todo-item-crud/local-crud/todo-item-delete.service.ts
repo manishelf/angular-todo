@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { TodoItem } from '../../../models/todo-item';
+import { TodoItem } from '../../../../models/todo-item';
 import { Observable, switchMap } from 'rxjs';
 import { TodoItemUtils } from './todo-item-utils';
 
@@ -13,6 +13,8 @@ export class TodoItemDeleteService {
   deleteItem(db:IDBDatabase, item: TodoItem, fromBin?: boolean):void{
     if(!fromBin){
       item.deleted = true;
+      item.updationTimestamp = new Date(Date.now()).toISOString();
+      item.version+=1;
       this.todoItemUtils.getObjectStoreRW(db, 'deleted_todo_items').add(item);
       this.todoItemUtils.getObjectStoreRW(db, 'todo_items').delete(item.id);
     }else{

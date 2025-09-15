@@ -29,8 +29,8 @@ import {
 import { UserFormComponent } from '../../component/user-form/user-form.component';
 import { FormField, FormSchema, inputTagTypes } from '../../models/FormSchema';
 import { ToastService } from 'angular-toastify';
-import { filter, Observable } from 'rxjs';
 import { TagListComponent } from '../../component/tag-list/tag-list.component';
+import{v4 as uuidv4} from 'uuid';
 
 declare var Prism: any;
 
@@ -66,7 +66,9 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
 
   todoItem: Omit<TodoItem, 'id'> = {
     subject: '',
+    uuid: uuidv4(),
     description: '',
+    version:0,
     tags: [{ name: '*' }], //if no tag is added for a item then search by tags does not work correctly
     completionStatus: false,
     setForReminder: false,
@@ -405,7 +407,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
       this.todoItem.description =
         this.todoItem.description.substring(0, cursorPosition) +
         `[link-${new Date().getSeconds()}](${text})` + 
-    this.todoItem.description.substring(cursorPosition);
+      this.todoItem.description.substring(cursorPosition);
       event.preventDefault();
     }
     interface data {
@@ -450,11 +452,21 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
           }
           
           this.appendCustomSchemaFields([field]);
-          
           let formData: any = {};
           formData[field.name] = target.result;          
 
           this.customFormData = { ...this.customFormData, ...formData };
+          
+          let hasPastedFiles = false;
+          for(let t of this.todoItem.tags){
+            if(t.name == 'has-attachments'){
+              hasPastedFiles = true;
+            }
+          }
+
+          if(!hasPastedFiles){
+            this.todoItem.tags.push({name: 'has-attachments'});
+          }
           
           const cursorPosition = descArea.selectionStart;
           this.todoItem.description =
@@ -530,7 +542,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
     if (this.userForm?.dynamicForm.invalid) {
       console.log('user defined field validation failed - ');
       console.error(this.userForm.state());
-      (await this.userForm.state() ).forEach((value, key) => {
+      (await this.userForm.state()).forEach((value, key) => {
         if (value) {
           let stringy = JSON.stringify(value);
           this.toaster.error(key + '->' + stringy);
@@ -544,18 +556,23 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
         formControlSchema: this.customFormSchema,
         data: await this.userForm.state(),
       };
+
+      if(this.todoItem.userDefined.tag.name == ''){
+        this.todoItem.userDefined.tag.name = 'has-attachments';
+      }
     }
 
     this.updateParentDescForTree();
-
+    
     if (this.forEdit !== -1) {
       this.todoServie.updateItem({ id: this.forEdit, ...this.todoItem });
     } else {
       this.todoServie.addItem(this.todoItem);
     }
 
-    history.back();
-    // this.router.navigate(['/home'], { queryParams: this.queryParams });
+    if(this.router.lastSuccessfulNavigation?.finalUrl?.toString().includes('/home'))
+      this.router.navigate(['/home'], { queryParams: this.queryParams });
+    else history.back();
   }
 
   onUpdateTags(tags: Tag[]) {
@@ -703,8 +720,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
       *   {"tag":"sample", "formControlSchema": {"fields": [{"name":"sample", "label":"sample text", "type":"text"}]}, "data":[["sample", "current value"]]}\n*/\n\n\n`;
     if (this.todoItem.userDefined) {
       if (this.todoItem.userDefined.formControlSchema.fields) {
-        // undo the form- prefix for convienience
-		this.todoItem.description += JSON.stringify(
+		    this.todoItem.description += JSON.stringify(
           this.todoItem.userDefined,
           null,
           4

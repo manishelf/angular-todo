@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { TodoItem } from '../../models/todo-item';
 import { from, mergeMap, Observable, of, scheduled } from 'rxjs';
-import { TodoItemUtils } from '../todo/todo-item-crud/todo-item-utils';
+import { TodoItemUtils } from '../todo/todo-item-crud/local-crud/todo-item-utils';
 
 @Injectable({
   providedIn: 'root',

@@ -20,7 +20,9 @@ declare var Prism : any;
 })
 export class TodoItemComponent implements OnChanges, AfterContentChecked{
   @Input() item: TodoItem = {
-    id:0,
+    id:Number.MIN_VALUE,
+    version:0,
+    uuid: '',
     subject: "",
     description: "",
     tags: [],

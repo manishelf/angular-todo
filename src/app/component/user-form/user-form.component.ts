@@ -24,6 +24,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { inputTagTypes } from './../../models/FormSchema';
 import { CanvasComponent } from './canvas/canvas.component';
+import { ConnectionService } from './../../service/connection/connection.service';
 
 
 @Component({
@@ -46,6 +47,11 @@ export class UserFormComponent implements OnChanges {
   @ViewChildren(CanvasComponent) canvasComponents!: QueryList<CanvasComponent>;
 
   fileControlsId: string[] = [];
+  
+  
+  constructor(private formBuilder: FormBuilder, private connectionService: ConnectionService) {
+    this.inputTagTypes = inputTagTypes;
+   }
 
   async state(): Promise<Map<string, any>> {
     if (!this.schemaInternal?.fields) return new Map();
@@ -92,9 +98,6 @@ export class UserFormComponent implements OnChanges {
 
   dynamicForm!: FormGroup;
 
-  constructor(private formBuilder: FormBuilder) {
-    this.inputTagTypes = inputTagTypes;
-   }
 
   ngOnChanges(): void {
     this.schemaInternal = structuredClone(this.schema);
@@ -103,6 +106,9 @@ export class UserFormComponent implements OnChanges {
       if(this.schemaInternal){
         this.schemaInternal?.fields?.forEach((field) => {
           field.default = data.get(field.name) as string;
+          if(field.default.startsWith('/item/doc/')){
+            field.default = this.connectionService.backendUrl+field.default;
+          }
         });
       }
     }

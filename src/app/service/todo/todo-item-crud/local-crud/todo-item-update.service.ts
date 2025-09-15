@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, from, BehaviorSubject, throwError, switchMap, tap, Subscription } from 'rxjs';
-import { TodoItem } from '../../../models/todo-item';
+import { TodoItem } from '../../../../models/todo-item';
 import { TodoItemUtils } from './todo-item-utils';
 
 @Injectable({
@@ -19,6 +19,7 @@ export class TodoItemUpdateService {
           if(target.result.tags.join(',') !== todoItem.tags.join(',')){
             this.updateTags(db, todoItem);
           }
+          todoItem.version+=1;
           todoItem.updationTimestamp = new Date(Date.now()).toISOString();
           this.todoItemUtils.getObjectStoreRW(db, 'todo_items').put(todoItem);
           handleSucc(event);

@@ -5,6 +5,8 @@ import { BehaviorSubject } from 'rxjs';
 import {Axios} from 'axios';
 import { UserService , localUser} from './../user/user.service';
 import { Route, Router } from '@angular/router';
+import { TodoItem } from '../../models/todo-item';
+import { TodoItemUpdateService } from '../todo/todo-item-crud/local-crud/todo-item-update.service';
 
 @Injectable({
   providedIn: 'root',
@@ -19,7 +21,9 @@ export class ConnectionService {
 
   axios: Axios = new Axios();
 
-  constructor(private toaster: ToastService, private userService : UserService, private router: Router) {
+  constructor(private toaster: ToastService,
+     private userService : UserService,
+     private router: Router) {
     this.backendUrl = localStorage['qtodo_backend_url'];
     if (this.backendUrl && this.backendUrl !== 'null') {
       this.connectToBackend().then(
@@ -54,26 +58,81 @@ export class ConnectionService {
     this.userService.loggedInUser.subscribe((user)=>{
       if(user.email == localUser.email && user.userGroup == localUser.userGroup){
         this.accessToken = ''; 
-        this.connected.next(false);
       }else{
         this.accessToken = user.token || '';
-        this.connected.next(true);
       }
     });
 
     this.axios.interceptors.request.use(async (config)=> {
-        if(this.accessToken != '' && this.isTokenExpired(this.accessToken)
-           && !(config.url?.includes('/user/refresh') || config.url?.includes('/user/logout'))){
-          let resp = await this.axios.get('/user/refresh');
-          if(resp.status == 200){
+      
+      
+      if(this.accessToken != '' && this.isTokenExpired(this.accessToken)
+        && !(config.url?.includes('/user/refresh') || config.url?.includes('/user/logout'))){
+      let resp = await this.axios.get('/user/refresh');
+      if(resp.status == 200){
             this.accessToken = resp.data.accessToken;
           }else{
             this.logoutUser();
           }
         }
+        
+        if(config.url === '/item/save' || config.url === '/item/update'){       
+          config.data.itemList.forEach((item: TodoItem)=>{
+            if(item.userDefined){
+              item.userDefined.formControlSchema.fields?.forEach((field)=>{
+                
+                if(item.userDefined?.data){
+                  if(field.type == 'image' || field.type == 'file'){
+                    let user = this.userService.loggedInUser.value;
+                    let fieldKey = item.uuid+'_'+item.userDefined?.tag.name+'_'+field.name.replaceAll('/','_').replaceAll('\\','_');
+                    
+                    let data = (item.userDefined.data as any )[field.name] || '';
+                    (item.userDefined.data as any)[field.name]=
+                      '/item/doc/'+user.userGroup+'_'+user.email.replace('.','_').replace('@','_')+'_'+fieldKey;
+
+                    const parts = data.split(';');
+                    const mimeType = parts[0].split(':')[1];
+                    let dataType = mimeType;
+                    
+                    this.postFileToBackend(
+                      data,
+                      fieldKey,
+                      dataType,
+                      fieldKey
+                    ).then((refUrl)=>{
+
+                    }).catch(()=>{
+                      (item.userDefined?.data as any)[field.name]=data;
+                    });
+                  }
+                } 
+              });
+            }
+          });
+        }
+
+        if(config.url?.includes('/user/signup') && config.data.profilePicture){
+
+          let user = config.data;
+          let pictureData = config.data.profilePicture;
+          const parts = config.data.profilePicture.split(';');
+          const mimeType = parts[0].split(':')[1];
+          let fileInfo = 'profile_pic_'+user.userGroup;
+          
+          config.data.profilePicture=user.userGroup+'_'+user.email.replace('.','_').replace('@','_')+'_'+fileInfo;
+
+          setTimeout(()=>{
+            this.postFileToBackend(pictureData, fileInfo,mimeType, fileInfo)
+          },1000); 
+        }
+
         config.headers.Authorization = 'Bearer '+ this.accessToken;
-        config.data = JSON.stringify(config.data);
-        config.headers['Content-Type'] = 'application/json';
+        if(!(config.data instanceof FormData)){
+          config.data = JSON.stringify(config.data);
+        }
+        if(!config.headers['Content-Type']){
+          config.headers['Content-Type'] = 'application/json';
+        }
         config.url = this.backendUrl+config.url;
         config.withCredentials = true;
         return config;
@@ -106,20 +165,20 @@ export class ConnectionService {
   }
 
   isTokenExpired(token:string) {
-  try {
-    const payloadBase64 = token.split('.')[1];
-    let expirationTimeInSeconds = 0;
-    if(payloadBase64){
-      const decodedPayload = atob(payloadBase64);
-      const payload = JSON.parse(decodedPayload);
-      expirationTimeInSeconds = payload.exp*1000;
+    try {
+      const payloadBase64 = token.split('.')[1];
+      let expirationTimeInSeconds = 0;
+      if(payloadBase64){
+        const decodedPayload = atob(payloadBase64);
+        const payload = JSON.parse(decodedPayload);
+        expirationTimeInSeconds = payload.exp*1000;
+      }
+      return expirationTimeInSeconds<Date.now();
+    } catch (e) {
+      console.error("Failed to decode token:", e);
+      return null;
     }
-    return expirationTimeInSeconds<Date.now();
-  } catch (e) {
-    console.error("Failed to decode token:", e);
-    return null;
   }
-}
 
   connectToBackend(): Promise<boolean> {
     return new Promise((res, rej) => {
@@ -182,5 +241,38 @@ export class ConnectionService {
     this.axios.post('/user/logout');
     this.accessToken = '';
     this.userService.loggedInUser.next(localUser);
+  }
+
+  dataURLtoBlob(dataurl: string): Blob {
+    const arr = dataurl.split(',');
+    const mime = (arr[0].match(/:(.*?);/) || [undefined, undefined])[1];
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new Blob([u8arr], {type: mime});
+  }
+  
+  postFileToBackend(fileData: string, fileName: string, fileType: string, fileInfo: string):Promise<string>{
+    return new Promise((res, rej)=>{
+      let formData = new FormData();
+      formData.append('file', this.dataURLtoBlob(fileData));
+      formData.append('fileType', fileType);
+      formData.append('fileInfo', fileInfo);
+      formData.append('fileName', fileName);
+      this.axios.post('/item/save/document',
+        formData,
+        {
+          headers:{
+            "Content-Type":'multipart/form-data'
+          }
+        }
+      ).then((resp)=>{
+        console.log(resp);
+        res(resp.data.body);
+      });
+    });
   }
 }

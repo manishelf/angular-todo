@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Observable, from, BehaviorSubject, throwError, switchMap, tap, mergeMap, toArray, max, take, of } from 'rxjs';
 import { TodoItem } from '../../models/todo-item';
-import { TodoItemUtils } from '../todo/todo-item-crud/todo-item-utils';
+import { TodoItemUtils } from '../todo/todo-item-crud/local-crud/todo-item-utils';
 import { Tag } from '../../models/tag';
-import { TodoItemGetService } from '../todo/todo-item-crud/todo-item-get.service';
+import { TodoItemGetService } from '../todo/todo-item-crud/local-crud/todo-item-get.service';
 
 
 @Injectable({

@@ -105,6 +105,13 @@
         <button (click)="openFileBrowserFor(field.name)">📁</button>
         </div>
         <app-canvas *ngIf="field.type === 'canvas'" [id]="field.name" [data]="data?data[field.name]:null"/>  
+        <div *ngIf="field.type === 'iframe'">
+          <iframe
+            [src]="dynamicForm.get(field.name)?.value"
+            sandbox="allow-scripts allow-popups allow-modals">
+          </iframe>
+        </div>
+
        </td>
     </tr>
   </table>

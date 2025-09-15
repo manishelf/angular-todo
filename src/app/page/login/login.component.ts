@@ -21,7 +21,7 @@ export class LoginComponent {
   @ViewChild('emailInp') emailInpEle!: ElementRef;
   @ViewChild('profilePicEle') profilePicEle!: ElementRef;
 
-  userGroupList: string[] = ['qtodo'];
+  userGroupList: Set<string> = new Set(['qtodo']);
 
   profilePicDataUrl: string | null = null;
 
@@ -52,7 +52,9 @@ export class LoginComponent {
       this.emailInpEle.nativeElement.focus();
     },200);
     connectionService.axios.get('/user/usergroups').then((resp)=>{
-      this.userGroupList.push(...resp.data?.body);
+      resp.data?.body.forEach((ug:string)=>{
+        this.userGroupList.add(ug);
+      })
     });
     const formControls: { [key: string]: FormControl} = {
       "email":this.formBuilder.control(
@@ -105,8 +107,7 @@ export class LoginComponent {
 
 
     if(this.profilePicDataUrl){
-      const base64String = btoa(this.profilePicDataUrl);
-      user.profilePicture = base64String;
+      user.profilePicture = this.profilePicDataUrl;
     }
 
     user.email = (user.email as string).toLowerCase();
@@ -116,14 +117,18 @@ export class LoginComponent {
     this.connectionService.axios.post('/user'+action,
       user
     ).then((resp)=>{
+      
       if(resp.status != 200) return;
+
       user.token = resp.data?.accessToken;
       user.profilePicture = this.profilePicDataUrl || '';
       if(this.asLogin){
         user.token = resp.data?.userDetails.accessToken;
         user.alias = resp.data?.userDetails.alias;
-        if(resp.data?.userDetails.profilePicture)
-        user.profilePicture = atob(resp.data?.userDetails.profilePicture);
+        if(resp.data?.userDetails.profilePicture){
+          let refUrl = resp.data?.userDetails.profilePicture;
+          user.profilePicture = refUrl;
+        }
       }
       user.password = "";
       let recentLogins = localStorage["recentLogins"];
@@ -151,7 +156,7 @@ export class LoginComponent {
   addUserGroup(){
     let usergroup = (prompt('Enter your group title') || '');
     if(usergroup != ''){
-      this.userGroupList.push(usergroup);
+      this.userGroupList.add(usergroup);
       let val = this.formGroup.value;
       val['usergroup']= usergroup;
       this.formGroup.setValue(val);

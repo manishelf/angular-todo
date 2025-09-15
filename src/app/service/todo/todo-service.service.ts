@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import {
   Observable,
   BehaviorSubject,
@@ -9,12 +9,16 @@ import {
   debounceTime,
   switchMap,
   tap,
+  of,
+  throttle,
+  throttleTime,
+  mergeMap,
 } from 'rxjs';
 import { TodoItem } from '../../models/todo-item';
-import { TodoItemAddService } from './todo-item-crud/todo-item-add.service';
-import { TodoItemUpdateService } from './todo-item-crud/todo-item-update.service';
-import { TodoItemDeleteService } from './todo-item-crud/todo-item-delete.service';
-import { TodoItemGetService } from './todo-item-crud/todo-item-get.service';
+import { TodoItemAddService } from './todo-item-crud/local-crud/todo-item-add.service';
+import { TodoItemUpdateService } from './todo-item-crud/local-crud/todo-item-update.service';
+import { TodoItemDeleteService } from './todo-item-crud/local-crud/todo-item-delete.service';
+import { TodoItemGetService } from './todo-item-crud/local-crud/todo-item-get.service';
 import { ToastService } from 'angular-toastify';
 import { SortService } from '../sort/sort.service';
 import { UserService , localUser} from '../user/user.service';
@@ -22,17 +26,19 @@ import { User } from '../../models/User';
 import { BackendCrudService } from './todo-item-crud/backend-crud/backend-crud.service';
 import { Tag } from '../../models/tag';
 import { SearchService } from '../search/search.service';
+import { OP } from './syncWorker/sync.worker';
 
 @Injectable({
   providedIn: 'root',
 })
-export class TodoServiceService {
+export class TodoServiceService implements OnDestroy {
   fromBin: boolean = false;
 
   db!: IDBDatabase;
 
-  private todoItemsSubject = new BehaviorSubject<TodoItem[]>([]);
-  todoItems$ = this.todoItemsSubject.asObservable();
+  private todoItems = new BehaviorSubject<TodoItem[]>([]);
+  todoItems$ = this.todoItems.asObservable();
+
   private changedItem = new BehaviorSubject<TodoItem|null>(null);
   changedItem$ = this.changedItem.asObservable();
 
@@ -49,16 +55,7 @@ export class TodoServiceService {
   ) {
 
     userService.loggedInUser$.subscribe((user)=>{
-      
-      if(user.email !== localUser.email && user.userGroup !== localUser.userGroup){
-        if(this.backendService.connected){
-          this.backendService.getAll().then((items)=>{
-            this.addMany(items);
-          });
-        }
-      }      
-      
-      this.initializeIndexDB(user.email,user.userGroup)
+      this.initializeIndexDB(user)
     });
 
     this.changedItem$.subscribe((changedItem)=>{
@@ -70,7 +67,7 @@ export class TodoServiceService {
       is optimized for UI rendering efficiency, not for raw memory efficiency. 
       The "inefficient" data manipulation is a small price to pay :> fu wd
        */
-      const updatedList = this.todoItemsSubject.value.map((item)=>{
+      const updatedList = this.todoItems.value.map((item)=>{
         if(item.id == changedItem.id){
           if(changedItem.deleted){
             listUpdated = true;
@@ -87,13 +84,13 @@ export class TodoServiceService {
       if(!listUpdated){ 
         updatedList.push(changedItem);
       }
-      this.todoItemsSubject.next(updatedList);        
+      this.todoItems.next(updatedList);        
     });
   }
 
 
-  initializeIndexDB(userEmail: string, userGroup: string){
-    const request = indexedDB.open('todo_items_db_'+userEmail+'@'+userGroup, 1);
+  initializeIndexDB(user:User){
+    const request = indexedDB.open('todo_items_db/'+user.userGroup+'/'+user.email, 1);
     request.onerror = (error) => {
       this.toaster.error('error connecting to local idexedDB!');
       console.error('Error opening IndexedDB:', error);
@@ -117,9 +114,17 @@ export class TodoServiceService {
       });
 
       todoItemsStore.createIndex('subjectIndex', 'subject', { unique: true });
-      deletedTodoItemsStore.createIndex('subjectIndex', 'subject', {
-        unique: true,
-      });
+      todoItemsStore.createIndex('uuidIndex', 'uuid', { unique: true });
+      todoItemsStore.createIndex('tagsIndex', 'tags', { multiEntry: true });
+      todoItemsStore.createIndex('creationTimestampIndex', 'creationTimestamp');
+      todoItemsStore.createIndex('updationTimestampIndex', 'updationTimestamp');
+
+      deletedTodoItemsStore.createIndex('subjectIndex', 'subject', { unique: true });
+      deletedTodoItemsStore.createIndex('uuidIndex', 'uuid', {unique: true});
+      deletedTodoItemsStore.createIndex('tagsIndex', 'tags', { multiEntry: true });
+      deletedTodoItemsStore.createIndex('creationTimestampIndex', 'creationTimestamp');
+      deletedTodoItemsStore.createIndex('updationTimestampIndex', 'updationTimestamp');
+      
       tagsTodoItemStroe.createIndex('tagName', 'name', { unique: true });
       customItemStroe.createIndex('tagIndex', 'tag', { unique: true });
     };
@@ -130,6 +135,7 @@ export class TodoServiceService {
       db.onerror = (err) => {
         throw (err as any).srcElement.error;
       };            
+      this.backendService.init(db, user);
       this.initializeItems();
     };
   }
@@ -137,7 +143,7 @@ export class TodoServiceService {
   initializeItems(): void {
     this.getAll().subscribe((items)=>{
       console.log('DB fetch', Date.now());
-      this.todoItemsSubject.next(items);
+      this.todoItems.next(items);
     });
   }
 
@@ -155,7 +161,7 @@ export class TodoServiceService {
     );
     if (res === 'Y')
     {
-      this.todoItemsSubject.next([]);
+      this.todoItems.next([]);
       this.getService
       .getAllItems(this.db, this.fromBin)
       .subscribe((items) => {
@@ -243,6 +249,10 @@ export class TodoServiceService {
     return this.getService.getItemById(this.db, id);
   }
 
+  getItemByUUID(uuid: string):Observable<TodoItem>{
+    return this.getService.getItemByUUID(this.db, uuid);
+  } 
+
   getCustom(tag: string): Observable<any> {
     return this.getService.getCustom(this.db, tag);
   }
@@ -325,6 +335,8 @@ export class TodoServiceService {
   deserializeOneFromJson(jsonString: string): TodoItem {
     let item: TodoItem = {
       id: Number.MIN_VALUE,
+      version: 0,
+      uuid: '',
       subject: '',
       description: '',
       tags: [],
@@ -361,46 +373,101 @@ export class TodoServiceService {
     });
   }
 
-  addMany(items: TodoItem[]): void {
-    try {
-      for (let i = 0; i < items?.length; i++) {
-        let item = items[i];
-        try {
-          this.addItem(item);
-        } catch (e) {
-          try {
-            this.getItemById(item.id).subscribe((existingItem) => {
-              if (existingItem) {
+  async addMany(items: TodoItem[]) {
+    let addList = [];
+    let staleItems : TodoItem[] = [];
+    let updateList = [];
+    let errorList:any[] = [];
+    let done = new BehaviorSubject<boolean>(false);
+    let currDBErrorHandler = this.db.onerror;
+    this.db.onerror = (err)=>{
+      errorList.push(err);
+    };
+
+    for (let i = 1; i <= items?.length; i++) { // async as sync? wtf 
+      let item = items[i];
+      
+      if(!item) continue;
+
+      if(item.subject.trim()===''){
+      item.subject = new Date().toISOString(); 
+      }
+      this.addService.addItem(this.db, item, (suc)=>{
+          let id = (suc.target as IDBRequest).result;
+          let savedItem = item as any;
+          savedItem.id = id;
+          addList.push(savedItem);            
+
+          done.next(true);
+        },
+        (err)=>{
+          this.getItemById(item.id).subscribe((existingItem) => {
+            if (existingItem) {
+              if (
+                new Date(existingItem.updationTimestamp) <
+                new Date(item.updationTimestamp)
+              ){
+                this.updateService.updateItem(this.db, item, (suc)=>{
+                  updateList.push(item);
+
+                  done.next(true);
+                }
+              );
+              }
+            } else {
+              this.searchTodos(item.subject).subscribe((existingItem) => {
                 if (
-                  new Date(existingItem.updationTimestamp) <
+                  new Date(existingItem[0].updationTimestamp) <
                   new Date(item.updationTimestamp)
                 ) {
                   this.updateItem(item);
-                  this.toaster.info('updated an existing item');
+                  this.updateService.updateItem(this.db, item, (suc)=>{
+                    updateList.push(item);
+
+                    done.next(true);
+                  });
                 }
-              } else {
-                this.searchTodos(item.subject).subscribe((existingItem) => {
-                  if (
-                    new Date(existingItem[0].updationTimestamp) <
-                    new Date(item.updationTimestamp)
-                  ) {
-                    this.updateItem(item);
-                    this.toaster.info('updated an existing item');
-                  }
-                });
-              }
-            });
-          } catch (e) {
-            console.log('error adding item', e);
-            this.toaster.error('error adding item');
-          }
-          console.log('error adding todo item', e);
+              });
+            }
+          });
         }
-      }
-      this.toaster.success(`added ${items.length} todo items successfully!`);
-    } catch (e) {
-      this.toaster.error('error adding todo items');
-      console.error('error adding todo items: ', e);
+      ); 
     }
+    done.pipe(debounceTime(100)).subscribe((s)=>{ // runs after 100 ms of inactivity 
+        if(s){
+          this.db.onerror = currDBErrorHandler;
+          if(addList.length>0)
+          this.toaster.success(`added ${addList.length} items`);
+
+          if(updateList.length>0)
+          this.toaster.success(`updated ${updateList.length} items`);
+
+          if(errorList.length>0)
+          this.toaster.error(`encountered ${errorList.length} errors`);
+          
+          if(staleItems.length>0)
+          this.downloadTodoItemsAsJson(staleItems, 'stale');
+   
+          this.initializeItems();
+        }
+      });
+  }
+
+  downloadTodoItemsAsJson(items: TodoItem[], fileName: string = 'todo'){
+    this.serializeManyToJson(items).subscribe((json) => {
+        let blob = new Blob([json], { type: 'application/json' });
+        let url = URL.createObjectURL(blob);
+        let a = document.createElement('a');
+        a.href = url;
+        a.download = `${fileName}-${Date.now()}.json`;
+        a.click();
+        this.toaster.success('downloaded '+ items.length+' '+fileName + ' items');
+        URL.revokeObjectURL(url);
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.todoItems.unsubscribe();
+    this.changedItem.unsubscribe();
   }
 }

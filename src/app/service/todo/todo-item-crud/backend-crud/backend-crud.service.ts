@@ -1,59 +1,122 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, ConnectConfig, Observable } from 'rxjs';
+import { Injectable, OnDestroy } from '@angular/core';
+import { BehaviorSubject, ConnectConfig, debounceTime, Observable } from 'rxjs';
 import { ToastService } from 'angular-toastify';
 import { User } from '../../../../models/User';
 import { UserService } from '../../../user/user.service';
 import { ConnectionService } from '../../../connection/connection.service';
 import { TodoItem } from '../../../../models/todo-item';
-import { TodoItemUpdateService } from './../todo-item-update.service';
-import { TodoItemAddService } from '../todo-item-add.service';
-import { TodoItemGetService } from '../todo-item-get.service';
+import { TodoItemUpdateService } from '../local-crud/todo-item-update.service';
+import { TodoItemAddService } from '../local-crud/todo-item-add.service';
+import { TodoItemGetService } from '../local-crud/todo-item-get.service';
+import { OP, todoItemState } from '../../syncWorker/sync.worker';
+import { SearchService } from '../../../search/search.service';
+import { TodoItemDeleteService } from '../local-crud/todo-item-delete.service';
+import { TodoItemUtils } from '../local-crud/todo-item-utils';
+import { Route, Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
 })
-export class BackendCrudService {  
-  connected = false;
-  
-  constructor(private toaster: ToastService, private connectionService : ConnectionService, 
+export class BackendCrudService implements OnDestroy{  
+  connected = false;  
+  syncWorker: Worker;
+
+  db: IDBDatabase | null = null;
+  user: User | null = null;
+
+  constructor(private toaster: ToastService, 
+    private connectionService : ConnectionService, 
     private localUpdateService: TodoItemUpdateService,
     private localAddService: TodoItemAddService,
-    private localGetService: TodoItemGetService
+    private localDeleteService: TodoItemDeleteService,
+    private dbUtils: TodoItemUtils,
+    private localSearchService: SearchService,
+    private localGetService: TodoItemGetService,
+    private router: Router,
   ) { 
+    this.syncWorker = new Worker(new URL('../../syncWorker/sync.worker.ts', import.meta.url));
+
+    this.syncWorker.onerror=(err)=>{
+      this.toaster.error('Unable to sync with backend!');
+      console.error(err);
+    };
+
+    this.syncWorker.onmessageerror=(err)=>{
+      this.toaster.error('sync operation failed!');
+      console.error(err);
+    }
+    
+    this.syncWorker.onmessage = (message)=>{
+      this.handleSyncMessage(message);
+    };
+
     connectionService.connected$.subscribe((status)=>{
       this.connected = status;
     });
   }
 
-  // syncAll(db$: Observable<IDBDatabase>, localItems: TodoItem[]): Promise<TodoItem[]>{
-  //   return new Promise<TodoItem[]>((res, rej)=>{
-  //       if(!this.connected || true) res(localItems);
+  init(db: IDBDatabase, user: User){
+    this.db = db;
+    this.user = user;
+    
+    if(this.connected)
+    this.syncWorker.postMessage({
+      op:OP.INIT,
+      backendUrl: this.connectionService.backendUrl,
+      user
+    });
+  }
 
-  //       this.getDirty(localItems).then((dirtyItems)=>{
-  //         if(dirtyItems.length == 0){
-  //           res(localItems);
-  //         }else{
-  //           for(let item of dirtyItems){
-  //             this.localUpdateService.updateItem(db$, item, (suc)=>{
-  //             },(err)=>{
-  //               this.localAddService.addItem(db$, item);
-  //             });
-  //           }
-  //         }
-  //       });
-  //   });
-  // }
+  handleSyncMessage(message: any){
+    if(message.data.op === OP.MERGE){
+      let itemsForAdd = message.data.itemsForAdd;
+      let itemsForUpdate = message.data.itemsForUpdate;
+      let itemsForDelete = message.data.itemsForDelete;
+      let done = new BehaviorSubject<boolean>(false);
+      
+      
+      itemsForAdd.forEach((item: Omit<TodoItem, 'id'>)=>{
+        if(this.db){
+          this.localAddService.addItem(this.db, item,()=>{
+            done.next(true);
+          });
+        }
+      });
+      
+      itemsForUpdate.forEach((forUpdate: TodoItem) => {
+        if(this.db)
+        this.localGetService.getItemByUUID(this.db, forUpdate.uuid).subscribe((item)=>{
+          forUpdate.id = item.id;
+          if(this.db && new Date(item.updationTimestamp).getTime() < new Date(forUpdate.updationTimestamp).getTime()){
+            this.localUpdateService.updateItem(this.db, forUpdate,()=>{
+              done.next(true);
+            });
+          }
+        });
+      });
+      itemsForDelete.forEach((item: todoItemState)=>{
+        if(this.db)
+          this.localGetService.getItemByUUID(this.db, item.uuid).subscribe((item)=>{
+          if(this.db){
+            this.localDeleteService.deleteItem(this.db, item);
+            done.next(true);
+          }
+        });
+      });
 
-  // getDirty(localItems: TodoItem[]): Promise<TodoItem[]>{
-  //   return new Promise<TodoItem[]>((res)=>{
-  //     let dirty:TodoItem[] = [];
-  //     if(!this.connected) res(localItems);
-  //     this.connectionService.axios.post('/item/merge',{itemList: localItems}).then((resp)=>{
-  //       let items = resp.data.items as TodoItem[];
-  //       res(items);
-  //     })
-  //   });
-  // }
+      done.pipe(debounceTime(100)).subscribe((s)=>{
+        if(s){
+          this.toaster.success('Synced items with backend!');
+          this.toaster.info('auto refresh in 5 seconds');
+          setTimeout(()=>{
+            let a = document.createElement('a');
+            a.href='/';
+            a.click();
+          },5000);
+        }
+      });
+    }
+  }
 
   getAll(): Promise<TodoItem[]>{
     if(!this.connected) return Promise.resolve([]);
@@ -68,8 +131,11 @@ export class BackendCrudService {
   addItem(item: Omit<TodoItem, 'id'>){
     if(!this.connected) return;
 
+    console.log('sending add', Date.now());
+    console.log('todo item', item.updationTimestamp);
     this.connectionService.axios.post('/item/save',{itemList:[item]}).then((res)=>{
       console.log(res);
+      console.log('recieved response', Date.now());
     }).catch((e)=>{
       console.log(e);
     });
@@ -92,7 +158,6 @@ export class BackendCrudService {
   updateItem(db: IDBDatabase,dirtyItem: TodoItem){
     if(!this.connected) return;
     this.localGetService.getItemById(db,dirtyItem.id).subscribe(item=>{
-      (dirtyItem as any).subjectBeforeUpdate = item.subject;
       this.updateManyItems([dirtyItem]); 
       console.log(item);
     });
@@ -105,5 +170,9 @@ export class BackendCrudService {
     }).catch((e)=>{
       console.log(e);
     });
+  }
+
+  ngOnDestroy(): void {
+    this.syncWorker.terminate();
   }
 }

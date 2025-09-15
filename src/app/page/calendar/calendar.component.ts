@@ -19,6 +19,7 @@ import { TodoServiceService } from '../../service/todo/todo-service.service';
 import { TodoItem } from '../../models/todo-item';
 import { Router, withDebugTracing } from '@angular/router';
 import { Subscription } from 'rxjs';
+import {v4 as uuidv4} from 'uuid';
 
 // example found at https://github.com/fullcalendar/fullcalendar-examples
 @Component({
@@ -130,6 +131,8 @@ export class CalendarComponent  implements OnInit{
         : selectInfo.dateStr;
       let end = selectInfo.endStr ? selectInfo.endStr : selectInfo.dateStr;
       const newTodoItem: Omit<TodoItem, 'id'> = {
+        uuid: uuidv4(),
+        version:0,
         subject: title,
         description: '',
         creationTimestamp: start,
