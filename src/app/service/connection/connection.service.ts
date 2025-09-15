@@ -115,15 +115,16 @@ export class ConnectionService {
 
           let user = config.data;
           let pictureData = config.data.profilePicture;
-          const parts = config.data.profilePicture.split(';');
-          const mimeType = parts[0].split(':')[1];
-          let fileInfo = 'profile_pic_'+user.userGroup;
-          
-          config.data.profilePicture=user.userGroup+'_'+user.email.replace('.','_').replace('@','_')+'_'+fileInfo;
-
-          setTimeout(()=>{
-            this.postFileToBackend(pictureData, fileInfo,mimeType, fileInfo)
-          },1000); 
+          if(pictureData){
+            const parts = config.data.profilePicture.split(';');
+            const mimeType = parts[0].split(':')[1];
+            let fileInfo = 'profile_pic_'+user.userGroup;
+            
+            config.data.profilePicture=user.userGroup+'_'+user.email.replace('.','_').replace('@','_')+'_'+fileInfo;
+            setTimeout(()=>{
+              this.postFileToBackend(pictureData, fileInfo,mimeType, fileInfo)
+            },1000); 
+          }
         }
 
         config.headers.Authorization = 'Bearer '+ this.accessToken;
