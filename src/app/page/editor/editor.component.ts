@@ -437,11 +437,11 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
             name:
               data.file.name.replaceAll(/[.]/g, '_') +
               '/' +
-              new Date(data.file.lastModified).toISOString().replaceAll(/[-.:]/g,'_'),
+              new Date(data.file.lastModified).toLocaleString().replaceAll(/[-,\/.: ]/g,'_'),
             label:
               data.file.name +
               '/' +
-              new Date(data.file.lastModified).toISOString().replaceAll(/[-.:]/g,'_'),
+              new Date(data.file.lastModified).toLocaleString().replaceAll(/[-,\/.: ]/g,'_'),
             default: 'file data',
             validation:{
               readonly: true,
