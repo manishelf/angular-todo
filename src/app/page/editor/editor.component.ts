@@ -436,11 +436,11 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
             type: 'file',
             name:
               data.file.name.replaceAll(/[.]/g, '_') +
-              '/' +
+              '_' +
               new Date(data.file.lastModified).toLocaleString().replaceAll(/[-,\/.: ]/g,'_'),
             label:
               data.file.name +
-              '/' +
+              '_' +
               new Date(data.file.lastModified).toLocaleString().replaceAll(/[-,\/.: ]/g,'_'),
             default: 'file data',
             validation:{
