@@ -1,8 +1,9 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { MatIcon } from '@angular/material/icon';
 import { Tag } from '../../models/tag';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TodoServiceService } from '../../service/todo/todo-service.service';
 
 @Component({
   selector: 'app-tag-list',
@@ -19,12 +20,18 @@ export class TagListComponent implements OnInit{
 
   editing: number = -1;
 
+  suggestedTag: Tag[] = [];
+
+  constructor(private todoItemService: TodoServiceService){
+
+  }
+
   ngOnInit(): void {
   }
 
   updateState(item: Tag, tagInput: HTMLElement){
-    let newTagName = tagInput?.innerHTML.replaceAll(/<div>|<\/div>|<br>/g,'') || '';
-    item.name = newTagName;
+    let newTagName = tagInput?.innerHTML;
+    item.name = this.stripOutHtml(newTagName);
     this.tagsList = this.tagsList.filter(t=>t.name.trim() != '');
     this.tagsList.forEach(t=>t.name=t.name.trim());
     this.onChange.emit(this.tagsList);
@@ -36,5 +43,20 @@ export class TagListComponent implements OnInit{
       name:"....."
     });
     this.editing = this.tagsList.length-1;
+  }
+
+  handleTagNameInput(event: Event){
+    let target = event.target as HTMLDivElement;
+    let tagName = target.innerHTML;
+    
+    this.todoItemService.
+    getTagWithNameLike(this.stripOutHtml(tagName))
+    .subscribe((tags)=>{
+      this.suggestedTag = tags;
+    });
+  }
+
+  stripOutHtml(inp: string): string {
+    return inp.replaceAll(/<div>|<\/div>|<br>/g,'') || '';
   }
 }

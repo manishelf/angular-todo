@@ -406,7 +406,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
       let cursorPosition = descArea.selectionStart;
       this.todoItem.description =
         this.todoItem.description.substring(0, cursorPosition) +
-        `[link-${new Date().getSeconds()}](${text})` + 
+        `[link_${new Date().getSeconds()}](${text})` + 
       this.todoItem.description.substring(cursorPosition);
       event.preventDefault();
     }
@@ -437,11 +437,11 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
             name:
               data.file.name.replaceAll(/[.]/g, '_') +
               '/' +
-              new Date(data.file.lastModified).getSeconds(),
+              new Date(data.file.lastModified).toLocaleString(),
             label:
               data.file.name +
               '/' +
-              new Date(data.file.lastModified).getSeconds(),
+              new Date(data.file.lastModified).toLocaleString(),
             default: 'file data',
             validation:{
               readonly: true,

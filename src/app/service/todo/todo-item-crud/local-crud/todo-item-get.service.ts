@@ -47,4 +47,27 @@ export class TodoItemGetService {
       toArray()
     );
   }
+
+  getTagWithNameLike(db: IDBDatabase, name: string): Observable<Tag[]>{
+    const store = this.todoItemUtils.getObjectStoreRO(db, 'tags_todo_items');
+    const index = store.index('tagName');
+    const range = IDBKeyRange.bound(name, name + '\uffff', false, false); // Prefix search
+    const request = index.openCursor(range);
+    return new Observable<Tag[]>((observer) => {
+      const results :Tag[] = [];
+      request.onsuccess = (event) => {
+        const cursor = (event.target as IDBRequest<IDBCursorWithValue>).result;
+        if (cursor) {
+          results.push(cursor.value);
+          cursor.continue();
+        } else {
+          observer.next(results);
+          observer.complete();
+        }
+      };
+      request.onerror = (event) => {
+        observer.error((event.target as IDBRequest).error);
+      };
+    });
+  }
 }

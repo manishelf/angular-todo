@@ -261,6 +261,10 @@ export class TodoServiceService implements OnDestroy {
     return this.getService.getAllCustom(this.db, tags);
   }
 
+  getTagWithNameLike(name: string): Observable<Tag[]>{
+    return this.getService.getTagWithNameLike(this.db, name);
+  }
+
   updateItem(item: TodoItem): void {
     this.backendService.updateItem(this.db, item);// order is important as subject can change
     this.updateService.updateItem(this.db, item, (suc)=>{

@@ -3,9 +3,14 @@
         <div class="w-fit option field-sizing-content" *ngIf="editing != i"(click)="editable && (editing = i)">
             {{item.name}}
         </div>
-        <div *ngIf="i == editing" class="flex flex-row items-center">
-            <div class="w-fit option field-sizing-content outline-0 border-b-2 wrap-break-word" #tagInput contenteditable="true"  [innerText]="item.name"></div>
-            <mat-icon  class="hover:scale-110 cursor-pointer option" title="save changes" (click)="updateState(item, tagInput)">done</mat-icon>
+        <div *ngIf="i == editing" class="flex flex-col">
+            <div class="flex flex-row">
+                <div class="w-fit option field-sizing-content outline-0 border-b-2 wrap-break-word" #tagInput contenteditable="true" (input)="handleTagNameInput($event)"  [innerText]="item.name"></div>
+                <mat-icon  class="hover:scale-110 cursor-pointer option" title="save changes" (click)="updateState(item, tagInput)">done</mat-icon>
+            </div>
+            <div  class="max-h-30 overflow-scroll" tabindex="-1">
+                <a *ngFor="let tag of suggestedTag" tabindex="0" class="block opacity-50 focus:opacity-100 hover:opacity-100 option wrap-break-word" (focus)="tagInput.innerText = tag.name">{{tag.name}}</a>
+            </div>
         </div>
     </div>
     <mat-icon class="hover:scale-110 cursor-pointer transition-all option" *ngIf="editable" (click)="addItem()">add_circle_outline</mat-icon>

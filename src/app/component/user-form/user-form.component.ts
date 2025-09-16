@@ -25,6 +25,7 @@ import { CommonModule } from '@angular/common';
 import { inputTagTypes } from './../../models/FormSchema';
 import { CanvasComponent } from './canvas/canvas.component';
 import { ConnectionService } from './../../service/connection/connection.service';
+import { DomSanitizer } from '@angular/platform-browser';
 
 
 @Component({
@@ -49,7 +50,7 @@ export class UserFormComponent implements OnChanges {
   fileControlsId: string[] = [];
   
   
-  constructor(private formBuilder: FormBuilder, private connectionService: ConnectionService) {
+  constructor(private formBuilder: FormBuilder, private connectionService: ConnectionService, private sanitizer: DomSanitizer) {
     this.inputTagTypes = inputTagTypes;
    }
 
@@ -106,8 +107,13 @@ export class UserFormComponent implements OnChanges {
       if(this.schemaInternal){
         this.schemaInternal?.fields?.forEach((field) => {
           field.default = data.get(field.name) as string;
+          
           if(field.default.startsWith('/item/doc/')){
             field.default = this.connectionService.backendUrl+field.default;
+          }
+
+          if(field.type == 'iframe'){
+            (field.default as any) = this.sanitizer.bypassSecurityTrustHtml(field.default);
           }
         });
       }
