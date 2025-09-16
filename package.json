@@ -4,7 +4,8 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build --configuration production --base-href /ang/ --deploy-url /ang/",
+    "build": "ng build",
+    "build ang": "ng build --configuration production --base-href /ang/ --deploy-url /ang/",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
