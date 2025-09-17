@@ -60,7 +60,7 @@ export class ConnectionService {
         this.accessToken = ''; 
       }else{
         this.accessToken = user.token || '';
-      }
+      }      
     });
 
     this.axios.interceptors.request.use(async (config)=> {
