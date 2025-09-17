@@ -395,7 +395,11 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
   
   @HostListener('paste', ['$event'])
   onPasteEvent(event: Event) {
+    if(!(event.target instanceof HTMLTextAreaElement)){
+      return;
+    }
     const descArea = event.target as HTMLTextAreaElement;
+
     let clipBoardData = (event as ClipboardEvent).clipboardData;
     let text = clipBoardData?.getData('text');
 
@@ -433,7 +437,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
         let target: any = event.target;
         if (target.result) {
           let field: FormField = {
-            type: 'file',
+            type: 'iframe',
             name:
               data.file.name.replaceAll(/[.]/g, '_') +
               '_' +
@@ -646,7 +650,9 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
         //first remove comments
         this.todoItem.description = this.todoItem.description
           .replaceAll(/\/\*[\s\S]*?\*\//g, '')
-          .replaceAll(/\/\/.*$/gm, '');
+          .replaceAll(/\//g,'\\/')
+          .replaceAll('<','&lt;')
+          .replaceAll('>','&gt;');
 
         let formSchema = JSON.parse(this.todoItem.description);
         if (!formSchema.tag || !formSchema.formControlSchema) {
@@ -695,7 +701,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
       *         "name" : string,
       *         "label" : string,
       *         "type" : 'text' | 'textarea' | 'email' | 'password' 
-      *                  | 'number' | 'date' | 'select' | 'checkbox' | 'radio' | 'boolean' | 'image' | 'file' | 'canvas' 
+      *                  | 'number' | 'date' | 'select' | 'checkbox' | 'radio' | 'boolean' | 'image' | 'file' | 'iframe' | 'canvas' 
       *                  | 'color' | 'range' | 'month' | 'date' | 'time' | 'datetime-local' | 'timestamp' | 'history',
       *         "placeholder"?: string,
       *         "validation"?: {

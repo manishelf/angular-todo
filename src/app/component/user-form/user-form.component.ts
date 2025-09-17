@@ -25,7 +25,7 @@ import { CommonModule } from '@angular/common';
 import { inputTagTypes } from './../../models/FormSchema';
 import { CanvasComponent } from './canvas/canvas.component';
 import { ConnectionService } from './../../service/connection/connection.service';
-import { DomSanitizer } from '@angular/platform-browser';
+import { DomSanitizer, SafeHtml, SafeResourceUrl } from '@angular/platform-browser';
 
 
 @Component({
@@ -49,6 +49,7 @@ export class UserFormComponent implements OnChanges {
 
   fileControlsId: string[] = [];
   
+  iframeControlId: string[] = [];
   
   constructor(private formBuilder: FormBuilder, private connectionService: ConnectionService, private sanitizer: DomSanitizer) {
     this.inputTagTypes = inputTagTypes;
@@ -60,6 +61,7 @@ export class UserFormComponent implements OnChanges {
     if (this.dynamicForm?.valid) {
       let data = this.dynamicForm.value;
       let canvasArr = this.canvasComponents.toArray(); 
+
       for(let canvas of canvasArr){
         data[canvas.id]=canvas.getState();       
       }
@@ -81,6 +83,13 @@ export class UserFormComponent implements OnChanges {
                 reader.readAsDataURL(file);
             }
           }
+        });
+      }
+
+      if(this.iframeControlId.length>0){
+        //safeResourceUrl - {changingThisBreaksApplicationSecurity:dataUrl}
+        this.iframeControlId.forEach((id)=>{
+          data[id] = data[id].changingThisBreaksApplicationSecurity;
         });
       }
       
@@ -107,13 +116,15 @@ export class UserFormComponent implements OnChanges {
       if(this.schemaInternal){
         this.schemaInternal?.fields?.forEach((field) => {
           field.default = data.get(field.name) as string;
-          
-          if(field.default.startsWith('/item/doc/')){
+          let isFile= field.type == 'image' || field.type == 'file' || field.type == 'iframe';
+
+          if( isFile && (typeof field.default) == "string" && field.default?.startsWith('/item/doc/')){
             field.default = this.connectionService.backendUrl+field.default;
           }
-
+          
           if(field.type == 'iframe'){
-            (field.default as any) = this.sanitizer.bypassSecurityTrustHtml(field.default);
+            this.iframeControlId.push(field.name);
+            (field.default as any) = this.sanitizer.bypassSecurityTrustResourceUrl(field.default);
           }
         });
       }
@@ -240,5 +251,9 @@ export class UserFormComponent implements OnChanges {
 
   openFileBrowserFor(id: string){
     document.getElementById(id)?.click();
+  }
+
+  getSafeLinkHtmlForIframe(data: string): SafeResourceUrl{
+    return this.sanitizer.bypassSecurityTrustResourceUrl(data);
   }
 }
