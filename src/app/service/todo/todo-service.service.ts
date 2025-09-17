@@ -90,7 +90,7 @@ export class TodoServiceService implements OnDestroy {
 
 
   initializeIndexDB(user:User){
-    const request = indexedDB.open('todo_items_db_'+user.userGroup+'@'+user.email, 1);
+    const request = indexedDB.open('todo_items_db/'+user.userGroup+'/'+user.email, 1);
     request.onerror = (error) => {
       this.toaster.error('error connecting to local idexedDB!');
       console.error('Error opening IndexedDB:', error);
