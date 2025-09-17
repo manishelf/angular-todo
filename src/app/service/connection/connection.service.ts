@@ -82,7 +82,7 @@ export class ConnectionService {
               item.userDefined.formControlSchema.fields?.forEach((field)=>{
                 
                 if(item.userDefined?.data){
-                  if(field.type == 'image' || field.type == 'file'){
+                  if(field.type == 'image' || field.type == 'file' || field.type == 'iframe'){
                     let user = this.userService.loggedInUser.value;
                     let fieldKey = item.uuid+'_'+item.userDefined?.tag.name+'_'+field.name.replaceAll('/','_').replaceAll('\\','_');
                     
