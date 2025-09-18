@@ -108,7 +108,11 @@ export class BackendCrudService implements OnDestroy{
         if(s){
           this.toaster.success('Synced items with backend!');
           this.toaster.info('auto refresh in 5 seconds');
-          this.router.navigate(['/edit']); //forces reload
+          setTimeout(()=>{
+            let a = document.createElement('a');
+            a.href='/';
+            a.click();
+          },5000);
         }
       });
     }
