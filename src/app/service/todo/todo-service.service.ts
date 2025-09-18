@@ -305,6 +305,8 @@ export class TodoServiceService implements OnDestroy {
   }
 
   serializeOneToJson(item: TodoItem): string {
+    let ud = JSON.stringify(item.userDefined, null, 4);
+    ud = ud?ud:'{"tag":{"name":""}, "formControlScheme":{"fields":[]}}';
     return `
     {
       "id": ${item.id ? item.id : null},
@@ -325,7 +327,7 @@ export class TodoServiceService implements OnDestroy {
       "eventEnd": ${item.eventEnd ? '"' + item.eventEnd + '"' : null},
       "eventFullDay": ${item.eventFullDay ? item.eventFullDay : false},
       "deleted": ${item.deleted ? item.deleted : false},
-      "userDefined": ${JSON.stringify(item.userDefined, null, 4)}
+      "userDefined": ${ud}
     }`;
   }
 
