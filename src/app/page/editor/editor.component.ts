@@ -312,6 +312,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
     childItem.description = '### ['+name+']';
     childItem.userDefined = undefined;
     childItem.tags.push({name});
+    childItem.uuid = '';
     this.onAddClick(); 
     this.todoServie.addItem(childItem).then((id)=>{
       this.router.navigate(['/edit/child'],{state:{item:{id: id, ...childItem}, params: this.queryParams}, queryParams:{id}});
