@@ -124,7 +124,7 @@ export class UserFormComponent implements OnChanges {
           
           if(field.type == 'iframe'){
             this.iframeControlId.push(field.name);
-            (field.default as any) = this.sanitizer.bypassSecurityTrustResourceUrl(field.default);
+            (field.default as any)= this.getSafeLinkHtmlForIframe(field.default);
           }
         });
       }

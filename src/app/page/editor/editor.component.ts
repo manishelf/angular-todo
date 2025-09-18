@@ -447,7 +447,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
           let fileName = 
               data.file.type.replaceAll('/','_')+
               '_' +
-              data.file.name +
+              data.file.name.replaceAll(/[.]/g,'_') +
               '_' +
               new Date(data.file.lastModified).toLocaleString().replaceAll(/[-,\/.: ]/g,'_');
           let field: FormField = {

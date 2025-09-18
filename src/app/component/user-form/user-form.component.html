@@ -116,11 +116,10 @@
               [placeholder]="field.placeholder"
               [readonly]="field.validation?.readonly"
             />
-            <a [href]="dynamicForm.get(field.name)?.value" class="outline-1">↗️</a>
           </div>
           <iframe
             [src]="dynamicForm.get(field.name)?.value"
-            sandbox="allow-scripts allow-popups allow-modals" class="outline-1 w-full h-full bg-white">
+            sandbox="allow-scripts allow-popups allow-modals allow-downloads" class="outline-1 w-full h-full bg-white">
           </iframe>
         </div>
 
