@@ -112,6 +112,7 @@ export class TodoItemComponent implements OnChanges, AfterContentChecked{
       minute: '2-digit',
     }).format(new Date());
     delete duplicateItem.id;
+    duplicateItem.uuid = '';
     delete duplicateItem.userDefined.data;
     duplicateItem.creationTimestamp = new Date(Date.now()).toISOString();
     duplicateItem.updationTimestamp = new Date(Date.now()).toISOString();
