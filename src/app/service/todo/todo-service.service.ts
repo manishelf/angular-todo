@@ -465,7 +465,7 @@ export class TodoServiceService implements OnDestroy {
         let url = URL.createObjectURL(blob);
         let a = document.createElement('a');
         a.href = url;
-        a.download = `${fileName}-${Date.now()}.json`;
+        a.download = `${fileName}-${new Date().toLocaleString().replaceAll(/[ ,:/]/g,'_')}.json`;
         a.click();
         this.toaster.success('downloaded '+ items.length+' '+fileName + ' items');
         URL.revokeObjectURL(url);

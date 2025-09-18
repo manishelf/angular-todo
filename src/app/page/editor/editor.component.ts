@@ -444,18 +444,16 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
       data.reader.onload = (event: Event) => {
         let target: any = event.target;
         if (target.result) {
-          let field: FormField = {
-            type: 'iframe',
-            name:
-            data.file.name.replaceAll(/[.]/g, '_') +
+          let fileName = 
+              data.file.type.replaceAll('/','_')+
               '_' +
-            data.file.type.replaceAll('/','_')+
-              '_' +
-              new Date(data.file.lastModified).toLocaleString().replaceAll(/[-,\/.: ]/g,'_'),
-            label:
               data.file.name +
               '_' +
-              new Date(data.file.lastModified).toLocaleString().replaceAll(/[-,\/.: ]/g,'_'),
+              new Date(data.file.lastModified).toLocaleString().replaceAll(/[-,\/.: ]/g,'_');
+          let field: FormField = {
+            type: 'iframe',
+            name: fileName,
+            label: fileName,
             default: 'file data',
             validation:{
               readonly: true,
