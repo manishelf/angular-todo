@@ -447,7 +447,9 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
           let field: FormField = {
             type: 'iframe',
             name:
-              data.file.name.replaceAll(/[.]/g, '_') +
+            data.file.name.replaceAll(/[.]/g, '_') +
+              '_' +
+            data.file.type.replaceAll('/','_')+
               '_' +
               new Date(data.file.lastModified).toLocaleString().replaceAll(/[-,\/.: ]/g,'_'),
             label:
