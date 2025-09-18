@@ -38,6 +38,43 @@ axios.interceptors.request.use(async (config)=> {
             user!.token = resp.data.accessToken;
         }
     }
+    
+    if(config.url === '/item/save' || config.url === '/item/update'){       
+          config.data.itemList.forEach((item: TodoItem)=>{
+            if(item.userDefined){
+                console.log(item.userDefined);
+                
+              item.userDefined.formControlSchema.fields?.forEach((field)=>{
+                    
+                if(item.userDefined?.data){
+                  if(field.type == 'image' || field.type == 'file' || field.type == 'iframe'){
+
+                    let fieldKey = item.uuid+'_'+item.userDefined?.tag.name+'_'+field.name.replaceAll('/','_').replaceAll('\\','_');
+                    
+                    let data = (item.userDefined.data as any )[field.name] || '';
+                    (item.userDefined.data as any)[field.name]=
+                      '/item/doc/'+user?.userGroup+'_'+user?.email.replace('.','_').replace('@','_')+'_'+fieldKey;
+
+                    const parts = data.split(';');
+                    const mimeType = parts[0].split(':')[1];
+                    let dataType = mimeType;
+                    
+                    postFileToBackend(
+                      data,
+                      fieldKey,
+                      dataType,
+                      fieldKey
+                    ).then((refUrl)=>{
+
+                    }).catch(()=>{
+                      (item.userDefined?.data as any)[field.name]=data;
+                    });
+                  }
+                } 
+              });
+            }
+          });
+        }
 
     config.headers.Authorization = 'Bearer '+ user.token;
     config.data = JSON.stringify(config.data);
@@ -224,3 +261,34 @@ function  getObjectStoreRO(storeName: string):IDBObjectStore{
     return db!.transaction(storeName, 'readonly').objectStore(storeName);
 }
 
+function  postFileToBackend(fileData: string, fileName: string, fileType: string, fileInfo: string):Promise<string>{
+    return new Promise((res, rej)=>{
+      let formData = new FormData();
+      formData.append('file', dataURLtoBlob(fileData));
+      formData.append('fileType', fileType);
+      formData.append('fileInfo', fileInfo);
+      formData.append('fileName', fileName);
+      axios.post('/item/save/document',
+        formData,
+        {
+          headers:{
+            "Content-Type":'multipart/form-data'
+          }
+        }
+      ).then((resp)=>{
+        res(resp.data.body);
+      });
+    });
+}
+
+function dataURLtoBlob(dataurl: string): Blob {
+    const arr = dataurl.split(',');
+    const mime = (arr[0].match(/:(.*?);/) || [undefined, undefined])[1];
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new Blob([u8arr], {type: mime});
+  }

@@ -80,7 +80,7 @@ export class ConnectionService {
           config.data.itemList.forEach((item: TodoItem)=>{
             if(item.userDefined){
               item.userDefined.formControlSchema.fields?.forEach((field)=>{
-                
+                  
                 if(item.userDefined?.data){
                   if(field.type == 'image' || field.type == 'file' || field.type == 'iframe'){
                     let user = this.userService.loggedInUser.value;
@@ -271,7 +271,6 @@ export class ConnectionService {
           }
         }
       ).then((resp)=>{
-        console.log(resp);
         res(resp.data.body);
       });
     });
