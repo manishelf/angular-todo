@@ -42,8 +42,6 @@ axios.interceptors.request.use(async (config)=> {
     if(config.url === '/item/save' || config.url === '/item/update'){       
           config.data.itemList.forEach((item: TodoItem)=>{
             if(item.userDefined){
-                console.log(item.userDefined);
-                
               item.userDefined.formControlSchema.fields?.forEach((field)=>{
                     
                 if(item.userDefined?.data){
