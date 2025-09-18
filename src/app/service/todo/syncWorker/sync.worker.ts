@@ -75,8 +75,12 @@ axios.interceptors.request.use(async (config)=> {
         }
 
     config.headers.Authorization = 'Bearer '+ user.token;
-    config.data = JSON.stringify(config.data);
-    config.headers['Content-Type'] = 'application/json';
+    if(!(config.data instanceof FormData)){
+        config.data = JSON.stringify(config.data);
+    }
+    if(!config.headers['Content-Type']){
+        config.headers['Content-Type'] = 'application/json';
+    }
     config.url = (backendUrl||'')+config.url;
     config.withCredentials = true;
     
@@ -266,6 +270,8 @@ function  postFileToBackend(fileData: string, fileName: string, fileType: string
       formData.append('fileType', fileType);
       formData.append('fileInfo', fileInfo);
       formData.append('fileName', fileName);
+      console.log(formData);
+      
       axios.post('/item/save/document',
         formData,
         {
