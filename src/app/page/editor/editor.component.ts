@@ -90,6 +90,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
           let id = params['id'];
           let subject = params['subject'];
           id = Number.parseInt(id);
+          let noData = false;
           if(id){
             this.todoServie.getItemById(id).subscribe((item)=>{
               this.forEdit = id;
@@ -101,22 +102,29 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
               this.forEdit = item[0].id;
               this.todoItem = item[0];
             });
-          } 
+          } else {
+            noData = true;
+          }
+
+          if (navigation?.extras?.state) {
+            let itemForUpdate = navigation.extras.state['item'] as TodoItem;
+            this.queryParams = navigation.extras.state['query'];     
+            this.forEdit = itemForUpdate.id;
+            this.todoItem = itemForUpdate;
+            this.todoItem.description = this.todoItem.description.replace(
+              /<br>/g,
+              '\n'
+            );
+            this.customFormSchema = this.todoItem.userDefined?.formControlSchema;
+            this.customFormData = this.todoItem.userDefined?.data;
+            noData = false;
+          }
+
+          if(noData){
+            this.router.navigate(['/']);
+          }
         },100);
       });
-
-      if (navigation?.extras?.state) {
-        let itemForUpdate = navigation.extras.state['item'] as TodoItem;
-        this.queryParams = navigation.extras.state['query'];     
-        this.forEdit = itemForUpdate.id;
-        this.todoItem = itemForUpdate;
-        this.todoItem.description = this.todoItem.description.replace(
-          /<br>/g,
-          '\n'
-        );
-        this.customFormSchema = this.todoItem.userDefined?.formControlSchema;
-        this.customFormData = this.todoItem.userDefined?.data;
-      }
     }
   }
 
