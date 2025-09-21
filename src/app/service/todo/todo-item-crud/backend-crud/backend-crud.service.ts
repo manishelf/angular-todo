@@ -24,6 +24,8 @@ export class BackendCrudService implements OnDestroy{
   db: IDBDatabase | null = null;
   user: User | null = null;
 
+  refresh$ = new BehaviorSubject<boolean>(false);
+
   constructor(private toaster: ToastService, 
     private connectionService : ConnectionService, 
     private localUpdateService: TodoItemUpdateService,
@@ -107,12 +109,7 @@ export class BackendCrudService implements OnDestroy{
       done.pipe(debounceTime(100)).subscribe((s)=>{
         if(s){
           this.toaster.success('Synced items with backend!');
-          this.toaster.info('auto refresh in 5 seconds');
-          setTimeout(()=>{
-            let a = document.createElement('a');
-            a.href='/';
-            a.click();
-          },5000);
+          this.signalRefresh();
         }
       });
     }
@@ -170,6 +167,11 @@ export class BackendCrudService implements OnDestroy{
     }).catch((e)=>{
       console.log(e);
     });
+  }
+
+  signalRefresh(){
+    this.refresh$.next(true);
+    this.refresh$.next(false);
   }
 
   ngOnDestroy(): void {

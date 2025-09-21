@@ -5,7 +5,7 @@
             <mat-icon class="scale-200" >person_pin</mat-icon>
             <mat-icon class="absolute scale-70" style="top:-15px; right:-15px;">edit</mat-icon>
         </div>
-        <input type="file" #profilePicEle accept="image/png, image/jpeg" class="hidden" (change)="saveProfilePic($event)">
+        <input type="file" #profilePicEle accept="image/png, image/jpeg" class="hidden" (change)="savePic($event, 'profile')">
         <img [src]="profilePicDataUrl" class="w-10 absolute top-0 right-0 rounded-[40%]">
     </app-bean-item>
     <div class="flex flex-col p-10 gap-y-5">
@@ -13,7 +13,7 @@
             <label>Alias</label><input type="text" formControlName="alias">
         </div>
         <div>
-            <label>Update password</label><input type="password" formControlName="newPassword">
+            <label>Update password</label><input type="password" placeholder="*****" formControlName="newPassword">
         </div>
     </div>
     <div class="flex flex-col justify-center gap-y-6" *ngIf="isOwner">
@@ -21,10 +21,12 @@
         <div>
             <label>description &nbsp;&nbsp;&nbsp;</label><textarea class="outline-2 rounded-xl p-2"></textarea>
         </div>
-        <div class="flex justify-between">
+        <div class="flex justify-between relative">
             <label>Group banner</label>
-            <app-bean-item title="change group banner">
-                <mat-icon>people</mat-icon>
+            <app-bean-item title="change group banner" (click)="groupBannerPicEle.click()">
+                <mat-icon>people</mat-icon>        
+                <input type="file" #groupBannerPicEle accept="image/png, image/jpeg" class="hidden" (change)="savePic($event, 'groupBanner')">
+                <img [src]="groupBannerPicDataUrl" class="w-10 absolute top-0 right-0 rounded-[40%]">
             </app-bean-item>
         </div>
         <div>
@@ -36,5 +38,5 @@
     </div>
 </div>
 <div class="mt-2 flex items-center justify-center">
-    <button class="bg-blue-600 p-3 rounded-xl"><app-bean-item>Update</app-bean-item></button>
+    <button class="bg-blue-600 p-3 rounded-xl" (click)="updateUserDetails()"><app-bean-item>Update</app-bean-item></button>
 </div>

@@ -86,6 +86,12 @@ export class TodoServiceService implements OnDestroy {
       }
       this.todoItems.next(updatedList);        
     });
+
+    this.backendService.refresh$.subscribe((s)=>{
+      if(s){
+        this.initializeItems();
+      }
+    });
   }
 
 

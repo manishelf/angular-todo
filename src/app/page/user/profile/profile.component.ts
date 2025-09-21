@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { User } from '../../../models/User';
-import { UserService } from '../../../service/user/user.service';
+import { localUser, UserService } from '../../../service/user/user.service';
 import { MatIcon } from '@angular/material/icon';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -16,6 +16,7 @@ export class ProfileComponent implements OnInit{
 
   user!: User;
   profilePicDataUrl: string = '';
+  groupBannerPicDataUrl: string = ''
 
   form: FormGroup;
 
@@ -30,6 +31,8 @@ export class ProfileComponent implements OnInit{
 
     let passwordRegex = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{5,}$";
     formControls['newPassword'] = formBuilder.control('', Validators.pattern(passwordRegex));
+    formControls['confirmPassword'] = formBuilder.control('', Validators.pattern(passwordRegex));
+    formControls['existingPassword'] = formBuilder.control('', Validators.pattern(passwordRegex));
 
     this.form = formBuilder.group(formControls);
     
@@ -40,7 +43,6 @@ export class ProfileComponent implements OnInit{
       }else{
         this.profilePicDataUrl = '';
       }
-      this.form.setValue({'alias':user.alias, 'newPassword':'*****'});
       let payload = this.userService.getPayloadFromAccessToken();
       if(payload?.permissions.includes('UG_OWNER')){
         this.isOwner = true;
@@ -51,10 +53,9 @@ export class ProfileComponent implements OnInit{
   }
 
   ngOnInit():void{
-    
   }
 
-  saveProfilePic(event:Event){
+  savePic(event:Event, type: string){
     let ele = event.target as any;
     let file = ele.files[0];
     if(file){
@@ -62,8 +63,17 @@ export class ProfileComponent implements OnInit{
       reader.readAsDataURL(file);
       reader.onload = (e)=>{
         let url = e.target?.result;
-        this.profilePicDataUrl = url?.toString() || '';
+        let dataUrl = url?.toString() || '';
+        if(type == 'profile'){
+          this.profilePicDataUrl = dataUrl;
+        }else if(type == 'groupBanner'){
+          this.groupBannerPicDataUrl = dataUrl;
+        }
       }
     }
+  }
+
+  updateUserDetails(){
+
   }
 }
