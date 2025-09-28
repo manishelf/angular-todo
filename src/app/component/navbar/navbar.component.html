@@ -25,7 +25,7 @@
                     <mat-icon>cloud_download</mat-icon>
             </app-bean-item>
             <app-bean-item>
-                <select class="max-w-10 absolute top-0 right-0 w-10 h-10 cursor-pointer" (change)="updateTheme($event)">
+                <select class="max-w-10 absolute top-0 right-0 w-10 h-10 cursor-pointer z-3" (change)="updateTheme($event)">
                     <option>🎨</option>
                     <optgroup *ngFor="let categoryKey of getCategories()" [label]="categoryKey">
                         <option *ngFor="let theme of availableThemes[categoryKey]" [value]="theme">{{theme}}</option>

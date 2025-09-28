@@ -7,13 +7,17 @@ import { UserService , localUser} from './../user/user.service';
 import { Route, Router } from '@angular/router';
 import { TodoItem } from '../../models/todo-item';
 import { TodoItemUpdateService } from '../todo/todo-item-crud/local-crud/todo-item-update.service';
+import { SOC_OP } from './socket/socket.worker';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ConnectionService {
-  backendUrl: string = '';
 
+  backendUrl: string = '';
+  
+  socketWorkers: Map<string,Worker> = new Map();
+  
   private connected: BehaviorSubject<boolean> = new BehaviorSubject(false);
   connected$ = this.connected.asObservable();
 
@@ -34,13 +38,18 @@ export class ConnectionService {
             this.router.navigate(['/login']);
             return;
           }
-          setTimeout(()=>{ // allow the ui to render
+          requestAnimationFrame(()=>{ // allow the ui to render
             recentLogins = JSON.parse(recentLogins);
             recentLogins = Object.values(recentLogins);
             let lastUser = recentLogins.reverse()[0];
             this.userService.loggedInUser.next(lastUser);
-          }, 200);
-
+            
+            setTimeout(()=>{
+              this.getToken().then(token=>{
+                lastUser.token = token;
+                localStorage['recentLogins']= JSON.stringify(recentLogins);
+            })}, 100); // allow refresh
+          });
         }
       );
     }
@@ -55,25 +64,31 @@ export class ConnectionService {
       }
     });
     
-    this.userService.loggedInUser.subscribe((user)=>{
+    this.userService.loggedInUser.subscribe(async (user)=>{
       if(user.email == localUser.email && user.userGroup == localUser.userGroup){
         this.accessToken = ''; 
       }else{
         this.accessToken = user.token || '';
-      }      
+        await this.refreshTokenIfExpired();    
+
+        let payload = this.userService.getPayloadFromAccessToken();
+        
+        if(payload['user_group_colaboration'] && !this.socketWorkers.get(payload['user_group'])){
+          let wsWorker = new Worker(new URL('/socket/socket.worker.ts', import.meta.url));
+          wsWorker.postMessage({
+            op: SOC_OP.INIT,
+            target: { user, backendUrl: this.backendUrl}
+          });
+          this.socketWorkers.set(payload['user_group'], wsWorker);          
+        }           
+      }   
     });
 
     this.axios.interceptors.request.use(async (config)=> {
-      
-      
-      if(this.accessToken != '' && this.isTokenExpired(this.accessToken)
+            
+      if(this.accessToken != ''
         && !(config.url?.includes('/user/refresh') || config.url?.includes('/user/logout'))){
-      let resp = await this.axios.get('/user/refresh');
-      if(resp.status == 200){
-            this.accessToken = resp.data.accessToken;
-          }else{
-            this.logoutUser();
-          }
+          await this.refreshTokenIfExpired();
         }
         
         if(config.url === '/item/save' || config.url === '/item/update'){       
@@ -144,8 +159,13 @@ export class ConnectionService {
     );
 
     this.axios.interceptors.response.use((resp)=>{
-      if(resp.data)
-        resp.data = JSON.parse(resp.data);
+      if(resp.data){
+        try{
+          resp.data = JSON.parse(resp.data);
+        }catch {
+          // dont deserialize if not json
+        }
+      }
       if(resp.data.responseMessage){
         if(resp.status == 200)
         this.toaster.success(resp.data.responseMessage);
@@ -246,14 +266,14 @@ export class ConnectionService {
 
   dataURLtoBlob(dataurl: string): Blob {
     const arr = dataurl.split(',');
-    const mime = (arr[0].match(/:(.*?);/) || [undefined, undefined])[1];
+    const mime = arr[0].match(/:(.*?);/);
     const bstr = atob(arr[1]);
     let n = bstr.length;
     const u8arr = new Uint8Array(n);
     while (n--) {
       u8arr[n] = bstr.charCodeAt(n);
     }
-    return new Blob([u8arr], {type: mime});
+    return new Blob([u8arr], {type: mime?mime[1]:''});
   }
   
   postFileToBackend(fileData: string, fileName: string, fileType: string, fileInfo: string):Promise<string>{
@@ -273,6 +293,24 @@ export class ConnectionService {
       ).then((resp)=>{
         res(resp.data.body);
       });
+    });
+  }
+
+  async refreshTokenIfExpired(){
+    if(this.isTokenExpired(this.accessToken)){
+      let resp = await this.axios.get('/user/refresh');
+    if(resp.status == 200){
+        this.accessToken = resp.data.accessToken;
+        this.userService.loggedInUser.value.token = this.accessToken;
+      }else{
+        this.logoutUser();
+      }
+    }  
+  }
+
+  getToken(): Promise<String>{
+    return new Promise((res, rej)=>{
+      this.refreshTokenIfExpired().then(()=>res(this.accessToken));
     });
   }
 }

@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { UserService,localUser } from './../../service/user/user.service';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -7,6 +7,7 @@ import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, 
 import { ConnectionService } from '../../service/connection/connection.service';
 import { User } from '../../models/User';
 import { ToastService } from 'angular-toastify';
+import { preventDefault } from '@fullcalendar/core/internal';
 
 @Component({
   selector: 'app-login',
@@ -160,6 +161,13 @@ export class LoginComponent {
       let val = this.formGroup.value;
       val['usergroup']= usergroup;
       this.formGroup.setValue(val);
+    }
+  }
+
+  handleEnter(event: KeyboardEvent){
+    if(event.key == 'Enter'){
+      event.preventDefault();
+      this.onSubmitClick();
     }
   }
 

@@ -114,15 +114,17 @@ export class NavbarComponent implements AfterViewInit {
       }
     });
 
-    userService.loggedInUser$.subscribe((user)=>{
+    userService.loggedInUser$.subscribe(async (user)=>{
       this.user = user;
       
       if(this.user.profilePicture){
         if(this.user.profilePicture.startsWith('/item/doc/')){
-          this.userProfilePicture = this.connectionService.backendUrl+this.user.profilePicture;
+          this.userProfilePicture = this.connectionService.backendUrl+this.user.profilePicture + '?sessionToken='+await this.connectionService.getToken();
         }else{
           this.userProfilePicture = this.user.profilePicture;
         }
+      }else{
+        this.userProfilePicture = null;
       }
 
       let recentLogins = localStorage["recentLogins"];

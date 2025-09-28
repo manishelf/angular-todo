@@ -4,7 +4,7 @@ import { BehaviorSubject, debounceTime, take } from 'rxjs';
 import { localUser } from "../../user/user.service";
 import { TodoItem } from "../../../models/todo-item";
 import {v4} from 'uuid'
-export enum OP{
+export enum SYNC_OP{
     SYNC,
     INIT,
     MERGE,
@@ -17,6 +17,7 @@ export interface todoItemState{
 }
 
 export interface diffRequest{
+    partial: boolean,
     mergeItems: todoItemState[],
     deleteItems: todoItemState[]
 }
@@ -101,10 +102,10 @@ axios.interceptors.response.use((resp)=>{
 self.onmessage = (event)=>{
    let {op} = event.data;  
    switch(op){
-    case OP.INIT:
+    case SYNC_OP.INIT:
         handleInit(event.data);
         break;
-    case OP.MERGE:
+    case SYNC_OP.MERGE:
         handleMerge(event.data);
         break;
    } 
@@ -115,6 +116,8 @@ function handleInit(data: any){
     backendUrl = data.backendUrl;
 
     initializeIndexDB().then((db)=>{
+        console.log("SYNC start", Date.now());
+        
         getTodoItemFetchRequest().then((req)=>{
             
             if(!user || user?.email == localUser.email && user?.userGroup == localUser.userGroup) return;
@@ -122,43 +125,7 @@ function handleInit(data: any){
             axios.post('/item/getdiff',req)
             .then(resp=>{
                 if(resp.status == 200){
-                   let itemsForAdd = resp.data.itemsForAdd;
-                   let itemsForUpdate = resp.data.itemsForUpdate;
-                   let itemsForDelete = resp.data.itemsForDelete;
-                   let itemsForSync = resp.data.itemsForSync;
-
-                   let done = new BehaviorSubject<boolean>(false);
-                   let syncReq:TodoItem[] = [];
-                   itemsForSync.forEach((itemReq: todoItemState) => {
-                        getItemByUUID(itemReq.uuid).then((item)=>{
-                            syncReq.push(item);
-                            done.next(true);                        
-                        });
-                   });
-                   
-                   console.log(itemsForAdd, itemsForDelete, itemsForSync, itemsForUpdate);
-                   
-                   if(itemsForSync.length==0 && (itemsForAdd.length > 0 || itemsForUpdate.length > 0 || itemsForDelete.length > 0)){
-                    done.next(true);
-                   }
-
-                   done.pipe(debounceTime(100)).subscribe((s)=>{
-                     if(s){
-                        
-                        if(syncReq.length>0){
-                            axios.patch('/item/update',{
-                                itemList: syncReq
-                            });
-                        }
-
-                        self.postMessage({
-                            op: OP.MERGE,
-                            itemsForAdd,
-                            itemsForUpdate,
-                            itemsForDelete
-                        });
-                     }
-                   });
+                  mergeItems(resp.data) 
                 }
             }).catch(e=>{
                 console.error(e);
@@ -166,6 +133,61 @@ function handleInit(data: any){
             });
         }); 
     });
+}
+
+function mergeItems(data: any){
+    let itemsForAdd = data.itemsForAdd;
+    let itemsForUpdate = data.itemsForUpdate;
+    let itemsForDelete = data.itemsForDelete;
+    let itemsForSync = data.itemsForSync;
+
+    let done = new BehaviorSubject<boolean>(false);
+    let syncReq:TodoItem[] = [];
+    itemsForSync.forEach((itemReq: todoItemState) => {
+        getItemByUUID(itemReq.uuid).then((item)=>{
+            syncReq.push(item);
+            done.next(true);                        
+        });
+    });
+    
+    console.log(itemsForAdd, itemsForDelete, itemsForSync, itemsForUpdate);
+    
+    if(itemsForSync.length==0 && (itemsForAdd.length > 0 || itemsForUpdate.length > 0 || itemsForDelete.length > 0)){
+    done.next(true);
+    }
+
+    done.pipe(debounceTime(100)).subscribe((s)=>{
+        if(s){
+        if(syncReq.length>0){
+            axios.patch('/item/update',{
+                itemList: syncReq
+            });
+        }
+
+        const itemsForAddBuffer = serializeItemsToArrayBuffer(itemsForAdd);
+        const itemsForUpdateBuffer = serializeItemsToArrayBuffer(itemsForUpdate);
+        const itemsForDeleteBuffer = serializeItemsToArrayBuffer(itemsForDelete);
+        console.log("SYNC merge", Date.now());
+        
+        self.postMessage(
+        {
+            op: SYNC_OP.MERGE,
+            itemsForAdd: itemsForAddBuffer,
+            itemsForUpdate: itemsForUpdateBuffer,
+            itemsForDelete: itemsForDeleteBuffer,
+        },
+        {
+            transfer: [itemsForAddBuffer, itemsForUpdateBuffer, itemsForDeleteBuffer] // much more efficient in transfer
+        }
+        );
+        }
+    });
+}
+
+function serializeItemsToArrayBuffer(items: TodoItem[]): ArrayBuffer{
+    const jsonString = JSON.stringify(items);
+    const textEncoder = new TextEncoder();
+    return textEncoder.encode(jsonString).buffer;
 }
 
 function initializeIndexDB(): Promise<IDBDatabase>{ // the db cannot be shared accross threads!
@@ -184,46 +206,59 @@ function initializeIndexDB(): Promise<IDBDatabase>{ // the db cannot be shared a
 }
 
 function handleMerge(event: any){
-
+    console.log("merging sync");
+    
+    getTodoItemFetchRequest(1).then((diffRequest)=>{
+        axios.post('/item/getdiff', diffRequest).then((res)=>{
+            mergeItems(res.data);
+        });
+    })
 }
 
-function getTodoItemFetchRequest():Promise<diffRequest>{
+function getItemsStateFromStore(store: string, count: number): Promise<todoItemState[]>{
     return new Promise((res, rej)=>{
-        let cursorRequ = getObjectStoreRO('todo_items')
+        let cursorRequ = getObjectStoreRO(store)
                         .openCursor(null, 'prev');
-        let mergeItems:todoItemState[] = [];
-        let deleteItems: todoItemState[] = [];
+        let result:todoItemState[] = [];
         cursorRequ.onsuccess = (ev)=>{
-            const cursor = (ev.target as IDBRequest).result;
+            let cursor = (ev.target as IDBRequest).result;
             if(cursor){
-                mergeItems.push({
+                result.push({
                     uuid: cursor.value.uuid,
                     updationTimestamp: cursor.value.updationTimestamp,
                     version: cursor.value.version
                 });
-                cursor.continue();
-            }else{
-                cursorRequ = getObjectStoreRO('deleted_todo_items')
-                                .openCursor(null,'prev');
-                cursorRequ.onsuccess = (ev)=>{
-                    const delCursor = (ev.target as IDBRequest).result;
-                    if(cursor){
-                        deleteItems.push({
-                            uuid: cursor.value.uuid,
-                            updationTimestamp: cursor.value.updationTimestamp,
-                            version: cursor.value.version
-                        });
-                        delCursor.continue();
-                    }else{
-                        res({
-                            mergeItems,
-                            deleteItems
-                        });
-                    }
+
+                if(count === -1 || result.length < count){
+                    cursor.continue();
+                } else {
+                    res(result);
                 }
+            }else{
+                res(result);
             }
-        }
-        cursorRequ.onerror = e=>rej(e);
+        };
+        cursorRequ.onerror = rej;
+    });
+}
+
+function getTodoItemFetchRequest(count = -1):Promise<diffRequest>{
+    return new Promise((res, rej)=>{
+        let mergeItems:todoItemState[] = [];
+        let deleteItems: todoItemState[] = [];
+        getItemsStateFromStore('todo_items', count).then(items=>{
+            mergeItems = items;
+            let partial = !(count == -1);
+            getItemsStateFromStore('deleted_todo_items', count).then(items=>{
+                deleteItems = items;
+                res({
+                    partial,
+                    mergeItems,
+                    deleteItems
+                });
+            })
+        });
+          
     });
 }
 
@@ -270,7 +305,6 @@ function  postFileToBackend(fileData: string, fileName: string, fileType: string
       formData.append('fileType', fileType);
       formData.append('fileInfo', fileInfo);
       formData.append('fileName', fileName);
-      console.log(formData);
       
       axios.post('/item/save/document',
         formData,

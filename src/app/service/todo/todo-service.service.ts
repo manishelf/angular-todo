@@ -26,7 +26,6 @@ import { User } from '../../models/User';
 import { BackendCrudService } from './todo-item-crud/backend-crud/backend-crud.service';
 import { Tag } from '../../models/tag';
 import { SearchService } from '../search/search.service';
-import { OP } from './syncWorker/sync.worker';
 
 @Injectable({
   providedIn: 'root',

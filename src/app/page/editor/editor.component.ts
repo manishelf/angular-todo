@@ -583,7 +583,8 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
       this.todoServie.addItem(this.todoItem);
     }
 
-    if(this.router.lastSuccessfulNavigation?.finalUrl?.toString().includes('/home'))
+    let lastNav = this.router.lastSuccessfulNavigation?.finalUrl?.toString();
+    if(lastNav?.includes('/home'))
       this.router.navigate(['/home'], { queryParams: this.queryParams });
     else history.back();
   }
