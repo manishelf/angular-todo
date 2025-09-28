@@ -130,14 +130,11 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
 
 
   ngAfterViewInit(): void {
-    requestAnimationFrame(() => {
-      this.subjectTxt.nativeElement.focus();
-      this.subjectTxt.nativeElement.scrollIntoView();
-      this.onEventForResize();
-    })
     setTimeout(()=>{
+      this.subjectTxt.nativeElement.scrollIntoView();
       this.subjectTxt.nativeElement.focus();
-    },100); // requestAnimationFrame does not focus
+      this.onEventForResize()
+    },100); 
     this.convertedMarkdown = '';    
   }
 
