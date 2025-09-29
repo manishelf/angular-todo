@@ -94,6 +94,7 @@ export class CalendarComponent implements AfterViewInit{
                 }
               )
               if(this.calanderObj){
+                this.calanderObj.render();
                 this.forceFullCalendarResize();
               }
               successCallback(events);
@@ -101,7 +102,6 @@ export class CalendarComponent implements AfterViewInit{
           curr.events = events;
           return curr;
         });
-      this.calanderObj.render();
     });
   }
 
