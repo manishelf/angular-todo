@@ -227,7 +227,8 @@ export class CalendarComponent implements AfterViewInit{
         successCallback(events);
       };
       return curr;
-    })
+    });
+   this.calanderObj.render();
   }
 
   openItemInEditor(id: string){    
