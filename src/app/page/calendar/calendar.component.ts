@@ -101,6 +101,7 @@ export class CalendarComponent implements AfterViewInit{
           curr.events = events;
           return curr;
         });
+      this.calanderObj.render();
     });
   }
 
