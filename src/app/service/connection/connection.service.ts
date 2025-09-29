@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ToastService } from 'angular-toastify';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, last } from 'rxjs';
 
 import {Axios} from 'axios';
 import { UserService , localUser} from './../user/user.service';
@@ -33,23 +33,29 @@ export class ConnectionService {
       this.connectToBackend().then(
         (con)=>{
           if(!con) return;
-          let recentLogins = localStorage['recentLogins'];
-          if(recentLogins == 'null') {
+          let recentLoginsMap = localStorage['recentLogins'];
+          if(recentLoginsMap == 'null') {
             this.router.navigate(['/login']);
             return;
           }
-          requestAnimationFrame(()=>{ // allow the ui to render
-            recentLogins = JSON.parse(recentLogins);
-            recentLogins = Object.values(recentLogins);
-            let lastUser = recentLogins.reverse()[0];
+          requestAnimationFrame(()=>{ // allow the ui to render and token to refresh
+            recentLoginsMap = JSON.parse(recentLoginsMap);
+            let recentLoginsUsers: any = Object.values(recentLoginsMap);
+            let lastUser = recentLoginsUsers.reverse()[0];
+            
+            if(lastUser.email == localUser.email && lastUser.userGroup == localUser.userGroup)
+              return;
+
             this.userService.loggedInUser.next(lastUser);
             
-            setTimeout(()=>{
-              this.getToken().then(token=>{
+            this.getToken().then(token=>{
+              console.log(this.userService.getPayloadFromAccessToken());
+              if(token && token != ''){
                 lastUser.token = token;
-                localStorage['recentLogins']= JSON.stringify(recentLogins);
-            })}, 100); // allow refresh
-          });
+                localStorage['recentLogins']= JSON.stringify(recentLoginsMap);
+              }
+            })
+          }); 
         }
       );
     }
@@ -84,9 +90,8 @@ export class ConnectionService {
       }   
     });
 
-    this.axios.interceptors.request.use(async (config)=> {
-            
-      if(this.accessToken != ''
+    this.axios.interceptors.request.use(async (config)=> {        
+        if(this.accessToken != ''
         && !(config.url?.includes('/user/refresh') || config.url?.includes('/user/logout'))){
           await this.refreshTokenIfExpired();
         }

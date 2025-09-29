@@ -96,7 +96,7 @@ class ReconnectingWs{
   }
 
   private onclose(e: CloseEvent){
-    console.log("Disconnected ", e);
+    console.log("Disconnected ", e.wasClean, e.reason);
     
     if(!e.wasClean){
       this.reconnect = true;
@@ -121,8 +121,6 @@ class ReconnectingWs{
       if(this.messageQueue.length!=0){
         this.messageQueue.forEach((d)=>{
           this.send(d);
-          console.log(6);
-          
         });
         this.messageQueue = [];
       }

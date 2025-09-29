@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild, AfterViewChecked, HostListener } from '@angular/core';
+import { APP_BASE_HREF, CommonModule } from '@angular/common';
+import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild, AfterViewChecked, HostListener, Inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 
@@ -28,11 +28,15 @@ export class CanvasComponent implements AfterViewInit {
   fabricJsCanvas: any;
 
   history: any[] = [];
+
+  constructor(@Inject(APP_BASE_HREF) private baseHref: string){
+
+  }
   
   ngAfterViewInit(): void {
     if(!document.getElementById('fabricjs-script')){
       let script = document.createElement('script');
-      script.src = '/fabric.min.js';
+      script.src = APP_BASE_HREF+'fabric.min.js';
       script.id ='fabricjs-script'
       script.async = true;
       script.onload = ()=>{this.onLoadFabricJs()};

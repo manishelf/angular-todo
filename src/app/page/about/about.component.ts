@@ -28,7 +28,7 @@ export class AboutComponent implements OnInit, OnDestroy{
       this.swaggerConsoleUrl = connectionService.backendUrl+'/swagger-ui/index.html?sessionToken='+user?.token;
       this.h2ConsoleUrl = connectionService.backendUrl+'/qtodo-h2-console?sessionToken='+user?.token;
       let payload = this.userService.getPayloadFromAccessToken();
-      if(payload?.permissions.includes('SERVER_TOOLS')){
+      if(payload?.permissions.includes('SERVER_TOOLS') || payload?.roles.includes('ADMIN')){
         this.allowDevConsole = true;
       }else this.allowDevConsole = false;      
     });

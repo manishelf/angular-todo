@@ -1,14 +1,14 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
 import { FilterOrReduceService } from '../../service/filterOrReduce/filter-or-reduce.service';
 import { SortService } from '../../service/sort/sort.service';
 import { TodoServiceService } from '../../service/todo/todo-service.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TodoItem } from '../../models/todo-item';
-import { CommonModule } from '@angular/common';
+import { APP_BASE_HREF, CommonModule } from '@angular/common';
 import { BehaviorSubject, switchMap } from 'rxjs';
 import { MatIcon } from '@angular/material/icon';
 import { reduceToFields } from './helpers';
-import { drawBarChart, drawLineChart, drawPieChart, loadCharJS} from './charts';
+import { drawBarChart, drawLineChart, drawPieChart, loadChartJS, } from './charts';
 import { BeanItemComponent } from '../../component/bean-item/bean-item.component';
 
 declare var CanvasJS: any;
@@ -55,7 +55,8 @@ export class VisualizeComponent implements OnInit {
     private sortService: SortService,
     private todoService: TodoServiceService,
     private router: Router,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    @Inject(APP_BASE_HREF) private baseHref: string, 
   ) {
     
     this.sortedFields$.subscribe((sortOnfields) => {
@@ -69,7 +70,7 @@ export class VisualizeComponent implements OnInit {
       if(sortOnfields.includes("id")) this.sortedFields$.next([]);
     });
 
-    loadCharJS();
+    loadChartJS(baseHref+'canvasjs.min.js');
     this.subscribeCharts();
 
     this.selectedDataOperation$.subscribe((op)=>{

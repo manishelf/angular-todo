@@ -1,86 +1,88 @@
-import { Component, signal, ChangeDetectorRef, AfterViewInit, viewChild, ElementRef, ViewChild, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FullCalendarModule } from '@fullcalendar/angular';
-import {
-  CalendarOptions,
-  DateSelectArg,
-  EventClickArg,
-  EventApi,
-  EventInput,
-  EventAddArg,
-  EventRemoveArg,
-  EventChangeArg,
-} from '@fullcalendar/core';
-import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import timeGridPlugin from '@fullcalendar/timegrid';
-import listPlugin from '@fullcalendar/list';
+import { Component, signal, ChangeDetectorRef, AfterViewInit, viewChild, ElementRef, ViewChild, OnInit, Inject } from '@angular/core';
+import { APP_BASE_HREF, CommonModule } from '@angular/common';
 import { TodoServiceService } from '../../service/todo/todo-service.service';
 import { TodoItem } from '../../models/todo-item';
-import { Router, withDebugTracing } from '@angular/router';
+import { Router, TitleStrategy, withDebugTracing } from '@angular/router';
 import { Subscription } from 'rxjs';
 import {v4 as uuidv4} from 'uuid';
+import { ConnectionService } from '../../service/connection/connection.service';
+
+declare var FullCalendar: any;
 
 // example found at https://github.com/fullcalendar/fullcalendar-examples
 @Component({
   selector: 'app-calendar',
   standalone: true,
-  imports: [CommonModule, FullCalendarModule],
+  imports: [CommonModule],
   templateUrl: './calendar.component.html',
   styleUrl: './calendar.component.css',
 })
-export class CalendarComponent  implements OnInit{
+export class CalendarComponent implements AfterViewInit{
   
   calendarVisible = signal(true);
-  initialEvents: EventInput[] = [];
+  initialEvents: any = [];
   viewByUpdationTimestamp = signal(false);
   eventListVisible = signal(true);
   startResize = false;
   itemList: TodoItem[] = [];
 
-  @ViewChild('calanderContainer') calendarContainer!: ElementRef;
+  @ViewChild('calendarContainer') calendarContainer!: ElementRef;
   @ViewChild('panelContainer') panelContainer!: ElementRef;
 
-  calendarOptions = signal<CalendarOptions>({
-    plugins: [interactionPlugin, dayGridPlugin, timeGridPlugin, listPlugin],
-    headerToolbar: {
-      left: 'prev,next today',
-      center: 'title',
-      right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek',
-    },
-    initialView: 'dayGridMonth',
-    weekends: true,
-    editable: true,
-    selectable: true,
-    droppable: true,
-    selectMirror: true,
-    dayMaxEvents: true,
-    eventStartEditable: true,
-    longPressDelay: 100,
 
-    eventClick: this.handleEventClick.bind(this),
-    eventsSet: this.handleEvents.bind(this),
-    eventChange: this.handleEventChange.bind(this),
-    eventRemove: this.handleEventRemove.bind(this),
-    select: this.handleDateSelect.bind(this),
-    // adding click improves behaviour for phones but creates two events on pc.
-  });
-  currentEvents = signal<EventApi[]>([]);
+  calendarOptions: any = null; 
+
+  currentEvents = signal<any[]>([]);
+  
+  calanderObj: any;
 
   constructor(
     private changeDetector: ChangeDetectorRef,
     private todoService: TodoServiceService,
-    private router: Router
+    private router: Router,
+    @Inject(APP_BASE_HREF) private baseHref : string
   ) {
     this.todoService.fromBin = false;
+    if(!document.getElementById('fullcalander-script')){
+      let script = document.createElement('script');
+      script.src = baseHref+"fullcalendar.global.min.js";
+      script.id ='fullcalander-script';
+      script.async = true;
+      script.onload = this.afterScriptLoadInit.bind(this);
+      document.body.appendChild(script);
+    }
   }
 
-  ngOnInit(): void {
+  init(): void {
+    if(!this.calendarOptions){
+      this.calendarOptions = signal<any>({
+          headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek,multiMonthYear',
+          },
+          initialView: 'dayGridMonth',
+          weekends: true,
+          editable: true,
+          selectable: true,
+          droppable: true,
+          selectMirror: true,
+          dayMaxEvents: true,
+          eventStartEditable: true,
+          longPressDelay: 100,
+          eventClick: this.handleEventClick.bind(this),
+          eventsSet: this.handleEvents.bind(this),
+          eventChange: this.handleEventChange.bind(this),
+          eventRemove: this.handleEventRemove.bind(this),
+          select: this.handleDateSelect.bind(this),
+          // adding click improves behaviour for phones but creates two events on pc.
+        });
+      }
     this.todoService.todoItems$.subscribe((items)=>{
-      this.calendarOptions.update((curr)=>{
+      this.calendarOptions.update((curr:any)=>{
         let events = (fetchInfo: any, successCallback: any, failureCallback: any) => {
               this.itemList = items;
-              const events: EventInput[] = items.map((item) => {
+              const events: any[] = items.map((item) => {
                 return {
                     id: item.id.toString(),
                     title: item.subject,
@@ -91,7 +93,9 @@ export class CalendarComponent  implements OnInit{
                   }
                 }
               )
-              this.forceFullCalendarResize();
+              if(this.calanderObj){
+                this.forceFullCalendarResize();
+              }
               successCallback(events);
           }
           curr.events = events;
@@ -100,11 +104,20 @@ export class CalendarComponent  implements OnInit{
     });
   }
 
+  afterScriptLoadInit(): void {
+    this.init();    
+    let calander = new FullCalendar.Calendar(this.calendarContainer.nativeElement, this.calendarOptions());
+    calander.render();
+    this.calanderObj = calander;
+  }
+
+  ngAfterViewInit(): void {
+    this.afterScriptLoadInit();
+  }
+
   forceFullCalendarResize(){
-    //force view update for full calendar
-    this.handleWeekendsToggle();
     requestAnimationFrame(()=>{
-      this.handleWeekendsToggle();
+      this.calanderObj.updateSize();
     });
   }
 
@@ -113,7 +126,7 @@ export class CalendarComponent  implements OnInit{
   }
 
   handleWeekendsToggle() {
-    this.calendarOptions.update((options) =>{
+    this.calendarOptions.update((options: any) =>{
       options.weekends = !options.weekends;
       return options;
     });
@@ -157,7 +170,7 @@ export class CalendarComponent  implements OnInit{
     }
   }
 
-  handleEventClick(clickInfo: EventClickArg) {
+  handleEventClick(clickInfo: any) {
     this.todoService
       .getItemById(Number.parseInt(clickInfo.event.id))
       .subscribe((item) => {
@@ -168,7 +181,7 @@ export class CalendarComponent  implements OnInit{
   }
 
 
-  handleEventChange(changeInfo: EventChangeArg) {
+  handleEventChange(changeInfo: any) {
     const event = changeInfo.event;
     this.todoService.getItemById(Number(event.id)).subscribe((result) => {
       result.creationTimestamp = event.start
@@ -185,11 +198,11 @@ export class CalendarComponent  implements OnInit{
     });
   }
 
-  handleEventRemove(removeInfo: EventRemoveArg) {
+  handleEventRemove(removeInfo: any) {
     this.todoService.deleteItemById(Number(removeInfo.event.id));
   }
 
-  handleEvents(events: EventApi[]) {
+  handleEvents(events: any[]) {
     this.currentEvents.set(events);
     this.changeDetector.detectChanges();
   }
@@ -198,9 +211,9 @@ export class CalendarComponent  implements OnInit{
     
     this.viewByUpdationTimestamp.update(s=>!s);
 
-    this.calendarOptions.update((curr)=>{
-      curr.events=(fetchInfo, successCallback, failureCallback) => {
-        const events: EventInput[] = this.itemList.map((item) => {
+    this.calendarOptions.update((curr: any)=>{
+      curr.events=(fetchInfo: any, successCallback: any, failureCallback: any) => {
+        const events: any[] = this.itemList.map((item) => {
           return {
             id: item.id.toString(),
             title: item.subject,
@@ -227,6 +240,7 @@ export class CalendarComponent  implements OnInit{
 
   handleResize(event:MouseEvent){
   }
+
   toggleEventListVisible(){
     this.eventListVisible.update(cur=>!cur);
     this.forceFullCalendarResize();

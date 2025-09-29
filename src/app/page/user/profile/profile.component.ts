@@ -44,7 +44,7 @@ export class ProfileComponent implements OnInit{
         this.profilePicDataUrl = '';
       }
       let payload = this.userService.getPayloadFromAccessToken();
-      if(payload?.permissions.includes('UG_OWNER')){
+      if(payload?.roles.includes('UG_OWNER')){
         this.isOwner = true;
       }else{
         this.isOwner = false;

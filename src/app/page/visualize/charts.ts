@@ -4,11 +4,11 @@ declare var CanvasJS:any;
 // copy pasta from https://canvasjs.com/
 
 let canvasJsLoaded = false;
-export function loadCharJS(){
+export function loadChartJS(canvasUrl: string){
   if(canvasJsLoaded) return;
   
   let canvScr = document.createElement('script');
-  canvScr.src = '/canvasjs.min.js';
+  canvScr.src = canvasUrl;
   canvScr.async = true;
   canvScr.onerror = (e)=>{
     console.error('unable to load canvasjs!', e);

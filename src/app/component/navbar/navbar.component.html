@@ -8,7 +8,7 @@
         <div [ngClass]="menuHidden?'hidden':'visible'" class="flex">
             <div *ngIf="user != null || online" class="flex flex-row">
                 <select class="rounded p-1 m-1 max-w-30 overflow-ellipsis" (change)="changeCurrentUser($event)" tabindex="1">
-                    <option *ngFor="let recentUserEntry of recentLogins let i = index" [value]="i" [selected]="i == selectedUserIndex">{{recentUserEntry[0]}}</option>
+                    <option *ngFor="let recentUserEntry of recentLogins; let i = index" [value]="i" [selected]="i == selectedUserIndex">{{recentUserEntry[0]}}</option>
                 </select>
                 <app-bean-item routerLink="/user/profile">
                     <mat-icon>person_pin</mat-icon>
