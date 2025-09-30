@@ -1,14 +1,6 @@
 
 <div class='w-full flex flex-col md:flex-row h-full side-pannel overflow-auto md:overflow-hidden'>
   <div *ngIf='calendarVisible()' [ngClass]="calendarVisible()?'grow p-2 md:p-8':''"> 
-    <!-- <full-calendar [options]='calendarOptions()' class="h-full">
-      <ng-template #eventContent let-arg>
-        <div class="text-center">
-          <b>{{ arg.timeText }}&nbsp;</b>
-          <i>{{ arg.event.title }}</i>
-        </div>
-      </ng-template>
-    </full-calendar> -->
     <div #calendarContainer class="h-full w-full"></div>
     <footer class="w-full h-20"></footer>
   </div>

@@ -256,6 +256,13 @@ select {
   background-color: var(--todo-item-description-body-color);
 }
 
+ .fc-multimonth-singlecol .fc-multimonth-header{
+  background: var(--todo-item-body-color) !important;
+ }
+ .fc-multimonth-daygrid{
+  background: inherit !important;
+ }
+
 /*chartjs*/
 .canvasjs-chart-canvas{
     border: 1px dotted white !important;

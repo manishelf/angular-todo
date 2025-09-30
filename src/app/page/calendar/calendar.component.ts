@@ -50,6 +50,8 @@ export class CalendarComponent implements AfterViewInit{
       script.async = true;
       script.onload = this.afterScriptLoadInit.bind(this);
       document.body.appendChild(script);
+    }else{
+      requestAnimationFrame(this.afterScriptLoadInit.bind(this));
     }
   }
 
@@ -62,14 +64,22 @@ export class CalendarComponent implements AfterViewInit{
             right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek,multiMonthYear',
           },
           initialView: 'dayGridMonth',
+          businessHours: {
+            daysOfWeek: [ 1, 2, 3, 4 , 5], // Monday - Friday
+            startTime: '8:00', 
+            endTime: '18:00', 
+          },
           weekends: true,
           editable: true,
           selectable: true,
           droppable: true,
-          selectMirror: true,
+          // selectMirror: true,
           dayMaxEvents: true,
           eventStartEditable: true,
+          nowIndicator: true,
+          navLinks: true,
           longPressDelay: 100,
+          eventContent: this.customEventContent.bind(this),
           eventClick: this.handleEventClick.bind(this),
           eventsSet: this.handleEvents.bind(this),
           eventChange: this.handleEventChange.bind(this),
@@ -82,6 +92,15 @@ export class CalendarComponent implements AfterViewInit{
       this.calendarOptions.update((curr:any)=>{
         let events = (fetchInfo: any, successCallback: any, failureCallback: any) => {
               this.itemList = items;
+
+              this.itemList = this.itemList.sort((x,y)=>{
+                if(this.viewByUpdationTimestamp()){
+                  return new Date(x.updationTimestamp) < new Date(y.updationTimestamp) ? -1 : 1 ;
+                }else{
+                  return new Date(x.creationTimestamp) < new Date(y.creationTimestamp) ? 1 : -1;
+                }
+              });
+
               const events: any[] = items.map((item) => {
                 return {
                     id: item.id.toString(),
@@ -93,13 +112,12 @@ export class CalendarComponent implements AfterViewInit{
                   }
                 }
               )
-              if(this.calanderObj){
-                this.calanderObj.render();
-                this.forceFullCalendarResize();
-              }
               successCallback(events);
           }
           curr.events = events;
+          if(this.calanderObj){
+            this.calanderObj.setOption('events', events);
+          }
           return curr;
         });
     });
@@ -113,7 +131,19 @@ export class CalendarComponent implements AfterViewInit{
   }
 
   ngAfterViewInit(): void {
-    this.afterScriptLoadInit();
+    
+  }
+
+  customEventContent(eventInfo: any){    
+    let event = document.createElement('div');
+    event.classList.add('text-center');
+    let timeInfo = document.createElement('b');
+    timeInfo.innerHTML = eventInfo.timeText + '&nbsp;';
+    let eventSubject = document.createElement('i');
+    eventSubject.innerText = eventInfo.event.title;
+    event.appendChild(timeInfo);
+    event.appendChild(eventSubject);    
+    return {domNodes: [event]};
   }
 
   forceFullCalendarResize(){
@@ -124,11 +154,15 @@ export class CalendarComponent implements AfterViewInit{
 
   handleCalendarToggle() {
     this.calendarVisible.update((bool) => !bool);
+    if(this.calendarVisible()){
+      this.calanderObj.render();
+    }
   }
 
   handleWeekendsToggle() {
     this.calendarOptions.update((options: any) =>{
       options.weekends = !options.weekends;
+      this.calanderObj.setOption('weekends', options.weekends);
       return options;
     });
   }
@@ -158,16 +192,7 @@ export class CalendarComponent implements AfterViewInit{
         tags: [{ name: 'calendar event' }],
         eventFullDay: selectInfo.allDay,
       };
-      this.todoService.addItem(newTodoItem)
-      this.todoService.searchTodos(newTodoItem.subject).subscribe((item) => {
-       calendarApi.addEvent({
-          id: item[0].id,
-          title,
-          start: start,
-          end: end,
-          allDay: selectInfo.allDay,
-        });
-      });
+      this.todoService.addItem(newTodoItem);
     }
   }
 
@@ -224,20 +249,22 @@ export class CalendarComponent implements AfterViewInit{
             color: item.setForReminder?'orange':(item.completionStatus?'green':''),
           }
         });
+        this.itemList = this.itemList.sort((x,y)=>{
+          if(this.viewByUpdationTimestamp()){
+            return new Date(x.updationTimestamp) < new Date(y.updationTimestamp) ? -1 : 1 ;
+          }else{
+            return new Date(x.creationTimestamp) < new Date(y.creationTimestamp) ? 1 : -1;
+          }
+        });
         successCallback(events);
       };
+      this.calanderObj.setOption('events', curr.events);
       return curr;
     });
-   this.calanderObj.render();
   }
 
   openItemInEditor(id: string){    
     this.router.navigate(['/edit'],{queryParams:{id}});
-  }
-  
-  handleHideEventList(){
-    this.eventListVisible.update((cur)=>!cur); 
-    this.forceFullCalendarResize();
   }
 
   handleResize(event:MouseEvent){
@@ -245,6 +272,9 @@ export class CalendarComponent implements AfterViewInit{
 
   toggleEventListVisible(){
     this.eventListVisible.update(cur=>!cur);
+    if(!this.eventListVisible()){
+      this.calanderObj.render();
+    }
     this.forceFullCalendarResize();
   }
 }

@@ -7,7 +7,6 @@ import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, 
 import { ConnectionService } from '../../service/connection/connection.service';
 import { User } from '../../models/User';
 import { ToastService } from 'angular-toastify';
-import { preventDefault } from '@fullcalendar/core/internal';
 
 @Component({
   selector: 'app-login',
