@@ -1,5 +1,8 @@
-<div [formGroup]="form" class="flex flex-col flex-wrap md:max-h-100 items-center justify-center mt-4">
-    <h1>Hello {{user.alias}}!</h1>
+<div [formGroup]="form" class="flex flex-col relative flex-wrap md:max-h-100 items-center justify-center mt-8">
+    <div class="absolute top-0 right-center text-center">
+        <h1>Hello {{user.alias}}! </h1>
+        <u>[{{userRoles}}]</u>
+    </div>
     <app-bean-item class="mt-10" title="change profile picture" (click)="profilePicEle.click()">
         <div>
             <mat-icon class="scale-200" >person_pin</mat-icon>
@@ -22,12 +25,6 @@
             <label>description &nbsp;&nbsp;&nbsp;</label><textarea class="outline-2 rounded-xl p-2"></textarea>
         </div>
         <div class="flex justify-between relative">
-            <label>Group banner</label>
-            <app-bean-item title="change group banner" (click)="groupBannerPicEle.click()">
-                <mat-icon>people</mat-icon>        
-                <input type="file" #groupBannerPicEle accept="image/png, image/jpeg" class="hidden" (change)="savePic($event, 'groupBanner')">
-                <img [src]="groupBannerPicDataUrl" class="w-10 absolute top-0 right-0 rounded-[40%]">
-            </app-bean-item>
         </div>
         <div>
             <label>is open for joining</label><input type="checkbox">
@@ -39,4 +36,4 @@
 </div>
 <div class="mt-2 flex items-center justify-center">
     <button class="bg-blue-600 p-3 rounded-xl" (click)="updateUserDetails()"><app-bean-item>Update</app-bean-item></button>
-</div>
+</div> 

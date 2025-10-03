@@ -15,12 +15,11 @@ import { BeanItemComponent } from '../../../component/bean-item/bean-item.compon
 export class ProfileComponent implements OnInit{
 
   user!: User;
+  userRoles: string = '';
   profilePicDataUrl: string = '';
-  groupBannerPicDataUrl: string = ''
-
   form: FormGroup;
 
-  isOwner: boolean = false;
+  isOwner: boolean = true;
 
   constructor(private userService: UserService){
     
@@ -44,11 +43,13 @@ export class ProfileComponent implements OnInit{
         this.profilePicDataUrl = '';
       }
       let payload = this.userService.getPayloadFromAccessToken();
-      if(payload?.roles.includes('UG_OWNER')){
-        this.isOwner = true;
-      }else{
-        this.isOwner = false;
-      }
+      this.userRoles = payload.roles.sort().join(' , ');
+      console.log(payload)
+    //   if(payload?.roles.includes('UG_OWNER')){
+    //     this.isOwner = true;
+    //   }else{
+    //     this.isOwner = false;
+    //   }
     });
   }
 
@@ -66,8 +67,6 @@ export class ProfileComponent implements OnInit{
         let dataUrl = url?.toString() || '';
         if(type == 'profile'){
           this.profilePicDataUrl = dataUrl;
-        }else if(type == 'groupBanner'){
-          this.groupBannerPicDataUrl = dataUrl;
         }
       }
     }

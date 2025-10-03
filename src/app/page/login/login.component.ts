@@ -139,7 +139,7 @@ export class LoginComponent {
       recentLogins = JSON.parse(recentLogins);
       if(this.rememberMe){
         if(user.email && user.userGroup){
-          recentLogins[user.email+'/'+user.userGroup]=user;
+          recentLogins[user.userGroup+'/'+user.email]=user;
         } 
       }else{
         recentLogins['anon/anon']={email:'anon', userGroup:'anon'}
@@ -156,6 +156,11 @@ export class LoginComponent {
   addUserGroup(){
     let usergroup = (prompt('Enter your group title') || '');
     if(usergroup != ''){
+      if(usergroup.includes(' ')){
+        this.toaster.error("group name cannot contain spaces!");
+        this.toaster.info("please replace spaces with _ in the group name");
+        return;
+      }
       this.userGroupList.add(usergroup);
       let val = this.formGroup.value;
       val['usergroup']= usergroup;

@@ -38,24 +38,21 @@ export class ConnectionService {
             this.router.navigate(['/login']);
             return;
           }
-          requestAnimationFrame(()=>{ // allow the ui to render and token to refresh
-            recentLoginsMap = JSON.parse(recentLoginsMap);
-            let recentLoginsUsers: any = Object.values(recentLoginsMap);
-            let lastUser = recentLoginsUsers.reverse()[0];
-            
-            if(lastUser.email == localUser.email && lastUser.userGroup == localUser.userGroup)
-              return;
+          recentLoginsMap = JSON.parse(recentLoginsMap);
+          let lastUserKey = localStorage['lastLoggedInAs'];
+          let lastUser = recentLoginsMap[lastUserKey];
+          
+          if(lastUser.email == localUser.email && lastUser.userGroup == localUser.userGroup)
+            return;
 
-            this.userService.loggedInUser.next(lastUser);
-            
-            this.getToken().then(token=>{
-              console.log(this.userService.getPayloadFromAccessToken());
-              if(token && token != ''){
-                lastUser.token = token;
-                localStorage['recentLogins']= JSON.stringify(recentLoginsMap);
-              }
-            })
-          }); 
+          this.userService.loggedInUser.next(lastUser);
+          
+          this.getToken().then(token=>{
+            if(token && token != ''){
+              lastUser.token = token;
+              localStorage['recentLogins']= JSON.stringify(recentLoginsMap);
+            }
+          })
         }
       );
     }
@@ -87,10 +84,13 @@ export class ConnectionService {
           });
           this.socketWorkers.set(payload['user_group'], wsWorker);          
         }           
-      }   
+        localStorage['lastLoggedInAs'] = user.userGroup+'/'+user.email;        
+      } 
     });
 
     this.axios.interceptors.request.use(async (config)=> {        
+      console.log(userService.getPayloadFromAccessToken(), userService.loggedInUser.value);
+      
         if(this.accessToken != ''
         && !(config.url?.includes('/user/refresh') || config.url?.includes('/user/logout'))){
           await this.refreshTokenIfExpired();

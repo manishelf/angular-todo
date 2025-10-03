@@ -129,7 +129,7 @@ export class NavbarComponent implements AfterViewInit {
 
       let recentLogins = localStorage["recentLogins"];
       if(!recentLogins || recentLogins == 'null'){
-        recentLogins = `{"${localUser.email}/${localUser.userGroup}":${JSON.stringify(localUser)}}`;
+        recentLogins = `{"${localUser.userGroup}/${localUser.email}":${JSON.stringify(localUser)}}`;
       }
       
       recentLogins = JSON.parse(recentLogins);
@@ -141,7 +141,7 @@ export class NavbarComponent implements AfterViewInit {
 
       let i = 0;
       for(let e of this.recentLogins){
-        if(e[0] == user?.email+'/'+user?.userGroup){
+        if(e[0] == user?.userGroup+'/'+user?.email){
           this.selectedUserIndex = i;
           if(!e[1].preferences){
             const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -420,9 +420,9 @@ export class NavbarComponent implements AfterViewInit {
       usersMap = JSON.parse(users);
     }
     if(users && usersMap){
-     usersMap[user.email+'/'+user.userGroup] = user;
+     usersMap[user.userGroup+'/'+user.email] = user;
     }else {
-      let key = `${localUser.email}/${localUser.userGroup}`;
+      let key = `${localUser.userGroup}/${localUser.email}`;
       usersMap = { key:{
         email: localUser.email,
         userGroup: localUser.userGroup,
