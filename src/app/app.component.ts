@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit, Renderer2 } from '@angular/core';
+import { Component, HostListener, OnInit, Renderer2, AfterViewInit } from '@angular/core';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { NavbarComponent } from './component/navbar/navbar.component';
 import { SidebarComponent } from './component/sidebar/sidebar.component';
@@ -18,7 +18,7 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
-export class AppComponent{
+export class AppComponent implements AfterViewInit{
   title = 'angular-todo';
 
   constructor(private router : Router){
@@ -37,5 +37,8 @@ export class AppComponent{
       event.preventDefault();
       this.router.navigate(['/home']);
     }
+  }
+
+  ngAfterViewInit(){
   }
 }

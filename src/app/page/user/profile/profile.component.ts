@@ -57,6 +57,8 @@ export class ProfileComponent implements OnInit{
       }
       
       let payload = this.userService.getPayloadFromAccessToken();
+      if(!payload) return;
+
       this.userPermissions = payload.permissions.sort();
       let isUgOpen = payload['user_group_open'];
       let isUgColab = payload['user_group_colaboration'];
@@ -100,7 +102,6 @@ export class ProfileComponent implements OnInit{
 
   updateUserDetails(){    
     this.connectionService.axios.post('/user/update/usergroup/details',{
-      userGroupDescription: '',
       open: this.form.value.ugOpen,
       colaboration: this.form.value.ugColab
     });
