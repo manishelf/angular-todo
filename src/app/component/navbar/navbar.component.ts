@@ -114,12 +114,12 @@ export class NavbarComponent implements AfterViewInit {
       }
     });
 
-    userService.loggedInUser$.subscribe(async (user)=>{
+    userService.loggedInUser$.subscribe((user)=>{
       this.user = user;
       
       if(this.user.profilePicture){
         if(this.user.profilePicture.startsWith('/item/doc/')){
-          this.userProfilePicture = this.connectionService.backendUrl+this.user.profilePicture + '?sessionToken='+await this.connectionService.getToken();
+          this.connectionService.getUrlWithToken(this.user.profilePicture).then(url=>{this.userProfilePicture = url});
         }else{
           this.userProfilePicture = this.user.profilePicture;
         }

@@ -1,0 +1,20 @@
+<div class="border-1 rounded-xl m-2 relative">
+    <h3 class="text-center m-2 ">Group Participants</h3>
+    <div *ngIf="!minimized">
+        <div *ngFor="let user of userList" class="flex flex-row gap-2 items-center m-2">
+            <app-bean-item>
+                <img [src]="user.profilePicture" class="w-10 absolute top-0 right-0">
+                <mat-icon>person_pin</mat-icon>
+                <div *ngIf="isUgColab" class="absolute top-0 right-0" style="z-index:100;">
+                    <div class="p-0.5 rounded-xl" [title]="user.onlineInUg?'online':'offline'"
+                        [ngClass]="user.onlineInUg?'bg-green-600':'bg-gray-900'">
+                        {{user.onlineInUg? '✔': 'X'}}
+                    </div>
+                </div>
+            </app-bean-item>
+            <h3>{{user.email}}({{user.alias}})</h3>
+            <app-tag-list *ngIf="CAN_MANAGE_PARTICIPANT_PERMISSONS" [editable]="true" [names]="user.permissions || []" (onChange)="updatePermissionsForUser($event, user)"/>
+        </div>
+    </div>
+    <a class="absolute top-2 right-2 cursor-pointer" (click)="minimized = !minimized" title="minimize pannel">[ {{minimized?'v':'^'}} ]</a>
+</div>

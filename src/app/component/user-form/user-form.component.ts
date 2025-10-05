@@ -114,12 +114,12 @@ export class UserFormComponent implements OnChanges {
     if (this.data) {
       let data = new Map(Object.entries(this.data));
       if(this.schemaInternal){
-        this.schemaInternal?.fields?.forEach( async (field) => {
+        this.schemaInternal?.fields?.forEach((field) => {
           field.default = data.get(field.name) as string;
           let isFile= field.type == 'image' || field.type == 'file' || field.type == 'iframe';
 
           if( isFile && (typeof field.default) == "string" && field.default?.startsWith('/item/doc/')){
-            field.default = this.connectionService.backendUrl+field.default+'?sessionToken='+await this.connectionService.getToken();
+            this.connectionService.getUrlWithToken(field.default).then(url=>{field.default = url});
           }
           
           if(field.type == 'iframe'){

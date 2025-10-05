@@ -52,7 +52,7 @@ export class ConnectionService {
               lastUser.token = token;
               localStorage['recentLogins']= JSON.stringify(recentLoginsMap);
             }
-          })
+          });
         }
       );
     }
@@ -72,6 +72,7 @@ export class ConnectionService {
         this.accessToken = ''; 
       }else{
         this.accessToken = user.token || '';
+        
         await this.refreshTokenIfExpired();    
 
         let payload = this.userService.getPayloadFromAccessToken();
@@ -89,8 +90,7 @@ export class ConnectionService {
     });
 
     this.axios.interceptors.request.use(async (config)=> {        
-      console.log(userService.getPayloadFromAccessToken(), userService.loggedInUser.value);
-      
+       
         if(this.accessToken != ''
         && !(config.url?.includes('/user/refresh') || config.url?.includes('/user/logout'))){
           await this.refreshTokenIfExpired();
@@ -174,14 +174,12 @@ export class ConnectionService {
       if(resp.data.responseMessage){
         if(resp.status == 200)
         this.toaster.success(resp.data.responseMessage);
-        else if(resp.status == 400 || resp.status == 500){
+        else if(resp.status >= 400 && resp.status <= 500){
           if(resp.data.responseMessage.includes('Invalid JWT') && !resp.config.url?.includes('/user/logout')){
             this.logoutUser();
             this.userService.loginUser();
           }
           this.toaster.error(resp.data.responseMessage);
-        } else if(resp.status == 403){
-          this.toaster.error('403 -> forbidden')
         }else {
           this.toaster.warn(resp.data.responseMessage);
         }
@@ -317,5 +315,8 @@ export class ConnectionService {
     return new Promise((res, rej)=>{
       this.refreshTokenIfExpired().then(()=>res(this.accessToken));
     });
+  }
+  async getUrlWithToken(url: string){
+    return this.backendUrl+url+'?sessionToken='+await this.getToken();
   }
 }

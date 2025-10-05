@@ -1,9 +1,12 @@
+<div class="overflow-auto h-full">
 <div [formGroup]="form" class="flex flex-col relative flex-wrap md:max-h-100 items-center justify-center mt-8">
     <div class="absolute top-0 right-center text-center">
         <h1>Hello {{user.alias}}! </h1>
-        <u>[{{userRoles}}]</u>
+        <div class="underline cursor-pointer max-w-100" #permissionsContainer [title]="userPermissions.join(' , ')" (click)="permissionsContainer.innerHTML = userPermissions.join(' , ')">
+            Permissions
+        </div>
     </div>
-    <app-bean-item class="mt-10" title="change profile picture" (click)="profilePicEle.click()">
+    <app-bean-item class="mt-16" title="change profile picture" (click)="profilePicEle.click()">
         <div>
             <mat-icon class="scale-200" >person_pin</mat-icon>
             <mat-icon class="absolute scale-70" style="top:-15px; right:-15px;">edit</mat-icon>
@@ -19,21 +22,30 @@
             <label>Update password</label><input type="password" placeholder="*****" formControlName="newPassword">
         </div>
     </div>
-    <div class="flex flex-col justify-center gap-y-6" *ngIf="isOwner">
+    <div class="flex flex-col justify-center gap-y-6" *ngIf="CAN_CHANGE_UG_CONFIG">
         <h2 class="text-center text">User Group details</h2>
         <div>
-            <label>description &nbsp;&nbsp;&nbsp;</label><textarea class="outline-2 rounded-xl p-2"></textarea>
+            <label>description &nbsp;&nbsp;&nbsp;</label><textarea class="outline-2 rounded-xl p-2" formControlName="ugDescription"></textarea>
         </div>
         <div class="flex justify-between relative">
         </div>
         <div>
-            <label>is open for joining</label><input type="checkbox">
+            <label>is open for joining</label><input formControlName="ugOpen" type="checkbox">
         </div>
         <div>
-            <label>is colaboration</label><input type="checkbox">
+            <label>is colaboration</label><input formControlName="ugColab" type="checkbox">
         </div>
     </div>
+    </div> 
+    <app-manage-user-permissions 
+    [managePermissions]="CAN_MANAGE_PARTICIPANT_PERMISSIONS"
+    [addParticipants]="CAN_ADD_PARTICIPANT"
+    [deleteParticipants]="CAN_REMOVE_PARTICIPANT"
+    />
+    <div class="mt-2 flex items-center justify-center" (click)="updateUserDetails()">
+        <app-bean-item>
+            <button class="p-2" >Update</button>
+        </app-bean-item>
+    </div>
+    <footer class="h-20"></footer>
 </div>
-<div class="mt-2 flex items-center justify-center">
-    <button class="bg-blue-600 p-3 rounded-xl" (click)="updateUserDetails()"><app-bean-item>Update</app-bean-item></button>
-</div> 

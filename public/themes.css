@@ -52,7 +52,7 @@ html[data-theme="tokyo-night"] {
  --button-icon-background: #414868;
  --global-font-color: #c0caf5;
  --global-font-family: 'Inter', sans-serif;
- --global-font-size: 15px;
+ --global-font-size: 16px;
  --global-line-height: 1.5;
  --global-scrollbar-color: #414868 #1a1b26;
  --global-scrollbar-width: thin;
@@ -293,7 +293,7 @@ html[data-theme="tropical"] {
  --global-font-color: #333333;
  --global-font-family: 'Quicksand', sans-serif;
  --global-font-size: 16px;
- --global-line-height: 1.6;
+ --global-line-height: 1.5;
  --global-scrollbar-color: #80d8da #f4fcd9;
  --global-scrollbar-width: thin;
 }
@@ -323,7 +323,7 @@ html[data-theme="zen"] {
  --global-font-color: #555555;
  --global-font-family: 'Lora', serif;
  --global-font-size: 16px;
- --global-line-height: 1.7;
+ --global-line-height: 1.5;
  --global-scrollbar-color: #757471 #e5e5e0;
  --global-scrollbar-width: thin;
 }
@@ -352,7 +352,7 @@ html[data-theme="one-dark-pro"] {
  --button-icon-background: #3e4451;
  --global-font-color: #abb2bf;
  --global-font-family: 'JetBrains Mono', monospace;
- --global-font-size: 15px;
+ --global-font-size: 16px;
  --global-line-height: 1.5;
  --global-scrollbar-color: #61afef #282c34;
  --global-scrollbar-width: thin;
@@ -382,7 +382,7 @@ html[data-theme="dracula"] {
  --button-icon-background: #44475a;
  --global-font-color: #f8f8f2;
  --global-font-family: 'Roboto Mono', monospace;
- --global-font-size: 15px;
+ --global-font-size: 16px;
  --global-line-height: 1.5;
  --global-scrollbar-color: #bd93f9 #282a36;
  --global-scrollbar-width: thin;
@@ -442,8 +442,8 @@ html[data-theme="synthwave-84"] {
  --button-icon-background: #3e305e;
  --global-font-color: #fff4d2;
  --global-font-family: 'VT323', monospace;
- --global-font-size: 18px;
- --global-line-height: 1.2;
+ --global-font-size: 16px;
+ --global-line-height: 1.5;
  --global-scrollbar-color: #ff00a0 #2b213a;
  --global-scrollbar-width: thin;
 }
@@ -472,7 +472,7 @@ html[data-theme="monokai-pro"] {
  --button-icon-background: #413f47;
  --global-font-color: #fcfcfa;
  --global-font-family: 'JetBrains Mono', monospace;
- --global-font-size: 15px;
+ --global-font-size: 16px;
  --global-line-height: 1.5;
  --global-scrollbar-color: #fd971f #2d2a2e;
  --global-scrollbar-width: thin;
@@ -503,7 +503,7 @@ html[data-theme="academic"] {
  --global-font-color: #2e3440;
  --global-font-family: 'Georgia', 'Times New Roman', serif;
  --global-font-size: 16px;
- --global-line-height: 1.6;
+ --global-line-height: 1.5;
  --global-scrollbar-color: #4c566a #f5f5f5;
  --global-scrollbar-width: thin;
 }
@@ -532,7 +532,7 @@ html[data-theme="newspaper"] {
  --button-icon-background: #e0e0e0;
  --global-font-color: #212121;
  --global-font-family: 'Times New Roman', 'Georgia', serif;
- --global-font-size: 17px;
+ --global-font-size: 16px;
  --global-line-height: 1.5;
  --global-scrollbar-color: #d32f2f #212121;
  --global-scrollbar-width: thin;
@@ -562,8 +562,8 @@ html[data-theme="compact"] {
  --button-icon-background: #333034;
  --global-font-color: #f3f3f3;
  --global-font-family: 'JetBrains Mono', monospace;
- --global-font-size: 12px;
- --global-line-height: 1.2;
+ --global-font-size: 16px;
+ --global-line-height: 1.5;
  --global-scrollbar-color: #5d5a63 #1f1d1e;
  --global-scrollbar-width: thin;
 }

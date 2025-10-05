@@ -14,4 +14,8 @@ export interface User {
 	preferences? : {
 		theme: string,
 	}
+
+	permissions? : string[];
+
+	onlineInUg?: boolean;
 }

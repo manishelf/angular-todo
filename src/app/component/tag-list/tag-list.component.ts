@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, QueryList, SimpleChanges, ViewChild, ViewChildren } from '@angular/core';
 import { MatIcon } from '@angular/material/icon';
 import { Tag } from '../../models/tag';
 import { CommonModule } from '@angular/common';
@@ -11,9 +11,10 @@ import { TodoServiceService } from '../../service/todo/todo-service.service';
   templateUrl: './tag-list.component.html',
   styleUrl: './tag-list.component.css'
 })
-export class TagListComponent implements OnInit{
+export class TagListComponent implements OnInit, OnChanges{
 
-  @Input('tags') tagsList!: Tag[];
+  @Input('tags') tagsList: Tag[] = [];
+  @Input('names') names: string[] = [];
   @Input('editable') editable = false;
 
   @Output() onChange: EventEmitter<Tag[]> = new EventEmitter();
@@ -27,6 +28,12 @@ export class TagListComponent implements OnInit{
   }
 
   ngOnInit(): void {
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if(this.names.length>0){
+      this.names.forEach(name=>this.tagsList.push({name}));
+    }
   }
 
   updateState(item: Tag, tagInput: HTMLElement){

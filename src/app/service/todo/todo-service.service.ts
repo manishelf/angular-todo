@@ -220,7 +220,7 @@ export class TodoServiceService implements OnDestroy {
           let savedItem = item as any;
           savedItem.id = id;
           this.changedItem.next(savedItem);
-          this.toaster.success('item saved');
+          this.toaster.success('item saved localy');
         },
         (err)=>{
           this.toaster.error('error adding todo item!');
@@ -242,7 +242,7 @@ export class TodoServiceService implements OnDestroy {
 
   addCustom(tag: string, item: any) {
     this.addService.addCustom(this.db, tag, item,(suc)=>{
-      this.toaster.success('saved ' + tag);
+      this.toaster.success('saved ' + tag + ' localy');
     },
     (e)=>{
       this.toaster.error('error saving ' + tag);
@@ -274,7 +274,7 @@ export class TodoServiceService implements OnDestroy {
     this.backendService.updateItem(this.db, item);// order is important as subject can change
     this.updateService.updateItem(this.db, item, (suc)=>{
       this.changedItem.next(item);
-      this.toaster.success('todo item updated');
+      this.toaster.success('todo item updated localy');
     },(e)=>{
       this.toaster.error('error updating todo item');
       console.error('error updating todo item: ', e);
@@ -283,7 +283,7 @@ export class TodoServiceService implements OnDestroy {
 
   updateCustom(tag: string, item: any): void {
     this.updateService.updateCustom(this.db, tag, item, (suc)=>{
-      this.toaster.success('updated ' + tag);
+      this.toaster.success('updated ' + tag + ' localy');
     },(e)=>{
       this.toaster.error('error updating ' + tag);
       console.error('error updating ' + tag, e);
@@ -296,7 +296,7 @@ export class TodoServiceService implements OnDestroy {
       item.deleted = true;
       this.changedItem.next(item);
       this.backendService.deleteItem(item);
-      this.toaster.success('todo item deleted');
+      this.toaster.success('todo item deleted localy');
     } catch (e) {
       this.toaster.error('error deleting todo item');
       console.error('error deleting todo item: ', e);

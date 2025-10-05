@@ -136,6 +136,8 @@ function handleInit(data: any){
 }
 
 function mergeItems(data: any){
+    if(!data) return;
+
     let itemsForAdd = data.itemsForAdd;
     let itemsForUpdate = data.itemsForUpdate;
     let itemsForDelete = data.itemsForDelete;
@@ -149,11 +151,9 @@ function mergeItems(data: any){
             done.next(true);                        
         });
     });
-    
-    console.log(itemsForAdd, itemsForDelete, itemsForSync, itemsForUpdate);
-    
+        
     if(itemsForSync.length==0 && (itemsForAdd.length > 0 || itemsForUpdate.length > 0 || itemsForDelete.length > 0)){
-    done.next(true);
+        done.next(true);
     }
 
     done.pipe(debounceTime(100)).subscribe((s)=>{
