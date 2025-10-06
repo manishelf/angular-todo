@@ -48,7 +48,7 @@ export class ProfileComponent implements OnInit{
       this.user = user;
       if(user.profilePicture){
         if(user.profilePicture.startsWith('/item/doc/')){
-          this.connectionService.getUrlWithToken(user.profilePicture).then(url=>{this.profilePicDataUrl = url});
+          this.connectionService.getUrlWithToken(user.profilePicture).then(url=>this.profilePicDataUrl=url);
         }else{
           this.profilePicDataUrl = user.profilePicture;
         }

@@ -119,7 +119,10 @@ export class UserFormComponent implements OnChanges {
           let isFile= field.type == 'image' || field.type == 'file' || field.type == 'iframe';
 
           if( isFile && (typeof field.default) == "string" && field.default?.startsWith('/item/doc/')){
-            this.connectionService.getUrlWithToken(field.default).then(url=>{field.default = url});
+           this.connectionService.getUrlWithToken(field.default).then(url=>{
+            field.default = url;
+            this.createForm();
+           });
           }
           
           if(field.type == 'iframe'){

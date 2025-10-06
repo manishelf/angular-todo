@@ -291,7 +291,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
         this.leftIndentSpcaeCount-=1;
         if(this.leftIndentSpcaeCount<0) this.leftIndentSpcaeCount = 0;
       }
-      this.onEventForResize();
+      requestAnimationFrame(this.onEventForResize.bind(this));
     }
      else if (event.key === 's' && event.ctrlKey) {
       event.preventDefault();
@@ -741,7 +741,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
       }
     }
 
-    this.onEventForResize();
+    requestAnimationFrame(this.onEventForResize.bind(this));
     this.schemaEditingInProgress = true;
   }
 

@@ -311,11 +311,12 @@ export class ConnectionService {
     }  
   }
 
-  getToken(): Promise<String>{
+  getToken(): Promise<string>{
     return new Promise((res, rej)=>{
       this.refreshTokenIfExpired().then(()=>res(this.accessToken));
     });
   }
+
   async getUrlWithToken(url: string){
     return this.backendUrl+url+'?sessionToken='+await this.getToken();
   }

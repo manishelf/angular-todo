@@ -119,7 +119,7 @@ export class NavbarComponent implements AfterViewInit {
       
       if(this.user.profilePicture){
         if(this.user.profilePicture.startsWith('/item/doc/')){
-          this.connectionService.getUrlWithToken(this.user.profilePicture).then(url=>{this.userProfilePicture = url});
+          this.connectionService.getUrlWithToken(this.user.profilePicture).then(url=>this.userProfilePicture=url);
         }else{
           this.userProfilePicture = this.user.profilePicture;
         }
