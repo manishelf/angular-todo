@@ -395,7 +395,7 @@ export class TodoServiceService implements OnDestroy {
       errorList.push(err);
     };
 
-    for (let i = 1; i <= items?.length; i++) { // async as sync? wtf 
+    for (let i = 0; i <= items?.length; i++) { // async as sync? wtf 
       let item = items[i];
       
       if(!item) continue;

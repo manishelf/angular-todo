@@ -366,7 +366,7 @@ export class NavbarComponent implements AfterViewInit {
           if(jsonBuffer){
             this.todoService
             .deserializeManyFromJson(jsonBuffer.toString())
-            .subscribe((itemList) => {
+            .subscribe((itemList) => {              
               this.todoService.addMany(itemList);
             });
           }
