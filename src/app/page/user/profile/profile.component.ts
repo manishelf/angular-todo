@@ -65,9 +65,14 @@ export class ProfileComponent implements OnInit{
 
       this.form.setValue({alias: user.alias, 
         newPassword: '', ugDescription: '',
-         ugOpen: isUgOpen, ugColab: isUgColab});
+        ugOpen: isUgOpen, ugColab: isUgColab});
       
-
+      this.CAN_MANAGE_PARTICIPANT_PERMISSIONS = false;
+      this.CAN_ADD_PARTICIPANT = false;
+      this.CAN_CHANGE_UG_CONFIG = false;
+      this.CAN_REMOVE_PARTICIPANT = false;
+      this.CAN_ENABLE_DISABLE_UG = false;
+      
       if(this.userPermissions.includes('MANAGE_PARTICIPANT_PERMISSIONS'))
         this.CAN_MANAGE_PARTICIPANT_PERMISSIONS = true;
       if(this.userPermissions.includes('ENABLE_DISABLE_UG'))
