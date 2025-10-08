@@ -8,7 +8,8 @@
     border: none;
     outline: none;
     background: repeating-linear-gradient(
-        0deg,
+        180deg, /* this fixes issue for backspace not aligning the line with letters correctly
+         - the gradient is now drawn bottom to top thus aligning with the letters better*/
         var(--editor-desc-input-bg-color),
         var(--editor-desc-input-bg-color) calc(var(--global-line-height) * var(--global-font-size) - 1px),
         var(--editor-desc-input-line-color) calc(var(--global-line-height) * var(--global-font-size) - 1px),

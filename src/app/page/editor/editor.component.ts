@@ -291,7 +291,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
         this.leftIndentSpcaeCount-=1;
         if(this.leftIndentSpcaeCount<0) this.leftIndentSpcaeCount = 0;
       }
-      requestAnimationFrame(this.onEventForResize.bind(this));
+      this.onEventForResize();
     }
      else if (event.key === 's' && event.ctrlKey) {
       event.preventDefault();
@@ -389,10 +389,8 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
   
   onEventForResize(): void {
     if (this.descriptionArea) {
-      const descriptionArea = this.descriptionArea.nativeElement; 
-
+      const descriptionArea = this.descriptionArea.nativeElement;         
       descriptionArea.style.height = 'auto';
-      
       requestAnimationFrame(() => { // because setTimeout causes the text to jump up and down
         descriptionArea.style.height = descriptionArea.scrollHeight + 'px';  
       });

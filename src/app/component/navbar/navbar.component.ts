@@ -42,6 +42,8 @@ export class NavbarComponent implements AfterViewInit {
 
   userProfilePicture: string | null = null;
 
+  currentTheme: string = '';
+
   availableThemes: any = {
     "classic-professional": [
     "white",
@@ -396,6 +398,7 @@ export class NavbarComponent implements AfterViewInit {
 
   changeTheme(themeName: string){
     document.documentElement.setAttribute('data-theme', themeName);
+    this.currentTheme = themeName;    
   }
 
   updateTheme(event: Event){
@@ -432,6 +435,7 @@ export class NavbarComponent implements AfterViewInit {
       }}
     }
     localStorage['recentLogins']=JSON.stringify(usersMap);
+    this.currentTheme = sel; // wierd bug where the theme name does not change on selection
     target.selectedIndex = 0;
   }
 

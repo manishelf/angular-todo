@@ -173,7 +173,7 @@ export class ConnectionService {
       }
       if(resp.data.responseMessage){
         if(resp.status == 200)
-        this.toaster.success(resp.data.responseMessage);
+        this.toaster.warn(resp.data.responseMessage);
         else if(resp.status >= 400 && resp.status <= 500){
           if(resp.data.responseMessage.includes('Invalid JWT') && !resp.config.url?.includes('/user/logout')){
             this.logoutUser();
