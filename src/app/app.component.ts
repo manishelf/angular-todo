@@ -25,8 +25,6 @@ export class AppComponent implements AfterViewInit, AfterViewChecked{
 
   gol: GameOfLife | null = null;
 
-  gameSleepTimer:number = -1;
-
   constructor(private router : Router){
   }
 
@@ -82,24 +80,6 @@ export class AppComponent implements AfterViewInit, AfterViewChecked{
   setGameClearFrame(state: boolean){
     if(this.gol)
     this.gol.clearBackground = state;
-    if(this.gameSleepTimer != -1){
-      clearTimeout(this.gameSleepTimer)  
-    }else{
-      this.startGame();
-    }
-    this.gameSleepTimer = setTimeout(()=>{
-      this.gameSleep();
-    }, 1000*60*2); // 2 min
-  }
-
-  gameSleep(){
-    this.gol?.pause();
-    this.gameSleepTimer = -1;
-  }
-
-  startGame(){
-    if(this.gol)
-    this.gol.start();
   }
 }
 
