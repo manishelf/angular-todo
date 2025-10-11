@@ -1,14 +1,9 @@
 import { BehaviorSubject, debounceTime, Subscription } from "rxjs";
 
 export class GameOfLife {
-  constructor(private canvas: HTMLCanvasElement){
-    
-    const rect = canvas.getBoundingClientRect();
-    const newWidth = rect.width;
-    const newHeight = rect.height;
-
-    canvas.width = newWidth;
-    canvas.height = newHeight;
+  constructor(private canvas: HTMLCanvasElement){ 
+    window.addEventListener('resize', this.resizeCanvas.bind(this));
+    this.resizeCanvas();
 
     // canvas.onclick = this.toggleCellStart.bind(this);
     // canvas.onmousemove = this.toggleCell.bind(this); 
@@ -28,12 +23,13 @@ export class GameOfLife {
   }
   
   GAME_CONFiG = {
-    CELL_SIZE: 10,
+    CELL_SIZE: 5,
     STROKE_COLOR: 'BLACK',
     CELL_COLOR: 'GREEN',
-    GAME_BACKGROUND: '#FFFA',
+    GAME_BACKGROUND: '#FFF9',
     CELL_SEED_CUTOFF: 0.85,
-    FRAME_DELTA: 150,
+    FRAME_DELTA: 50,
+    ALPHA: 0.1, 
   }
 
   gameGrid$: BehaviorSubject<boolean[][]>= new BehaviorSubject([[true,false]]);
@@ -50,6 +46,8 @@ export class GameOfLife {
 
   subscription!: Subscription;
 
+  clearBackground = true;
+
   pause(){
     this.paused = true;
     this.subscription.unsubscribe();
@@ -59,14 +57,21 @@ export class GameOfLife {
     let ctx = this.canvas.getContext('2d');
     if(!ctx) return;
     
+    ctx.globalAlpha = this.GAME_CONFiG.ALPHA;
+
     let gameGrid = this.newGrid(this.canvas.width, this.canvas.height);
     
     this.gameGrid$.next(gameGrid);
     
     this.subscription = this.gameGrid$.pipe(debounceTime(this.GAME_CONFiG.FRAME_DELTA)).subscribe(gameGrid=>{      
-      this.drawBackground(ctx, this.canvas.width, this.canvas.height); 
-      this.drawGrid(ctx, gameGrid, this.canvas.width, this.canvas.height);
-      this.updateGrid(ctx, gameGrid, this.canvas.width, this.canvas.height);
+      try{
+        this.drawBackground(ctx, this.canvas.width, this.canvas.height); 
+        this.drawGrid(ctx, gameGrid, this.canvas.width, this.canvas.height);
+        this.updateGrid(ctx, gameGrid, this.canvas.width, this.canvas.height);
+      }catch {
+        this.clear();
+        this.start();
+      }
     });
   }
 
@@ -110,8 +115,9 @@ export class GameOfLife {
     ctx.lineWidth = 1;
     ctx.strokeStyle = this.GAME_CONFiG.STROKE_COLOR;
     ctx.fillStyle = this.GAME_CONFiG.GAME_BACKGROUND; 
-
     
+    if(this.clearBackground) ctx.clearRect(0,0,width,height);
+
     ctx.fillRect(0,0, width, height);
     
     if(!this.drawGridLines) return;
@@ -215,4 +221,16 @@ export class GameOfLife {
   getInCell(pixels: number){
     return Math.floor(pixels/this.GAME_CONFiG.CELL_SIZE);
   } 
+
+  resizeCanvas(){
+    const rect = this.canvas.getBoundingClientRect();
+    const newWidth = rect.width;
+    const newHeight = rect.height;
+
+    this.canvas.width = newWidth;
+    this.canvas.height = newHeight;
+    
+    let newGrid = this.newGrid(this.canvas.width, this.canvas.height);
+    this.gameGrid$.next(newGrid);
+  }
 }

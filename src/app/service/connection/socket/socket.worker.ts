@@ -64,8 +64,6 @@ class ReconnectingWs{
   }
 
   connect(){
-    console.log("connecting");
-    console.log(this.url);
     this.socket = new WebSocket(this.url);
     this.socket.onerror = (e)=>{console.error(e); this.handleError(e)};
     this.socket.onopen = (e)=>{this.onopen(e)};
@@ -81,7 +79,7 @@ class ReconnectingWs{
     const data = e.data;
     const arrayBuffer = await data.arrayBuffer();
     const uint8Array = new Uint8Array(arrayBuffer);
-        
+
     let message = await decodeProtoBuff(uint8Array);
     console.log("Sock got",message);
     

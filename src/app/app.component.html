@@ -1,14 +1,14 @@
-<div class="flex flex-col h-full overflow-clip">
+<div class="flex flex-col h-full overflow-clip" >
     <app-navbar></app-navbar>
-    <div class="flex flex-col sm:flex-row h-full min-h-full">
+    <div class="flex flex-col sm:flex-row h-full min-h-full"(focusin)="setGameClearFrame(true)" (focusout)="setGameClearFrame(false)">
         <div class="flex-1/12 md:max-w-20">
             <app-sidebar></app-sidebar>
         </div>
         <div class="flex-11/12 relative h-full page overflow-hidden pb-10">
-                <div class="relative h-full w-full ">
+                <div class="relative h-full w-full z-3">
                     <router-outlet></router-outlet>
                 </div>
-                <!-- <canvas #backgroundCanvas class="absolute top-0 left-0 w-full h-full"></canvas> -->
+                <canvas #backgroundCanvas class="absolute top-0 left-0 w-full h-full z-1"></canvas>
         </div>
     </div>
 </div>

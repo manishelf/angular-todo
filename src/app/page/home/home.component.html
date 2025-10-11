@@ -1,4 +1,4 @@
-<div tabindex="1"  class="h-full overflow-y-auto justify-center pt-2">
+<div tabindex="1"  class="h-full overflow-y-auto justify-center">
     <div class="w-full flex flex-col justify-center" *ngIf="fromBin">
         <div class="mb-8">
             <span class="block text-center text-3xl font-semibold text-amber-600 m-4">
@@ -8,6 +8,7 @@
         </div>
     </div>
     <cdk-virtual-scroll-viewport itemSize="autosize" class="h-full">
+        <header class="m-2"></header>
         <div class="flex flex-row flex-wrap">
         <div tabindex="0" (keydown)="onKeyDownTodoItem($event, todoItem)" 
         (click)="onClickTodoItem($event, todoItem)" 

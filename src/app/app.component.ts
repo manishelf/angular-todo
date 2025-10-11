@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit, Renderer2, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, HostListener, OnInit, Renderer2, AfterViewInit, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { NavbarComponent } from './component/navbar/navbar.component';
 import { SidebarComponent } from './component/sidebar/sidebar.component';
@@ -18,10 +18,14 @@ import { GameOfLife } from './GameOfLife';
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
-export class AppComponent implements AfterViewInit{
+export class AppComponent implements AfterViewInit, AfterViewChecked{
   title = 'angular-todo';
 
-  // @ViewChild('backgroundCanvas') backgroundCanvasEle!: ElementRef;
+  @ViewChild('backgroundCanvas') backgroundCanvasEle!: ElementRef;
+
+  gol: GameOfLife | null = null;
+
+  gameSleepTimer:number = -1;
 
   constructor(private router : Router){
   }
@@ -42,9 +46,60 @@ export class AppComponent implements AfterViewInit{
   }
 
   ngAfterViewInit(){
-    // let canvas: HTMLCanvasElement = this.backgroundCanvasEle.nativeElement;
-    // let gol = new GameOfLife(canvas);
-    // gol.start();
+    let canvas: HTMLCanvasElement = this.backgroundCanvasEle.nativeElement;
+    this.gol = new GameOfLife(canvas); 
+    this.gol.start();
+  }
+
+  ngAfterViewChecked(): void {
+    this.themeGames(); 
+  }
+
+  themeGames(){
+    let currentTheme = getComputedStyle(document.documentElement);   
+    let GAME_BACKGROUND = currentTheme.getPropertyValue('--game-background');
+    let GAME_STROKE_COLOR = currentTheme.getPropertyValue('--game-stroke-color');
+    let GAME_CELL_SEED_CUTOFF = currentTheme.getPropertyValue('--game-cell-seed-cutoff');
+    let GAME_CELL_SIZE = currentTheme.getPropertyValue('--game-cell-size');
+    let GAME_CELL_COLOR = currentTheme.getPropertyValue('--game-cell-color');
+    let GAME_FRAME_DELTA = currentTheme.getPropertyValue('--game-frame-delta');
+    let GAME_CLEAR_FRAME_EVERY = currentTheme.getPropertyPriority('--game-frame-clear-every');
+    let GAME_DRAW_GRID_LINES = currentTheme.getPropertyPriority('--game-draw-grid-lines');
+
+    if(this.gol){
+      this.gol.GAME_CONFiG.CELL_COLOR = GAME_CELL_COLOR;
+      this.gol.GAME_CONFiG.CELL_SEED_CUTOFF = Number.parseFloat(GAME_CELL_SEED_CUTOFF);
+      this.gol.GAME_CONFiG.CELL_SIZE = Number.parseFloat(GAME_CELL_SIZE);
+      this.gol.GAME_CONFiG.FRAME_DELTA = Number.parseFloat(GAME_FRAME_DELTA);
+      this.gol.GAME_CONFiG.GAME_BACKGROUND = GAME_BACKGROUND;
+      this.gol.GAME_CONFiG.STROKE_COLOR = GAME_STROKE_COLOR;
+      this.gol.drawGridLines = GAME_DRAW_GRID_LINES === 'Y';
+
+      let clearBackgroundIn = Number.parseInt(GAME_CLEAR_FRAME_EVERY) * Number.parseFloat(GAME_CLEAR_FRAME_EVERY);
+    }
+  }
+
+  setGameClearFrame(state: boolean){
+    if(this.gol)
+    this.gol.clearBackground = state;
+    if(this.gameSleepTimer != -1){
+      clearTimeout(this.gameSleepTimer)  
+    }else{
+      this.startGame();
+    }
+    this.gameSleepTimer = setTimeout(()=>{
+      this.gameSleep();
+    }, 1000*60*2); // 2 min
+  }
+
+  gameSleep(){
+    this.gol?.pause();
+    this.gameSleepTimer = -1;
+  }
+
+  startGame(){
+    if(this.gol)
+    this.gol.start();
   }
 }
 
