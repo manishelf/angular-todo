@@ -81,8 +81,7 @@ class ReconnectingWs{
     const data = e.data;
     const arrayBuffer = await data.arrayBuffer();
     const uint8Array = new Uint8Array(arrayBuffer);
-    console.log(arrayBuffer);
-    
+        
     let message = await decodeProtoBuff(uint8Array);
     console.log("Sock got",message);
     
@@ -117,7 +116,6 @@ class ReconnectingWs{
   send(d: any){
     const message = MessageProto.create(d);
     const buffer = MessageProto.encode(message).finish();
-    console.log(this.socket?.readyState);
     if(this.socket?.readyState == WebSocket.OPEN){
       this.socket?.send(buffer);
       console.log("Socket send ", d);
