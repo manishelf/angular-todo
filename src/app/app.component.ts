@@ -1,10 +1,10 @@
-import { Component, HostListener, OnInit, Renderer2, AfterViewInit } from '@angular/core';
+import { Component, HostListener, OnInit, Renderer2, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { NavbarComponent } from './component/navbar/navbar.component';
 import { SidebarComponent } from './component/sidebar/sidebar.component';
 import { AngularToastifyModule } from 'angular-toastify';
-import { filter } from 'rxjs';
 import { ScrollingModule } from '@angular/cdk/scrolling';
+import { GameOfLife } from './GameOfLife';
 
 @Component({
   selector: 'app-root',
@@ -20,6 +20,8 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 })
 export class AppComponent implements AfterViewInit{
   title = 'angular-todo';
+
+  // @ViewChild('backgroundCanvas') backgroundCanvasEle!: ElementRef;
 
   constructor(private router : Router){
   }
@@ -40,5 +42,10 @@ export class AppComponent implements AfterViewInit{
   }
 
   ngAfterViewInit(){
+    // let canvas: HTMLCanvasElement = this.backgroundCanvasEle.nativeElement;
+    // let gol = new GameOfLife(canvas);
+    // gol.start();
   }
 }
+
+

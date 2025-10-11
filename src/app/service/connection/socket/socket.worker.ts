@@ -64,6 +64,8 @@ class ReconnectingWs{
   }
 
   connect(){
+    console.log("connecting");
+    console.log(this.url);
     this.socket = new WebSocket(this.url);
     this.socket.onerror = (e)=>{console.error(e); this.handleError(e)};
     this.socket.onopen = (e)=>{this.onopen(e)};
@@ -79,6 +81,7 @@ class ReconnectingWs{
     const data = e.data;
     const arrayBuffer = await data.arrayBuffer();
     const uint8Array = new Uint8Array(arrayBuffer);
+    console.log(arrayBuffer);
     
     let message = await decodeProtoBuff(uint8Array);
     console.log("Sock got",message);
@@ -114,6 +117,7 @@ class ReconnectingWs{
   send(d: any){
     const message = MessageProto.create(d);
     const buffer = MessageProto.encode(message).finish();
+    console.log(this.socket?.readyState);
     if(this.socket?.readyState == WebSocket.OPEN){
       this.socket?.send(buffer);
       console.log("Socket send ", d);
@@ -133,10 +137,21 @@ class ReconnectingWs{
 function decodeProtoBuff(buffer: Uint8Array): Promise<any>{
   return new Promise(async (res, rej)=>{
     if(!protobufRoot){
-      protobufRoot = await protobuf.load(backendUrl+'/proto/sock_message.proto');      
+      const currentOrigin = self.location.href.split('/').slice(0, 3).join('/');
+      // bug / function of protobufjs where if the url is same as current origin 
+      // then the http root is removed and the url is treated as relative
+      // ie malformed url is created
+      let path = '';
+      if (backendUrl === currentOrigin) {
+        path = '/proto/sock_message.proto';
+      } else {
+        path = backendUrl + '/proto/sock_message.proto';
+      }
+
+      protobufRoot = await protobuf.load(path);      
       MessageProto = protobufRoot.lookupType('MessageProto');
     }
-    let err = MessageProto.verify(buffer);
+    let err = true && MessageProto.verify(buffer);
     
     if(err){
       rej(err); 
