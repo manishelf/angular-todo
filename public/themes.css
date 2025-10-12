@@ -1,4 +1,4 @@
-:root {
+html[data-theme="normal"] {
   --page-bg-color: rgb(61, 72, 89);
   --navbar-bg-color: rgb(76, 87, 103);
   --navbar-searchbox-bg-color: white;
@@ -30,7 +30,7 @@
   --game-cell-size: 10;
   --game-stroke-color: #0e2794;
   --game-cell-color: #2d0101;
-  --game-background: #4d4e61;
+  --game-background: #1c2331; 
   --game-cell-seed-cutoff: 0.85;
   --game-frame-delta: 150;
   --game-frame-clear-every: 10;
@@ -99,8 +99,7 @@ html[data-theme="neon"] {
   --button-icon-color: #00ffcc;
   --button-icon-background: #444444;
   --global-font-color: #00ffcc;
-  /* --global-font-family: 'Orbitron', sans-serif; */
-  --global-font-family: "Monoton", sans-serif; /* Changed to a Google Font for Neon */
+  --global-font-family: "Monoton", sans-serif;
   --global-font-size: 16px;
   --global-line-height: 1.5;
   --global-scrollbar-color: #ff00ff #000000;
@@ -109,7 +108,7 @@ html[data-theme="neon"] {
   --game-cell-size: 7;
   --game-stroke-color: #ff00ff;
   --game-cell-color: #00ffcc;
-  --game-background: #000000;
+  --game-background: #0a0a0a;
   --game-cell-seed-cutoff: 0.9;
   --game-frame-delta: 80;
   --game-frame-clear-every: 10;
@@ -178,7 +177,6 @@ html[data-theme="hacker"] {
   --button-icon-color: #00ff00;
   --button-icon-background: #1a1a1a;
   --global-font-color: #00ff00;
-  /* --global-font-family: 'Space Mono', monospace; */
   --global-font-family: "Anonymous Pro", monospace;
   --global-font-size: 16px;
   --global-line-height: 1.5;
@@ -188,7 +186,7 @@ html[data-theme="hacker"] {
   --game-cell-size: 4;
   --game-stroke-color: #00ff00;
   --game-cell-color: #ffff00;
-  --game-background: #000000;
+  --game-background: #050505; 
   --game-cell-seed-cutoff: 0.95;
   --game-frame-delta: 50;
   --game-frame-clear-every: 10;
@@ -232,7 +230,6 @@ html[data-theme="sunny"] {
   --game-frame-delta: 200;
   --game-frame-clear-every: 10;
   --game-draw-grid-lines: "Y";
-
 }
 
 html[data-theme="minimal"] {
@@ -272,7 +269,6 @@ html[data-theme="minimal"] {
   --game-frame-delta: 300;
   --game-frame-clear-every: 10;
   --game-draw-grid-lines: "Y";
-
 }
 
 html[data-theme="white"] {
@@ -312,7 +308,6 @@ html[data-theme="white"] {
   --game-frame-delta: 150;
   --game-frame-clear-every: 10;
   --game-draw-grid-lines: "Y";
-
 }
 
 html[data-theme="lime"] {
@@ -347,12 +342,11 @@ html[data-theme="lime"] {
   --game-cell-size: 5;
   --game-stroke-color: #c8ff00;
   --game-cell-color: #00e600;
-  --game-background: #1a1a1a;
+  --game-background: #101010;
   --game-cell-seed-cutoff: 0.85;
   --game-frame-delta: 100;
   --game-frame-clear-every: 10;
   --game-draw-grid-lines: "Y";
-
 }
 
 html[data-theme="tropical"] {
@@ -378,7 +372,6 @@ html[data-theme="tropical"] {
   --button-icon-color: #333333;
   --button-icon-background: #c2e9e8;
   --global-font-color: #333333;
-  /* --global-font-family: 'Quicksand', sans-serif; */
   --global-font-family: "Original Surfer", sans-serif;
   --global-font-size: 16px;
   --global-line-height: 1.5;
@@ -393,7 +386,6 @@ html[data-theme="tropical"] {
   --game-frame-delta: 180;
   --game-frame-clear-every: 10;
   --game-draw-grid-lines: "Y";
-  
 }
 
 html[data-theme="zen"] {
@@ -419,7 +411,6 @@ html[data-theme="zen"] {
   --button-icon-color: #555555;
   --button-icon-background: #e5e5e0;
   --global-font-color: #555555;
-  /* --global-font-family: 'Lora', serif; */
   --global-font-family: "Zen Antique", serif;
   --global-font-size: 16px;
   --global-line-height: 1.5;
@@ -434,7 +425,6 @@ html[data-theme="zen"] {
   --game-frame-delta: 400;
   --game-frame-clear-every: 10;
   --game-draw-grid-lines: "Y";
-  
 }
 
 html[data-theme="one-dark-pro"] {
@@ -469,12 +459,11 @@ html[data-theme="one-dark-pro"] {
   --game-cell-size: 5;
   --game-stroke-color: #4b5263;
   --game-cell-color: #98c379;
-  --game-background: #282c34;
+  --game-background: #1c2025;
   --game-cell-seed-cutoff: 0.9;
   --game-frame-delta: 120;
   --game-frame-clear-every: 10;
   --game-draw-grid-lines: "Y";
-  
 }
 
 html[data-theme="dracula"] {
@@ -509,12 +498,11 @@ html[data-theme="dracula"] {
   --game-cell-size: 5;
   --game-stroke-color: #6272a4;
   --game-cell-color: #50fa7b;
-  --game-background: #282a36;
+  --game-background: #1c1d25;
   --game-cell-seed-cutoff: 0.85;
   --game-frame-delta: 110;
   --game-frame-clear-every: 10;
   --game-draw-grid-lines: "Y";
-  
 }
 
 html[data-theme="nord"] {
@@ -549,12 +537,11 @@ html[data-theme="nord"] {
   --game-cell-size: 7;
   --game-stroke-color: #4c566a;
   --game-cell-color: #81a1c1;
-  --game-background: #2e3440;
+  --game-background: #242a34;
   --game-cell-seed-cutoff: 0.8;
   --game-frame-delta: 130;
   --game-frame-clear-every: 10;
   --game-draw-grid-lines: "Y";
-  
 }
 
 html[data-theme="synthwave-84"] {
@@ -580,7 +567,6 @@ html[data-theme="synthwave-84"] {
   --button-icon-color: #fff4d2;
   --button-icon-background: #3e305e;
   --global-font-color: #fff4d2;
-  /* --global-font-family: 'VT323', monospace; */
   --global-font-family: "Press Start 2P", monospace;
   --global-font-size: 16px;
   --global-line-height: 1.5;
@@ -590,12 +576,11 @@ html[data-theme="synthwave-84"] {
   --game-cell-size: 12;
   --game-stroke-color: #ff00a0;
   --game-cell-color: #08f7fe;
-  --game-background: #2b213a;
+  --game-background: #1d1727;
   --game-cell-seed-cutoff: 0.95;
   --game-frame-delta: 60;
   --game-frame-clear-every: 10;
   --game-draw-grid-lines: "Y";
-  
 }
 
 html[data-theme="monokai-pro"] {
@@ -630,12 +615,11 @@ html[data-theme="monokai-pro"] {
   --game-cell-size: 5;
   --game-stroke-color: #58545b;
   --game-cell-color: #a6e22e;
-  --game-background: #2d2a2e;
+  --game-background: #242226; 
   --game-cell-seed-cutoff: 0.85;
   --game-frame-delta: 120;
   --game-frame-clear-every: 10;
   --game-draw-grid-lines: "Y";
-  
 }
 
 html[data-theme="academic"] {
@@ -661,7 +645,6 @@ html[data-theme="academic"] {
   --button-icon-color: #2e3440;
   --button-icon-background: #d8dee9;
   --global-font-color: #2e3440;
-  /* --global-font-family: 'Georgia', 'Times New Roman', serif; */
   --global-font-family: "Libre Baskerville", serif;
   --global-font-size: 16px;
   --global-line-height: 1.5;
@@ -676,7 +659,6 @@ html[data-theme="academic"] {
   --game-frame-delta: 350;
   --game-frame-clear-every: 10;
   --game-draw-grid-lines: "Y";
-  
 }
 
 html[data-theme="newspaper"] {
@@ -702,7 +684,6 @@ html[data-theme="newspaper"] {
   --button-icon-color: #212121;
   --button-icon-background: #e0e0e0;
   --global-font-color: #212121;
-  /* --global-font-family: 'Times New Roman', 'Georgia', serif; */
   --global-font-family: "Old Standard TT", serif;
   --global-font-size: 16px;
   --global-line-height: 1.5;
@@ -717,12 +698,11 @@ html[data-theme="newspaper"] {
   --game-frame-delta: 250;
   --game-frame-clear-every: 10;
   --game-draw-grid-lines: "Y";
-  
 }
 
 html[data-theme="compact"] {
   --page-bg-color: #1f1d1e;
-  --navbar-bg-color: #2a282b;
+  --navbar-bg-color: #3a282b;
   --navbar-searchbox-bg-color: #4a474c;
   --navbar-searchbox-text-color: #f3f3f3;
   --navbar-icon-bg-color: #5d5a63;
@@ -752,12 +732,11 @@ html[data-theme="compact"] {
   --game-cell-size: 3;
   --game-stroke-color: #5d5a63;
   --game-cell-color: #2ecc71;
-  --game-background: #1f1d1e;
+  --game-background: #100f10; 
   --game-cell-seed-cutoff: 0.9;
   --game-frame-delta: 80;
   --game-frame-clear-every: 10;
   --game-draw-grid-lines: "Y";
-  
 }
 
 ::view-transition-old(body) {

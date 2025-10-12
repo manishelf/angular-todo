@@ -5,6 +5,7 @@ nav{
 input[type="search"]{
     background: var(--navbar-searchbox-bg-color);
     color: var(--navbar-searchbox-text-color);
+    font-size: calc(var(--global-font-size) * 1.3) !important;
 }
 
 .icon-link{

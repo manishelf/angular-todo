@@ -75,6 +75,9 @@ export class NavbarComponent implements AfterViewInit {
     "synthwave-84",
     "hacker",
     "neon"
+    ],
+    "random":[
+      "random"
     ]
   };
   
@@ -146,12 +149,13 @@ export class NavbarComponent implements AfterViewInit {
         if(e[0] == user?.userGroup+'/'+user?.email){
           this.selectedUserIndex = i;
           if(!e[1].preferences){
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            if(prefersDark){
-              this.changeTheme('tokyo-night');
-            }else{
-              this.changeTheme('minimal');
-            }
+            // const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            // if(prefersDark){
+            //   this.changeTheme('tokyo-night');
+            // }else{
+            //   this.changeTheme('minimal');
+            // }
+            this.changeTheme('random');
           }else{
             this.changeTheme(e[1].preferences.theme);
           }
@@ -397,6 +401,14 @@ export class NavbarComponent implements AfterViewInit {
   }
 
   changeTheme(themeName: string){
+    if(themeName === 'random'){
+      const allThemes = Object.values(this.availableThemes)
+        .flat()
+        .filter(name => name !== 'random');
+      const randomIndex = Math.floor(Math.random() * allThemes.length);
+      themeName = allThemes[randomIndex] as string;
+    }
+    
     document.documentElement.setAttribute('data-theme', themeName);
     this.currentTheme = themeName;    
   }

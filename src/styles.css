@@ -15,28 +15,35 @@ body {
 
 /* manual styling as tailwind overrides*/
 h1 {
-  @apply text-3xl font-bold;
+  font-size: calc(var(--global-font-size) * 1.875) !important;
+  font-weight: bold;
 }
 
 h2 {
-  @apply text-2xl font-bold;
+  font-size: calc(var(--global-font-size) * 1.5) !important;
+  font-weight: bold;
 }
 
 h3 {
-  @apply text-xl font-bold;
+  font-size: calc(var(--global-font-size) * 1.25) !important;
+  font-weight: bold;
 }
 
 h4 {
-  @apply text-lg font-bold;
+  font-size: calc(var(--global-font-size) * 1.125) !important;
+  font-weight: bold;
 }
 
 h5 {
-  @apply text-base font-bold;
+  font-size: var(--global-font-size) !important;
+  font-weight: bold;
 }
 
 h6 {
-  @apply text-sm font-bold;
+  font-size: calc(var(--global-font-size) * 0.875) !important; 
+  font-weight: bold;
 }
+
 
 p {
   @apply text-base whitespace-pre-wrap mb-3;

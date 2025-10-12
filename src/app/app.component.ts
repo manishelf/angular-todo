@@ -4,7 +4,8 @@ import { NavbarComponent } from './component/navbar/navbar.component';
 import { SidebarComponent } from './component/sidebar/sidebar.component';
 import { AngularToastifyModule } from 'angular-toastify';
 import { ScrollingModule } from '@angular/cdk/scrolling';
-import { GameOfLife } from './GameOfLife';
+import { GameOfLife } from './game/GameOfLife';
+import { GameBoard } from './game/GameBoard';
 
 @Component({
   selector: 'app-root',
@@ -18,12 +19,12 @@ import { GameOfLife } from './GameOfLife';
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
-export class AppComponent implements AfterViewInit, AfterViewChecked{
+export class AppComponent implements AfterViewInit{
   title = 'angular-todo';
 
   @ViewChild('backgroundCanvas') backgroundCanvasEle!: ElementRef;
 
-  gol: GameOfLife | null = null;
+  gameBoard: GameBoard | null = null;
 
   constructor(private router : Router){
   }
@@ -45,12 +46,12 @@ export class AppComponent implements AfterViewInit, AfterViewChecked{
 
   ngAfterViewInit(){
     let canvas: HTMLCanvasElement = this.backgroundCanvasEle.nativeElement;
-    this.gol = new GameOfLife(canvas); 
-    this.gol.start();
-  }
-
-  ngAfterViewChecked(): void {
-    this.themeGames(); 
+    this.gameBoard = new GameBoard(canvas); 
+    this.themeGames();
+    this.gameBoard.startGame(new GameOfLife());
+    setInterval(()=>{
+      this.themeGames();
+    }, 500);
   }
 
   themeGames(){
@@ -64,22 +65,29 @@ export class AppComponent implements AfterViewInit, AfterViewChecked{
     let GAME_CLEAR_FRAME_EVERY = currentTheme.getPropertyPriority('--game-frame-clear-every');
     let GAME_DRAW_GRID_LINES = currentTheme.getPropertyPriority('--game-draw-grid-lines');
 
-    if(this.gol){
-      this.gol.GAME_CONFiG.CELL_COLOR = GAME_CELL_COLOR;
-      this.gol.GAME_CONFiG.CELL_SEED_CUTOFF = Number.parseFloat(GAME_CELL_SEED_CUTOFF);
-      this.gol.GAME_CONFiG.CELL_SIZE = Number.parseFloat(GAME_CELL_SIZE);
-      this.gol.GAME_CONFiG.FRAME_DELTA = Number.parseFloat(GAME_FRAME_DELTA);
-      this.gol.GAME_CONFiG.GAME_BACKGROUND = GAME_BACKGROUND;
-      this.gol.GAME_CONFiG.STROKE_COLOR = GAME_STROKE_COLOR;
-      this.gol.drawGridLines = GAME_DRAW_GRID_LINES === 'Y';
-
-      let clearBackgroundIn = Number.parseInt(GAME_CLEAR_FRAME_EVERY) * Number.parseFloat(GAME_CLEAR_FRAME_EVERY);
+    if(this.gameBoard){
+      this.gameBoard.GAME_CONFiG.CELL_COLOR = GAME_CELL_COLOR;
+      this.gameBoard.GAME_CONFiG.CELL_SEED_CUTOFF = Number.parseFloat(GAME_CELL_SEED_CUTOFF);
+      
+      let lastCellSize = this.gameBoard.GAME_CONFiG.CELL_SIZE;
+      this.gameBoard.GAME_CONFiG.CELL_SIZE = Number.parseFloat(GAME_CELL_SIZE);
+      if(lastCellSize != this.gameBoard.GAME_CONFiG.CELL_SIZE){
+        this.gameBoard.resizeCanvas(); // so that canvas is drawn based on cell size
+      }
+      
+      this.gameBoard.GAME_CONFiG.FRAME_DELTA = Number.parseFloat(GAME_FRAME_DELTA);
+      this.gameBoard.GAME_CONFiG.GAME_BACKGROUND = GAME_BACKGROUND;
+      this.gameBoard.GAME_CONFiG.STROKE_COLOR = GAME_STROKE_COLOR;
+      this.gameBoard.drawGridLines = GAME_DRAW_GRID_LINES === 'Y';
+      
+      let clearBackgroundIn = Number.parseInt(GAME_CLEAR_FRAME_EVERY) * Number.parseFloat(GAME_FRAME_DELTA);
+      
     }
   }
 
   setGameClearFrame(state: boolean){
-    if(this.gol)
-    this.gol.clearBackground = state;
+    if(this.gameBoard)
+      this.gameBoard.clearBackground = state;
   }
 }
 

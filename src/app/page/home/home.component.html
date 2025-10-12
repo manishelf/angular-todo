@@ -14,9 +14,8 @@
         (click)="onClickTodoItem($event, todoItem)" 
          focus="this.style.float='top'"
         *cdkVirtualFor="let todoItem of itemList$ | async; let i = index; trackBy: trackById" [id]="i"  
-        class="flex-auto max-w-full w-fit h-fit mx-2 my-1 rounded-2xl focus:outline-2 hover:outline-2 hover:shadow-lg
-         shadow-gray-50 outline-offset-2 outline-white transition-all animate-focus
-         ">
+        class="flex-auto relative max-w-full w-fit h-fit mx-2 my-1 rounded-2xl focus:outline-2 hover:outline-2 hover:shadow-lg
+         outline-offset-2 shadow-colored transition-all animate-focus">
             <app-todo-item [item]="todoItem" [fromBin]="fromBin" [minimized]="!fromSearch  || (i>1)"/>
         </div>
         </div>

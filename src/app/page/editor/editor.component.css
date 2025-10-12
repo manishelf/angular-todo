@@ -69,6 +69,7 @@ button:hover {
 }
 .editor-subject-input{
     background: var(--editor-subject-input-bg-color);
+    font-size: calc(var(--global-font-size) * 1.875) !important; /* h1 */
 }
 .markdown-container{
     background:var(--editor-desc-input-bg-color);

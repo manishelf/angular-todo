@@ -1,7 +1,7 @@
-<div class="max-w-full overflow-clip overflow-ellipsis item-container rounded-2xl animate-flip shadow-md" [title]="toolTipString">
+<div class="max-w-full overflow-clip overflow-ellipsis item-container rounded-2xl animate-flip" [title]="toolTipString">
     <div [class]="`${borderColour} flex flex-row rounded-2xl justify-between p-2 border-1 border-e-2 border-s-2`">
-        <div class="flex-grow-1 text-2xl overflow-hidden cursor-pointer animate-flip" title="edit">
-            <div class="border-0 border-b-1 w-fit">{{item.subject}}</div> 
+        <div class="flex-grow-1 overflow-hidden cursor-pointer animate-flip" title="edit">
+            <h2 class="border-0 border-b-1 w-fit">{{item.subject}}</h2> 
         </div>
         <div class="flex flex-shrink-0">
             <mat-icon (click)="optionsDisplayed=!optionsDisplayed" class="cursor-pointer hover:scale-120 option" title="options">
