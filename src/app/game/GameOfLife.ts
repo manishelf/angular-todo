@@ -7,7 +7,7 @@ export class GameOfLife implements Game {
   paused = false;
 
   config! : GameConfig;
-  
+
   pause(){
     this.paused = true;
     this.state = 'PAUSED';
@@ -26,7 +26,7 @@ export class GameOfLife implements Game {
   init(width: number, height: number, config: GameConfig): boolean[][]{
     let gameGrid = [];
     this.config = config;
-    
+
     for(let i = 0 ; i< height ; i++){
       let row = new Array(width);
       for(let j = 0; j< width; j++){
@@ -43,12 +43,12 @@ export class GameOfLife implements Game {
     let gridHeight = lastGameGrid.length;
     let gridWidth = lastGameGrid[0].length;
     for (let i = 0; i < gridHeight; i++) {
-        let row  = new Array(gridHeight);
+        let row  = new Array(gridWidth);
         newGameGrid.push(row);
         for (let j = 0; j < gridWidth; j++) {
           const currState = lastGameGrid[i][j];
           const neighbors = this.countNeighbors(lastGameGrid, i, j);
-          let newState = currState; 
+          let newState = currState;
           //https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life
           if (currState) {
             // Rule 1 & 3: Death by underpopulation (< 2) or overpopulation (> 3)
@@ -68,14 +68,14 @@ export class GameOfLife implements Game {
           newGameGrid[i][j] = newState;
         }
     }
-    
+
     if(!stateInFlow) this.pause();
 
-    return newGameGrid;  
+    return newGameGrid;
   }
 
   countNeighbors(gameGrid:boolean[][], row: number, col: number) {
-    let count = 0;    
+    let count = 0;
     for (let i = -1; i <= 1; i++) {
         for (let j = -1; j <= 1; j++) {
             const r = row + i;

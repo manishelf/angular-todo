@@ -34,7 +34,7 @@ export class AppComponent implements AfterViewInit{
     let target = (event.target as HTMLElement);
     if(target.id === 'editor-subject-input') return;
     else if(target.id === 'editor-description-input') return; // ignore incase of the editor as it has its own handling
-    
+
     if(event.key === '[' && event.ctrlKey){
       event.preventDefault();
       this.router.navigate(['/create']);
@@ -46,7 +46,7 @@ export class AppComponent implements AfterViewInit{
 
   ngAfterViewInit(){
     let canvas: HTMLCanvasElement = this.backgroundCanvasEle.nativeElement;
-    this.gameBoard = new GameBoard(canvas); 
+    this.gameBoard = new GameBoard(canvas);
     this.themeGames();
     this.gameBoard.startGame(new GameOfLife());
     setInterval(()=>{
@@ -55,7 +55,7 @@ export class AppComponent implements AfterViewInit{
   }
 
   themeGames(){
-    let currentTheme = getComputedStyle(document.documentElement);   
+    let currentTheme = getComputedStyle(document.documentElement);
     let GAME_BACKGROUND = currentTheme.getPropertyValue('--game-background');
     let GAME_STROKE_COLOR = currentTheme.getPropertyValue('--game-stroke-color');
     let GAME_CELL_SEED_CUTOFF = currentTheme.getPropertyValue('--game-cell-seed-cutoff');
@@ -66,22 +66,22 @@ export class AppComponent implements AfterViewInit{
     let GAME_DRAW_GRID_LINES = currentTheme.getPropertyPriority('--game-draw-grid-lines');
 
     if(this.gameBoard){
-      this.gameBoard.GAME_CONFiG.CELL_COLOR = GAME_CELL_COLOR;
-      this.gameBoard.GAME_CONFiG.CELL_SEED_CUTOFF = Number.parseFloat(GAME_CELL_SEED_CUTOFF);
-      
-      let lastCellSize = this.gameBoard.GAME_CONFiG.CELL_SIZE;
-      this.gameBoard.GAME_CONFiG.CELL_SIZE = Number.parseFloat(GAME_CELL_SIZE);
-      if(lastCellSize != this.gameBoard.GAME_CONFiG.CELL_SIZE){
+      this.gameBoard.GAME_CONFIG.CELL_COLOR = GAME_CELL_COLOR;
+      this.gameBoard.GAME_CONFIG.CELL_SEED_CUTOFF = Number.parseFloat(GAME_CELL_SEED_CUTOFF);
+
+      let lastCellSize = this.gameBoard.GAME_CONFIG.CELL_SIZE;
+      this.gameBoard.GAME_CONFIG.CELL_SIZE = Number.parseFloat(GAME_CELL_SIZE);
+      if(lastCellSize != this.gameBoard.GAME_CONFIG.CELL_SIZE){
         this.gameBoard.resizeCanvas(); // so that canvas is drawn based on cell size
       }
-      
-      this.gameBoard.GAME_CONFiG.FRAME_DELTA = Number.parseFloat(GAME_FRAME_DELTA);
-      this.gameBoard.GAME_CONFiG.GAME_BACKGROUND = GAME_BACKGROUND;
-      this.gameBoard.GAME_CONFiG.STROKE_COLOR = GAME_STROKE_COLOR;
+
+      this.gameBoard.GAME_CONFIG.FRAME_DELTA = Number.parseFloat(GAME_FRAME_DELTA);
+      this.gameBoard.GAME_CONFIG.GAME_BACKGROUND = GAME_BACKGROUND;
+      this.gameBoard.GAME_CONFIG.STROKE_COLOR = GAME_STROKE_COLOR;
       this.gameBoard.drawGridLines = GAME_DRAW_GRID_LINES === 'Y';
-      
+
       let clearBackgroundIn = Number.parseInt(GAME_CLEAR_FRAME_EVERY) * Number.parseFloat(GAME_FRAME_DELTA);
-      
+
     }
   }
 
