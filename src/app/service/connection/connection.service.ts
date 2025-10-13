@@ -29,11 +29,12 @@ export class ConnectionService {
      private userService : UserService,
      private router: Router) {
 
-    if (router.url.includes('/ang/')){
-      this.backendUrl = router.url.split('/ang/')[1];
-    }
 
     this.backendUrl = localStorage['qtodo_backend_url'];
+
+    if (!this.backendUrl && router.url.includes('/ang/')){
+      this.backendUrl = router.url.split('/ang/')[1];
+    }
 
     if (this.backendUrl && this.backendUrl !== 'null') {
       this.connectToBackend().then(
