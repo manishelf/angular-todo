@@ -15,9 +15,9 @@ import { SOC_OP } from './socket/socket.worker';
 export class ConnectionService {
 
   backendUrl: string = '';
-  
+
   socketWorkers: Map<string,Worker> = new Map();
-  
+
   private connected: BehaviorSubject<boolean> = new BehaviorSubject(false);
   connected$ = this.connected.asObservable();
 
@@ -28,7 +28,13 @@ export class ConnectionService {
   constructor(private toaster: ToastService,
      private userService : UserService,
      private router: Router) {
+
+    if (router.url.includes('/ang/')){
+      this.backendUrl = router.url.split('/ang/')[1];
+    }
+
     this.backendUrl = localStorage['qtodo_backend_url'];
+
     if (this.backendUrl && this.backendUrl !== 'null') {
       this.connectToBackend().then(
         (con)=>{
@@ -41,12 +47,12 @@ export class ConnectionService {
           recentLoginsMap = JSON.parse(recentLoginsMap);
           let lastUserKey = localStorage['lastLoggedInAs'];
           let lastUser = recentLoginsMap[lastUserKey];
-          
+
           if(lastUser.email == localUser.email && lastUser.userGroup == localUser.userGroup)
             return;
 
           this.userService.loggedInUser.next(lastUser);
-          
+
           this.getToken().then(token=>{
             if(token && token != ''){
               lastUser.token = token;
@@ -56,7 +62,7 @@ export class ConnectionService {
         }
       );
     }
-    
+
     this.connected$.subscribe((con) => {
       if (con) {
         this.toaster.info('connected to backend successfully!');
@@ -66,46 +72,46 @@ export class ConnectionService {
         );
       }
     });
-    
+
     this.userService.loggedInUser.subscribe(async (user)=>{
       if(user.email == localUser.email && user.userGroup == localUser.userGroup){
-        this.accessToken = ''; 
+        this.accessToken = '';
       }else{
         this.accessToken = user.token || '';
-        
-        await this.refreshTokenIfExpired();    
+
+        await this.refreshTokenIfExpired();
 
         let payload = this.userService.getPayloadFromAccessToken();
-        
+
         if(payload['user_group_colaboration'] && !this.socketWorkers.get(payload['user_group'])){
           let wsWorker = new Worker(new URL('/socket/socket.worker.ts', import.meta.url));
           wsWorker.postMessage({
             op: SOC_OP.INIT,
             target: { user, backendUrl: this.backendUrl}
           });
-          this.socketWorkers.set(payload['user_group'], wsWorker);          
-        }           
-        localStorage['lastLoggedInAs'] = user.userGroup+'/'+user.email;        
-      } 
+          this.socketWorkers.set(payload['user_group'], wsWorker);
+        }
+        localStorage['lastLoggedInAs'] = user.userGroup+'/'+user.email;
+      }
     });
 
-    this.axios.interceptors.request.use(async (config)=> {        
-       
+    this.axios.interceptors.request.use(async (config)=> {
+
         if(this.accessToken != ''
         && !(config.url?.includes('/user/refresh') || config.url?.includes('/user/logout'))){
           await this.refreshTokenIfExpired();
         }
-        
-        if(config.url === '/item/save' || config.url === '/item/update'){       
+
+        if(config.url === '/item/save' || config.url === '/item/update'){
           config.data.itemList.forEach((item: TodoItem)=>{
             if(item.userDefined){
               item.userDefined.formControlSchema.fields?.forEach((field)=>{
-                  
+
                 if(item.userDefined?.data){
                   if(field.type == 'image' || field.type == 'file' || field.type == 'iframe'){
                     let user = this.userService.loggedInUser.value;
                     let fieldKey = item.uuid+'_'+item.userDefined?.tag.name+'_'+field.name.replaceAll('/','_').replaceAll('\\','_');
-                    
+
                     let data = (item.userDefined.data as any )[field.name] || '';
                     (item.userDefined.data as any)[field.name]=
                       '/item/doc/'+user.userGroup+'_'+user.email.replace('.','_').replace('@','_')+'_'+fieldKey;
@@ -113,7 +119,7 @@ export class ConnectionService {
                     const parts = data.split(';');
                     const mimeType = parts[0].split(':')[1];
                     let dataType = mimeType;
-                    
+
                     this.postFileToBackend(
                       data,
                       fieldKey,
@@ -125,7 +131,7 @@ export class ConnectionService {
                       (item.userDefined?.data as any)[field.name]=data;
                     });
                   }
-                } 
+                }
               });
             }
           });
@@ -139,11 +145,11 @@ export class ConnectionService {
             const parts = config.data.profilePicture.split(';');
             const mimeType = parts[0].split(':')[1];
             let fileInfo = 'profile_pic_'+user.userGroup;
-            
+
             config.data.profilePicture=user.userGroup+'_'+user.email.replace('.','_').replace('@','_')+'_'+fileInfo;
             setTimeout(()=>{
               this.postFileToBackend(pictureData, fileInfo,mimeType, fileInfo)
-            },1000); 
+            },1000);
           }
         }
 
@@ -213,7 +219,7 @@ export class ConnectionService {
       ) {
           this.backendUrl =
           prompt('Enter backend server url to use cross device!') || '';
-        
+
           this.backendUrl = this.backendUrl.replace(/\/+$/, ''); // remove trailing /
       }
 
@@ -278,7 +284,7 @@ export class ConnectionService {
     }
     return new Blob([u8arr], {type: mime?mime[1]:''});
   }
-  
+
   postFileToBackend(fileData: string, fileName: string, fileType: string, fileInfo: string):Promise<string>{
     return new Promise((res, rej)=>{
       let formData = new FormData();
@@ -308,7 +314,7 @@ export class ConnectionService {
       }else{
         this.logoutUser();
       }
-    }  
+    }
   }
 
   getToken(): Promise<string>{
