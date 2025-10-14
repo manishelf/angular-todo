@@ -32,8 +32,8 @@ export class ConnectionService {
 
     this.backendUrl = localStorage['qtodo_backend_url'];
 
-    if (!this.backendUrl && router.url.includes('/ang/')){
-      this.backendUrl = router.url.split('/ang/')[1];
+    if (!this.backendUrl && window.location.href.includes('/ang/')){
+      this.backendUrl = window.location.href.split('/ang/')[0];
     }
 
     if (this.backendUrl && this.backendUrl !== 'null') {

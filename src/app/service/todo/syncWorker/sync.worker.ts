@@ -27,7 +27,6 @@ let db: IDBDatabase | null = null;
 let user: User | null = null;
 let backendUrl: string | null = null;
 
-
 axios.interceptors.request.use(async (config)=> {
     
     if(!user) return config;
@@ -156,12 +155,13 @@ function mergeItems(data: any){
         done.next(true);
     }
 
-    done.pipe(debounceTime(100)).subscribe((s)=>{
+    done.pipe(debounceTime(10000)).subscribe((s)=>{
         if(s){
         if(syncReq.length>0){
             axios.patch('/item/update',{
                 itemList: syncReq
             });
+            syncReq = [];
         }
 
         const itemsForAddBuffer = serializeItemsToArrayBuffer(itemsForAdd);
