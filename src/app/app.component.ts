@@ -65,6 +65,13 @@ export class AppComponent implements AfterViewInit{
     let GAME_CLEAR_FRAME_EVERY = currentTheme.getPropertyPriority('--game-frame-clear-every');
     let GAME_DRAW_GRID_LINES = currentTheme.getPropertyPriority('--game-draw-grid-lines');
 
+    let GAME_CELL_COLOR_A = currentTheme.getPropertyValue('--game-cell-color-a');
+    let GAME_CELL_COLOR_B = currentTheme.getPropertyValue('--game-cell-color-b');
+    let GAME_CELL_COLOR_C = currentTheme.getPropertyValue('--game-cell-color-c');
+    let GAME_CELL_COLOR_D = currentTheme.getPropertyValue('--game-cell-color-d');
+    let GAME_CELL_COLOR_E = currentTheme.getPropertyValue('--game-cell-color-e');
+
+
     if(this.gameBoard){
       this.gameBoard.GAME_CONFIG.CELL_COLOR = GAME_CELL_COLOR;
       this.gameBoard.GAME_CONFIG.CELL_SEED_CUTOFF = Number.parseFloat(GAME_CELL_SEED_CUTOFF);
@@ -79,6 +86,12 @@ export class AppComponent implements AfterViewInit{
       this.gameBoard.GAME_CONFIG.GAME_BACKGROUND = GAME_BACKGROUND;
       this.gameBoard.GAME_CONFIG.STROKE_COLOR = GAME_STROKE_COLOR;
       this.gameBoard.drawGridLines = GAME_DRAW_GRID_LINES === 'Y';
+
+      this.gameBoard.GAME_CONFIG.CELL_COLOR_A = GAME_CELL_COLOR_A;
+      this.gameBoard.GAME_CONFIG.CELL_COLOR_B = GAME_CELL_COLOR_B;
+      this.gameBoard.GAME_CONFIG.CELL_COLOR_C = GAME_CELL_COLOR_C;
+      this.gameBoard.GAME_CONFIG.CELL_COLOR_D = GAME_CELL_COLOR_D;
+      this.gameBoard.GAME_CONFIG.CELL_COLOR_E = GAME_CELL_COLOR_E;
 
       let clearBackgroundIn = Number.parseInt(GAME_CLEAR_FRAME_EVERY) * Number.parseFloat(GAME_FRAME_DELTA);
 

@@ -155,7 +155,7 @@ function mergeItems(data: any){
         done.next(true);
     }
 
-    done.pipe(debounceTime(10000)).subscribe((s)=>{
+    done.pipe(debounceTime(100)).subscribe((s)=>{
         if(s){
         if(syncReq.length>0){
             axios.patch('/item/update',{

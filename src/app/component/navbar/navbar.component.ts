@@ -80,7 +80,7 @@ export class NavbarComponent implements AfterViewInit {
       "random"
     ]
   };
-  
+
   constructor(
     private router: Router,
     private toaster: ToastService,

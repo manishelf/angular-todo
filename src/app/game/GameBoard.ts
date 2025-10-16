@@ -3,20 +3,25 @@ import { Game, GameConfig } from './Game';
 
 export class GameBoard {
 
-  gameGrid:boolean[][] = [[true, false]];
+  gameGrid:number[][] = [[-1]];
 
   canvas: HTMLCanvasElement;
-  boardHeight: number = -1;
-  boardWidth: number = -1;
+  boardHeight: number = 1;
+  boardWidth: number = 1;
 
   GAME_CONFIG: GameConfig = {
     CELL_SIZE: 5,
     STROKE_COLOR: 'BLACK',
-    CELL_COLOR: 'GREEN',
     GAME_BACKGROUND: '#FFFF',
     CELL_SEED_CUTOFF: 0.85,
     FRAME_DELTA: 50,
-    ALPHA: 0.1,
+    ALPHA: 0.5,
+    CELL_COLOR: 'RED',
+    CELL_COLOR_A: 'GREEN',
+    CELL_COLOR_B: 'BLUE',
+    CELL_COLOR_C: 'YELLOW',
+    CELL_COLOR_D: 'MAGENTA',
+    CELL_COLOR_E: 'CYAN'
   }
 
   allowCursorInteraction = true;
@@ -25,6 +30,7 @@ export class GameBoard {
   drawGridLines = true;
   paused = false;
 
+  private previousFrameData: Uint8ClampedArray | null = null; 
 
   gameInstance: Game | null = null;
 
@@ -78,10 +84,11 @@ export class GameBoard {
 
         this.drawBackground(ctx, this.boardWidth, this.boardHeight);
 
-        let latestGrid = this.gameInstance.update(this.gameGrid);
-        this.drawGrid(ctx, latestGrid,this.boardWidth, this.boardHeight);
-        this.gameGrid = latestGrid;
-
+        if(this.gameGrid && this.gameGrid.length > 0 && this.gameGrid[0].length>0){
+          let latestGrid = this.gameInstance.update(this.gameGrid);
+          this.drawGrid(ctx, latestGrid,this.boardWidth, this.boardHeight);
+          this.gameGrid = latestGrid;
+        }
         this.tick = 0;
         this.timeLapsedSinceLastFrame = performance.now();
       }
@@ -96,7 +103,10 @@ export class GameBoard {
     width = this.getInPx(width);
     height = this.getInPx(height);
 
-    if(this.clearBackground) ctx.clearRect(0,0,width,height);
+    if(this.clearBackground){
+      ctx.clearRect(0,0,width,height);
+      this.previousFrameData = ctx.createImageData(width, height).data;
+    }  
 
     ctx.fillRect(0,0, width, height);
 
@@ -105,7 +115,6 @@ export class GameBoard {
     ctx.beginPath();
 
     for(let j = 0; j < height ; j += this.GAME_CONFIG.CELL_SIZE){
-
       ctx.moveTo(0, j+0.5);
       ctx.lineTo(width, j+0.5);
     }
@@ -118,16 +127,77 @@ export class GameBoard {
     ctx.stroke();
   }
 
-  drawGrid(ctx: CanvasRenderingContext2D, gameGrid: boolean[][], width: number, height: number){
-    ctx.fillStyle = this.GAME_CONFIG.CELL_COLOR;
-    for(let i = 0 ; i< height ; i++){
-      for(let j = 0; j < width; j++){
-        if(gameGrid[i][j]){
-          ctx.fillRect(this.getInPx(j), this.getInPx(i), this.GAME_CONFIG.CELL_SIZE, this.GAME_CONFIG.CELL_SIZE);
-        }
+  drawGrid(ctx: CanvasRenderingContext2D, gameGrid: number[][], width: number, height: number){
+    let frame = this.generateFrame(ctx, gameGrid, width, height);
+    ctx.putImageData(frame, 0, 0);
+  }
+
+  generateFrame(ctx: CanvasRenderingContext2D, gameGrid: number[][], width: number, height: number){
+    width = this.getInPx(width);
+    height = this.getInPx(height);
+    
+    let imageBuffer: ImageData;
+    if (this.previousFrameData) {
+        // Reuse the existing buffer structure if available
+        imageBuffer = new ImageData(this.previousFrameData, width, height);
+    } else {
+        // Create a new one on first run
+        imageBuffer = ctx.createImageData(width, height);
+    }
+    const data = imageBuffer.data;
+
+    for (let i = 3; i < data.length; i += 4) {
+        data[i] *= (1 - this.GAME_CONFIG.ALPHA); 
+    }
+
+    for (let i = 0; i < height; i++) {
+      for (let j = 0; j < width; j++) {
+        let cellValue = gameGrid[this.getInCell(i)][this.getInCell(j)];
+        const index = (i * width + j) * 4;
+        let [r, g, b, a] = this.getColorForCell(cellValue);
+
+        if(r == -1 && g == -1 && b == -1) continue;
+
+        data[index] = r;  
+        data[index + 1] = g;   
+        data[index + 2] = b;  
+        data[index + 3] = 255;
       }
     }
+    this.previousFrameData = data;
+    return imageBuffer
   }
+
+  getColorForCell(cellValue: number){
+    switch(cellValue){
+      case -1: return this.hexToRgb(this.GAME_CONFIG.GAME_BACKGROUND);
+      case 0: return this.hexToRgb(this.GAME_CONFIG.CELL_COLOR);
+      case 1: return this.hexToRgb(this.GAME_CONFIG.CELL_COLOR_A);
+      case 2: return this.hexToRgb(this.GAME_CONFIG.CELL_COLOR_B);
+      case 3: return this.hexToRgb(this.GAME_CONFIG.CELL_COLOR_C);
+      case 4: return this.hexToRgb(this.GAME_CONFIG.CELL_COLOR_D);
+      case 5: return this.hexToRgb(this.GAME_CONFIG.CELL_COLOR_E);
+      default: return [-1, -1, -1];
+    }
+  }
+
+  hexToRgb(hex: string) {
+    let cleanedHex = hex.replace(/^#/, '');
+
+    // 2. Handle 3-digit shorthand (e.g., #f00 -> #ff0000)
+    if (cleanedHex.length === 3) {
+        cleanedHex = cleanedHex
+            .split('')
+            .map((char: string) => char + char) // double each character
+            .join('');
+    }
+
+    const r = parseInt(cleanedHex.substring(0, 2), 16);
+    const g = parseInt(cleanedHex.substring(2, 4), 16);
+    const b = parseInt(cleanedHex.substring(4, 6), 16);
+    
+    return [r,g,b];
+}
 
   newGrid(width: number, height: number){
     let gameGrid = [];
@@ -152,7 +222,7 @@ export class GameBoard {
     if (i < 0 || j < 0 || i >= this.boardHeight || j >= this.boardWidth) return;
 
     let newGrid = this.gameGrid;
-    newGrid[i][j] = !newGrid[i][j];
+    newGrid[i][j] = 5 - newGrid[i][j]; // 0 is default
 
     this.gameGrid = newGrid;
     setTimeout(()=>{

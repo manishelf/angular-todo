@@ -4,7 +4,7 @@ export class Checkered implements Game{
     state:string = 'NOT_PLAYING';
     paused: boolean = false;
 
-    init(width: number, height: number, config: GameConfig): boolean[][] {
+    init(width: number, height: number, config: GameConfig): number[][] {
         return []
     }
 
@@ -18,7 +18,7 @@ export class Checkered implements Game{
         
     }
     
-    update(grid: boolean[][]): boolean[][] {
+    update(grid: number[][]): number[][] {
         return []
     }
 }

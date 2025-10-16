@@ -7,6 +7,11 @@ export class GameOfLife implements Game {
   paused = false;
 
   config! : GameConfig;
+  
+  CELL_STATE = {
+    ALIVE: 0,
+    DEAD: -2
+  }
 
   pause(){
     this.paused = true;
@@ -23,21 +28,21 @@ export class GameOfLife implements Game {
     this.paused = false;
   }
 
-  init(width: number, height: number, config: GameConfig): boolean[][]{
+  init(width: number, height: number, config: GameConfig): number[][]{
     let gameGrid = [];
     this.config = config;
 
     for(let i = 0 ; i< height ; i++){
       let row = new Array(width);
       for(let j = 0; j< width; j++){
-        row[j] = Math.random() > config.CELL_SEED_CUTOFF;
+        row[j] = Math.random() > config.CELL_SEED_CUTOFF ? this.CELL_STATE.ALIVE : this.CELL_STATE.DEAD;
       }
       gameGrid.push(row);
     }
     return gameGrid;
   }
 
-  update(lastGameGrid: boolean[][]){
+  update(lastGameGrid: number[][]){  
     let newGameGrid = [];
     let stateInFlow = false;
     let gridHeight = lastGameGrid.length;
@@ -50,16 +55,16 @@ export class GameOfLife implements Game {
           const neighbors = this.countNeighbors(lastGameGrid, i, j);
           let newState = currState;
           //https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life
-          if (currState) {
+          if (currState == this.CELL_STATE.ALIVE) { 
             // Rule 1 & 3: Death by underpopulation (< 2) or overpopulation (> 3)
             if (neighbors < 2 || neighbors > 3) {
-              newState = false; // Cell dies
+              newState = this.CELL_STATE.DEAD; // Cell dies
             }
             // Rule 2: Lives on (if neighbors is 2 or 3, newState remains true)
           } else {
             // Rule 4: Reproduction (dead cell with exactly 3 neighbors becomes alive)
             if (neighbors === 3) {
-              newState = true; // Cell is born
+              newState = this.CELL_STATE.ALIVE; // Cell is born
             }
           }
           if (newState !== currState) {
@@ -74,7 +79,7 @@ export class GameOfLife implements Game {
     return newGameGrid;
   }
 
-  countNeighbors(gameGrid:boolean[][], row: number, col: number) {
+  countNeighbors(gameGrid:number[][], row: number, col: number) {
     let count = 0;
     for (let i = -1; i <= 1; i++) {
         for (let j = -1; j <= 1; j++) {
@@ -84,7 +89,7 @@ export class GameOfLife implements Game {
                 && c >= 0 &&
                 c < gameGrid[0].length // columns
                 && !(i === 0 && j === 0)) {
-                 count += gameGrid[r][c]?1:0;
+                 count += (gameGrid[r][c] == this.CELL_STATE.ALIVE)?1:0;
             }
         }
     }
