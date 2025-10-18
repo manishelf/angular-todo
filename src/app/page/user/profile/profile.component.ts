@@ -76,9 +76,7 @@ export class ProfileComponent implements OnInit{
 
       for(let key of Object.keys(recentLogins)){
         let userKey = key.split('/');
-        if(userKey[1] == user.email){
-          console.log(key);
-          
+        if(userKey[1] == user.email){          
           this.userGroupList.push(userKey[0]);
         }
       }
@@ -102,7 +100,8 @@ export class ProfileComponent implements OnInit{
 
       this.form.setValue({alias: user.alias, 
         newPassword: '', ugDescription: '',
-        ugOpen: this.isUgOpen, ugColab: this.isUgColab, userGroup: user.userGroup});
+        ugOpen: this.isUgOpen, ugColab: this.isUgColab, 
+        userGroup: user.userGroup});
 
       if(this.userPermissions.includes('MANAGE_PARTICIPANT_PERMISSIONS'))
         this.CAN_MANAGE_PARTICIPANT_PERMISSIONS = true;
@@ -118,6 +117,9 @@ export class ProfileComponent implements OnInit{
   }
 
   ngOnInit():void{
+    this.form.patchValue({
+      userGroup: this.user.userGroup
+    }); // bug where the userGroup is not selected
   }
 
   savePic(event:Event, type: string){
