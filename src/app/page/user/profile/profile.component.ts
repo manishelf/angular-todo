@@ -77,6 +77,8 @@ export class ProfileComponent implements OnInit{
       for(let key of Object.keys(recentLogins)){
         let userKey = key.split('/');
         if(userKey[1] == user.email){
+          console.log(key);
+          
           this.userGroupList.push(userKey[0]);
         }
       }
@@ -163,6 +165,8 @@ export class ProfileComponent implements OnInit{
       let val = this.form.value;
       val['userGroup']= userGroup;
       this.form.setValue(val);
+      console.log(val + '2');
+      
   }
 
   onUgSelChange(event: Event){    
@@ -177,6 +181,7 @@ export class ProfileComponent implements OnInit{
       this.recentLogins[user.userGroup+'/'+user.email]=user;
       localStorage["recentLogins"] = JSON.stringify(this.recentLogins);       
     }
+    console.log(selKey + '1');
     
     this.userService.loggedInUser.next(user);
   }
