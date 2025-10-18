@@ -7,6 +7,9 @@ export class GameOfLife implements Game {
   paused = false;
 
   config! : GameConfig;
+
+  width: number = -1;
+  height: number = -1;
   
   CELL_STATE = {
     ALIVE: 0,
@@ -31,6 +34,8 @@ export class GameOfLife implements Game {
   init(width: number, height: number, config: GameConfig): number[][]{
     let gameGrid = [];
     this.config = config;
+    this.width = width;
+    this.height = height;
 
     for(let i = 0 ; i< height ; i++){
       let row = new Array(width);
@@ -52,7 +57,7 @@ export class GameOfLife implements Game {
         newGameGrid.push(row);
         for (let j = 0; j < gridWidth; j++) {
           const currState = lastGameGrid[i][j];
-          const neighbors = this.countNeighbors(lastGameGrid, i, j);
+          const neighbors = this.countNeighborsToroidal(lastGameGrid, i, j, gridWidth , gridHeight, this.CELL_STATE.ALIVE);
           let newState = currState;
           //https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life
           if (currState == this.CELL_STATE.ALIVE) { 
@@ -95,4 +100,32 @@ export class GameOfLife implements Game {
     }
     return count;
   }
+  
+  //optimization
+  countNeighborsToroidal(gameGrid:number[][], r: number, c: number, W: number, H: number, ALIVE: number): number {
+    let count = 0;
+
+    // Toroidal helper calculation: (r - 1 + H) % H ensures the index wraps from 0 to H-1
+    
+    // Top Row Neighbors (i-1)
+    let top = (r - 1 + H) % H;
+    count += gameGrid[top][(c - 1 + W) % W] === ALIVE ? 1 : 0; // Top-Left
+    count += gameGrid[top][c] === ALIVE ? 1 : 0;               // Top
+    count += gameGrid[top][(c + 1) % W] === ALIVE ? 1 : 0;     // Top-Right
+
+    // Middle Row Neighbors (i)
+    let mid = r; 
+    count += gameGrid[mid][(c - 1 + W) % W] === ALIVE ? 1 : 0; // Middle-Left
+    count += gameGrid[mid][(c + 1) % W] === ALIVE ? 1 : 0;     // Middle-Right
+
+    // Bottom Row Neighbors (i+1)
+    let bottom = (r + 1) % H;
+    count += gameGrid[bottom][(c - 1 + W) % W] === ALIVE ? 1 : 0; // Bottom-Left
+    count += gameGrid[bottom][c] === ALIVE ? 1 : 0;              // Bottom
+    count += gameGrid[bottom][(c + 1) % W] === ALIVE ? 1 : 0;    // Bottom-Right
+
+    return count;
+  }
 }
+
+

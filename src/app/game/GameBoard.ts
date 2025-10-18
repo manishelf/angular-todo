@@ -78,8 +78,9 @@ export class GameBoard {
     if(!this.gameInstance) return;
 
     if(!this.gameInstance.paused){
-      this.tick = performance.now() - this.timeLapsedSinceLastFrame;
+      this.tick = performance.now() - this.timeLapsedSinceLastFrame; 
       if(this.tick >= this.GAME_CONFIG.FRAME_DELTA){
+        const logicStartTime = performance.now();
         ctx.globalAlpha = this.GAME_CONFIG.ALPHA;
 
         this.drawBackground(ctx, this.boardWidth, this.boardHeight);
@@ -89,10 +90,18 @@ export class GameBoard {
           this.drawGrid(ctx, latestGrid,this.boardWidth, this.boardHeight);
           this.gameGrid = latestGrid;
         }
+
+        const logicEndTime = performance.now();
+        const FPT = logicEndTime - logicStartTime;
+        const FPSL = (1000)/FPT;
+        
+        const fpsText = `FPSL: ${Math.round(FPSL)} tick: ${Math.round(this.tick)}`;
+        console.log(fpsText);
+
         this.tick = 0;
         this.timeLapsedSinceLastFrame = performance.now();
       }
-    }
+    }    
   }
 
   drawBackground(ctx : CanvasRenderingContext2D , width: number, height: number){
@@ -132,7 +141,7 @@ export class GameBoard {
     ctx.putImageData(frame, 0, 0);
   }
 
-  generateFrame(ctx: CanvasRenderingContext2D, gameGrid: number[][], width: number, height: number){
+  generateFrame1(ctx: CanvasRenderingContext2D, gameGrid: number[][], width: number, height: number){
     width = this.getInPx(width);
     height = this.getInPx(height);
     
@@ -166,6 +175,64 @@ export class GameBoard {
     }
     this.previousFrameData = data;
     return imageBuffer
+  }
+
+  generateFrame(ctx: CanvasRenderingContext2D, gameGrid: number[][], width: number, height: number) {
+      const pixelWidth = this.getInPx(width);
+      const pixelHeight = this.getInPx(height);
+
+      let imageBuffer;
+      if (this.previousFrameData && this.previousFrameData.length === pixelWidth * pixelHeight * 4) {
+          imageBuffer = new ImageData(this.previousFrameData.slice(), pixelWidth, pixelHeight);
+      } else {
+          imageBuffer = ctx.createImageData(pixelWidth, pixelHeight);
+          this.previousFrameData = imageBuffer.data;
+      }
+
+      const data = imageBuffer.data;
+      const alphaFactor = 1 - this.GAME_CONFIG.ALPHA;
+
+      const gridCellHeight = gameGrid.length;
+      const gridCellWidth = gameGrid[0].length; 
+
+      for (let cellY = 0; cellY < gridCellHeight; cellY++) {
+          for (let cellX = 0; cellX < gridCellWidth; cellX++) {
+              const cellValue = gameGrid[cellY][cellX];
+              const [r, g, b] = this.getColorForCell(cellValue);
+              
+              // optimization 
+              const startPixelY = this.getInPx(cellY); 
+              const endPixelY = startPixelY + this.getInPx(1); 
+              const startPixelX = this.getInPx(cellX);
+              const endPixelX = startPixelX + this.getInPx(1);
+
+              if (r !== -1 || g !== -1 || b !== -1) {
+                  for (let i = startPixelY; i < endPixelY && i < pixelHeight; i++) {
+                      for (let j = startPixelX; j < endPixelX && j < pixelWidth; j++) {
+                          const index = (i * pixelWidth + j) * 4;
+
+                          data[index + 3] *= alphaFactor;
+
+                          data[index] = r;
+                          data[index + 1] = g;
+                          data[index + 2] = b;
+                          data[index + 3] = 255;
+                      }
+                  }
+              } else if(!this.clearBackground){
+                // fade for transparent / inactive
+                    for (let i = startPixelY; i < endPixelY && i < pixelHeight; i++) {
+                      for (let j = startPixelX; j < endPixelX && j < pixelWidth; j++) {
+                          const index = (i * pixelWidth + j) * 4;
+                          data[index + 3] *= alphaFactor;
+                      }
+                  }
+              }
+          }
+      }
+
+      // Since we are modifying the data array directly, the imageBuffer is updated.
+      return imageBuffer;
   }
 
   getColorForCell(cellValue: number){
@@ -204,7 +271,7 @@ export class GameBoard {
     for(let i = 0 ; i< height ; i++){
       let row = new Array(width);
       for(let j = 0; j< width; j++){
-        row[j] = false;
+        row[j] = 0;
       }
       gameGrid.push(row);
     }
@@ -225,9 +292,7 @@ export class GameBoard {
     newGrid[i][j] = 5 - newGrid[i][j]; // 0 is default
 
     this.gameGrid = newGrid;
-    setTimeout(()=>{
-        this.gameInstance?.play();
-    }, 1000);
+    this.pauseForDuration(1500);
   }
 
   getInPx(cells: number){
@@ -250,5 +315,14 @@ export class GameBoard {
 
     this.boardWidth = this.getInCell(newWidth);
     this.boardHeight = this.getInCell(newHeight);
+  }
+
+  pauseForDuration(durationMs: number = 10000) {
+    if (!this.gameInstance) return;
+
+    this.gameInstance.pause(); 
+    setTimeout(() => {
+        this.gameInstance?.play(); 
+    }, durationMs); 
   }
 }
