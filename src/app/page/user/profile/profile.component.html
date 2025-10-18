@@ -39,7 +39,7 @@
                     <select class="w-full p-3 text-wrap rounded-lg shadow-inner bg-white/10  " 
                             title="userGroup" 
                             formControlName="userGroup" (change)="onUgSelChange($event)">
-                        <option *ngFor="let userGroup of userGroupList.reverse(); let i = index" [value]="userGroup"> 
+                        <option *ngFor="let userGroup of userGroupList; let i = index" [value]="userGroup"> 
                             {{userGroup}}
                         </option>
                     </select>

@@ -164,9 +164,7 @@ export class ProfileComponent implements OnInit{
       this.userGroupList = [...this.userGroupList, userGroup];
       let val = this.form.value;
       val['userGroup']= userGroup;
-      this.form.setValue(val);
-      console.log(val + '2');
-      
+      this.form.setValue(val);      
   }
 
   onUgSelChange(event: Event){    
@@ -180,9 +178,7 @@ export class ProfileComponent implements OnInit{
       user.userGroup = target.value;
       this.recentLogins[user.userGroup+'/'+user.email]=user;
       localStorage["recentLogins"] = JSON.stringify(this.recentLogins);       
-    }
-    console.log(selKey + '1');
-    
+    }    
     this.userService.loggedInUser.next(user);
   }
 
