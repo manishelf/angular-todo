@@ -7,6 +7,7 @@ import { CommonModule } from '@angular/common';
 import { BeanItemComponent } from '../../../component/bean-item/bean-item.component';
 import { ManageUserPermissionsComponent } from '../../../component/manage-user-permissions/manage-user-permissions.component';
 import { ConnectionService } from '../../../service/connection/connection.service';
+import { ToastService } from 'angular-toastify';
 
 @Component({
   selector: 'app-profile',
@@ -21,6 +22,14 @@ export class ProfileComponent implements OnInit{
   profilePicDataUrl: string = '';
   form: FormGroup;
 
+  isUgColab: boolean = false;
+  isUgOpen: boolean = false;
+
+  isOffLine: boolean = false;
+
+  userGroupList:string[] = [];
+  recentLogins: any = {};
+
   @ViewChildren(ManageUserPermissionsComponent) userPermissionComp!: QueryList<ManageUserPermissionsComponent>;
 
   CAN_MANAGE_PARTICIPANT_PERMISSIONS: boolean = false;
@@ -29,7 +38,7 @@ export class ProfileComponent implements OnInit{
   CAN_REMOVE_PARTICIPANT: boolean = false;
   CAN_CHANGE_UG_CONFIG: boolean = false;
 
-  constructor(private userService: UserService, private connectionService: ConnectionService){
+  constructor(private userService: UserService, private connectionService: ConnectionService, private toaster: ToastService){
     
     let formBuilder = new FormBuilder();
 
@@ -41,11 +50,12 @@ export class ProfileComponent implements OnInit{
     formControls['ugDescription'] = formBuilder.control('');
     formControls['ugOpen'] = formBuilder.control(false);
     formControls['ugColab'] = formBuilder.control(false);
-    
+    formControls['userGroup'] = formBuilder.control(localUser.userGroup);
     this.form = formBuilder.group(formControls);
     
     userService.loggedInUser$.subscribe((user)=>{
       this.user = user;
+      
       if(user.profilePicture){
         if(user.profilePicture.startsWith('/item/doc/')){
           this.connectionService.getUrlWithToken(user.profilePicture).then(url=>this.profilePicDataUrl=url);
@@ -55,24 +65,43 @@ export class ProfileComponent implements OnInit{
       }else{
         this.profilePicDataUrl = '';
       }
-      
-      let payload = this.userService.getPayloadFromAccessToken();
-      if(!payload) return;
+      let recentLogins = localStorage["recentLogins"];
+      if(!recentLogins || recentLogins == 'null'){
+        recentLogins = `{"${localUser.userGroup}/${localUser.email}":${JSON.stringify(localUser)}}`;
+      }
 
-      this.userPermissions = payload.permissions.sort();
-      let isUgOpen = payload['user_group_open'];
-      let isUgColab = payload['user_group_colaboration'];
+      this.userGroupList = [];
+      recentLogins = JSON.parse(recentLogins);
+      this.recentLogins = recentLogins;
 
-      this.form.setValue({alias: user.alias, 
-        newPassword: '', ugDescription: '',
-        ugOpen: isUgOpen, ugColab: isUgColab});
+      for(let key of Object.keys(recentLogins)){
+        let userKey = key.split('/');
+        if(userKey[1] == user.email){
+          this.addUserGroup(userKey[0]);
+        }
+      }
       
+      // this.addUserGroup(user.userGroup);
+
       this.CAN_MANAGE_PARTICIPANT_PERMISSIONS = false;
       this.CAN_ADD_PARTICIPANT = false;
       this.CAN_CHANGE_UG_CONFIG = false;
       this.CAN_REMOVE_PARTICIPANT = false;
       this.CAN_ENABLE_DISABLE_UG = false;
-      
+
+      this.isOffLine = user.email == localUser.email;
+
+      let payload = this.userService.getPayloadFromAccessToken();
+      if(!payload) return;
+
+      this.userPermissions = payload.permissions.sort();
+      this.isUgOpen = payload['user_group_open'];
+      this.isUgColab = payload['user_group_colaboration'];
+
+      this.form.setValue({alias: user.alias, 
+        newPassword: '', ugDescription: '',
+        ugOpen: this.isUgOpen, ugColab: this.isUgColab, userGroup: user.userGroup});
+
       if(this.userPermissions.includes('MANAGE_PARTICIPANT_PERMISSIONS'))
         this.CAN_MANAGE_PARTICIPANT_PERMISSIONS = true;
       if(this.userPermissions.includes('ENABLE_DISABLE_UG'))
@@ -111,5 +140,51 @@ export class ProfileComponent implements OnInit{
       colaboration: this.form.value.ugColab
     });
     this.userPermissionComp.first.postChangeRequest();
+  }
+
+  addUserGroupOnPrompt(event: Event){
+    let userGroup = (prompt('Enter your group title') || '');
+    if(userGroup != ''){
+      if(userGroup.includes(' ')){
+        this.toaster.error("group name cannot contain spaces!");
+        this.toaster.info("please replace spaces with _ in the group name");
+        return;
+      }
+      this.addUserGroup(userGroup);
+      
+      let target = event.target as HTMLInputElement;
+      target.value = userGroup;
+      this.onUgSelChange(event);
+    }
+  }
+
+  addUserGroup(userGroup: string){
+      this.userGroupList = [...this.userGroupList, userGroup];
+      let val = this.form.value;
+      val['userGroup']= userGroup;
+      this.form.setValue(val);
+  }
+
+  onUgSelChange(event: Event){    
+    let target = event.target as HTMLInputElement;
+    let selKey = target.value+'/'+this.user.email;
+    
+    let user = this.recentLogins[selKey];
+    if(!user){
+      user = structuredClone(this.user);
+      user.token = null;
+      user.userGroup = target.value;
+      this.recentLogins[user.userGroup+'/'+user.email]=user;
+      localStorage["recentLogins"] = JSON.stringify(this.recentLogins);       
+    }
+    
+    this.userService.loggedInUser.next(user);
+  }
+
+  clearCache(){
+    if(prompt('clearing cache can cause data loss if you forget your logins details! Enter Y to procede') == 'Y'){
+      localStorage.clear();
+      this.toaster.info("cache cleared!");
+    }
   }
 }

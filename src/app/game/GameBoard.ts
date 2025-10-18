@@ -96,7 +96,7 @@ export class GameBoard {
         const FPSL = (1000)/FPT;
         
         const fpsText = `FPSL: ${Math.round(FPSL)} tick: ${Math.round(this.tick)}`;
-        console.log(fpsText);
+        // console.log(fpsText);
 
         this.tick = 0;
         this.timeLapsedSinceLastFrame = performance.now();

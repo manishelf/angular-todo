@@ -35,11 +35,11 @@
                 <div class="flex items-end justify-evenly center w-full">
                     <div class="flex flex-col w-full ml-2 mr-2">
                         <div class="flex flex-row items-end justify-between">
-                            <label class="text-white">open usergroups</label>
+                            <label class="text-white">open userGroups</label>
                             <button class="text-blue-600 cursor-pointer hover:scale-110" (click)="addUserGroup()">[ + ]</button>
                         </div>
-                        <select class="w-full p-3 text-wrap rounded" title="usergroup" formControlName="usergroup">
-                            <option *ngFor="let usergroup of userGroupList; let i = index" [value]="usergroup"> {{usergroup}}</option>
+                        <select class="w-full p-3 text-wrap rounded" title="userGroup" formControlName="userGroup">
+                            <option *ngFor="let userGroup of userGroupList; let i = index" [value]="userGroup"> {{userGroup}}</option>
                         </select>
                     </div>
                 </div>

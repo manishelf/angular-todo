@@ -1,51 +1,104 @@
-<div class="overflow-auto h-full">
-<div [formGroup]="form" class="flex flex-col relative flex-wrap md:max-h-100 items-center justify-center mt-8">
-    <div class="absolute top-0 right-center text-center">
-        <h1>Hello {{user.alias}}! </h1>
-        <div class="underline cursor-pointer max-w-100" #permissionsContainer [title]="userPermissions.join(' , ')" (click)="permissionsContainer.innerHTML = userPermissions.join(' , ')">
-            Permissions
+<div class="overflow-auto h-full p-4 sm:p-6 md:p-8">
+    
+    <div [formGroup]="form" class="mx-auto flex flex-col items-center gap-y-8">
+
+        <div class="w-full text-center space-y-4">
+            <div class="flex px-20 flex-row justify-evenly items-center"> 
+                <h1 class="text-3xl font-bold">Hello {{user.alias}}!</h1>
+                
+                <div class="flex flex-col items-center gap-y-2">
+                
+                    <app-bean-item title="Change profile picture" (click)="profilePicEle.click()">
+                        
+                        <div class="h-20 w-20 flex items-center justify-center overflow-hidden bg-gray-700 rounded-full shadow-lg">
+                            
+                            <img *ngIf="profilePicDataUrl" 
+                                [src]="profilePicDataUrl" 
+                                class="h-full w-full object-cover rounded-full" 
+                            >
+
+                            <mat-icon *ngIf="!profilePicDataUrl" class="scale-200">person_pin</mat-icon>
+                        </div>
+
+                        <mat-icon class="absolute top-2 right-2">edit</mat-icon>
+                    </app-bean-item>
+                    
+                    <input type="file" #profilePicEle accept="image/png, image/jpeg" class="hidden" (change)="savePic($event, 'profile')">
+                    
+                </div>
+            </div>
+
+            <div class="flex flex-col items-center justify-center w-full">
+                <div class="flex flex-col w-full max-w-xs mx-auto">
+                    <div class="flex flex-row items-end justify-between mb-1">
+                        <label class=" text-sm">{{isOffline ? 'User Group':'Folder'}} for {{user.email}}</label>
+                        <button class="text-blue-400 text-lg font-bold cursor-pointer hover:scale-110" 
+                                (click)="addUserGroupOnPrompt($event)" 
+                                title="Add User Group">[ + ]</button>
+                    </div>
+                    <select class="w-full p-3 text-wrap rounded-lg shadow-inner bg-white/10  " 
+                            title="userGroup" 
+                            formControlName="userGroup" (change)="onUgSelChange($event)">
+                        <option *ngFor="let userGroup of userGroupList.reverse(); let i = index" [value]="userGroup"> 
+                            {{userGroup}}
+                        </option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="text-blue-400 underline cursor-pointer hover:text-blue-300 transition" 
+                 #permissionsContainer 
+                 [title]="userPermissions.join(' , ')" 
+                 (click)="permissionsContainer.innerHTML = userPermissions.join(' , ')">
+                View Permissions
+            </div>
         </div>
-    </div>
-    <app-bean-item class="mt-16" title="change profile picture" (click)="profilePicEle.click()">
-        <div>
-            <mat-icon class="scale-200" >person_pin</mat-icon>
-            <mat-icon class="absolute scale-70" style="top:-15px; right:-15px;">edit</mat-icon>
+
+        <div class="w-100 p-4 sm:p-6  rounded-lg shadow-xl space-y-5">            
+            <div class="flex flex-col">
+                <label class="text-gray-300 mb-1">Alias</label>
+                <input type="text" formControlName="alias" class="p-2 rounded-md bg-gray-700  border border-gray-600 focus:ring-blue-500">
+            </div>
+            
+            <div class="flex flex-col">
+                <label class="text-gray-300 mb-1">Update Password</label>
+                <input type="password" placeholder="*****" formControlName="newPassword" class="p-2 rounded-md bg-gray-700  border border-gray-600 focus:ring-blue-500">
+            </div>
         </div>
-        <input type="file" #profilePicEle accept="image/png, image/jpeg" class="hidden" (change)="savePic($event, 'profile')">
-        <img [src]="profilePicDataUrl" class="w-10 absolute top-0 right-0 rounded-[40%]">
-    </app-bean-item>
-    <div class="flex flex-col p-10 gap-y-5">
-        <div>
-            <label>Alias</label><input type="text" formControlName="alias">
+
+        <div class="w-full p-4 sm:p-6  rounded-lg shadow-xl space-y-5" *ngIf="CAN_CHANGE_UG_CONFIG">
+            <h2 class="text-xl font-semibold  text-center border-b border-gray-600 pb-2">User Group Configuration</h2>
+            
+            <div class="flex flex-col">
+                <label class="text-gray-300 mb-1">Description</label>
+                <textarea class="p-2 rounded-xl bg-gray-700  border border-gray-600 focus:ring-blue-500" formControlName="ugDescription"></textarea>
+            </div>
+            
+            <table>
+            <tr >
+                <td><label class="text-gray-300">Open for joining</label></td>
+                <td><input formControlName="ugOpen" type="checkbox" class="form-checkbox h-5 w-5 text-blue-600 rounded"></td>
+            </tr>
+            
+            <tr >
+                <td><label class="text-gray-300">Is Collaboration Group</label></td>
+                <td><input formControlName="ugColab" type="checkbox" class="form-checkbox h-5 w-5 text-blue-600 rounded"></td>
+            </tr>
+            </table>
         </div>
-        <div>
-            <label>Update password</label><input type="password" placeholder="*****" formControlName="newPassword">
-        </div>
-    </div>
-    <div class="flex flex-col justify-center gap-y-6" *ngIf="CAN_CHANGE_UG_CONFIG">
-        <h2 class="text-center text">User Group details</h2>
-        <div>
-            <label>description &nbsp;&nbsp;&nbsp;</label><textarea class="outline-2 rounded-xl p-2" formControlName="ugDescription"></textarea>
-        </div>
-        <div class="flex justify-between relative">
-        </div>
-        <div>
-            <label>is open for joining</label><input formControlName="ugOpen" type="checkbox">
-        </div>
-        <div>
-            <label>is colaboration</label><input formControlName="ugColab" type="checkbox">
-        </div>
-    </div>
-    </div> 
-    <app-manage-user-permissions 
-    [managePermissions]="CAN_MANAGE_PARTICIPANT_PERMISSIONS"
-    [addParticipants]="CAN_ADD_PARTICIPANT"
-    [deleteParticipants]="CAN_REMOVE_PARTICIPANT"
-    />
-    <div class="mt-2 flex items-center justify-center" (click)="updateUserDetails()">
-        <app-bean-item>
-            <button class="p-2" >Update</button>
+
+        <app-manage-user-permissions 
+            *ngIf="isUgColab || CAN_MANAGE_PARTICIPANT_PERMISSIONS || CAN_REMOVE_PARTICIPANT || CAN_ADD_PARTICIPANT"
+            [managePermissions]="CAN_MANAGE_PARTICIPANT_PERMISSIONS"
+            [addParticipants]="CAN_ADD_PARTICIPANT"
+            [deleteParticipants]="CAN_REMOVE_PARTICIPANT"
+            class="w-full mt-4"
+        />
+
+        <app-bean-item (click)="updateUserDetails()">
+            <button class="p-3 font-semibold">Update Details</button>
         </app-bean-item>
+        <app-bean-item (click)="clearCache()">clear cache</app-bean-item>
     </div>
-    <footer class="h-20"></footer>
+    <footer class="h-20 mt-8"></footer>
 </div>

@@ -75,7 +75,7 @@ export class ConnectionService {
     });
 
     this.userService.loggedInUser.subscribe(async (user)=>{
-      if(user.email == localUser.email && user.userGroup == localUser.userGroup){
+      if(user.email == localUser.email){
         this.accessToken = '';
       }else{
         this.accessToken = user.token || '';
@@ -92,8 +92,8 @@ export class ConnectionService {
           });
           this.socketWorkers.set(payload['user_group'], wsWorker);
         }
-        localStorage['lastLoggedInAs'] = user.userGroup+'/'+user.email;
       }
+      localStorage['lastLoggedInAs'] = user.userGroup+'/'+user.email;
     });
 
     this.axios.interceptors.request.use(async (config)=> {

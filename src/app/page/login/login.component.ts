@@ -63,7 +63,7 @@ export class LoginComponent {
       "password": this.formBuilder.control(
         "",Validators.pattern("^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{5,}$")
       ),
-      "usergroup": this.formBuilder.control(
+      "userGroup": this.formBuilder.control(
         "qtodo"
       ),
     };
@@ -101,7 +101,7 @@ export class LoginComponent {
       alias: data['alias'],
       email: data['email'],
       password: data['password'],
-      userGroup: data['usergroup'],
+      userGroup: data['userGroup'],
       profilePicture: ''
     }
 
@@ -154,16 +154,16 @@ export class LoginComponent {
   }
 
   addUserGroup(){
-    let usergroup = (prompt('Enter your group title') || '');
-    if(usergroup != ''){
-      if(usergroup.includes(' ')){
+    let userGroup = (prompt('Enter your group title') || '');
+    if(userGroup != ''){
+      if(userGroup.includes(' ')){
         this.toaster.error("group name cannot contain spaces!");
         this.toaster.info("please replace spaces with _ in the group name");
         return;
       }
-      this.userGroupList.add(usergroup);
+      this.userGroupList.add(userGroup);
       let val = this.formGroup.value;
-      val['usergroup']= usergroup;
+      val['userGroup']= userGroup;
       this.formGroup.setValue(val);
     }
   }

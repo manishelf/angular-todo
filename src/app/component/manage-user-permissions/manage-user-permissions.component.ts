@@ -34,14 +34,12 @@ export class ManageUserPermissionsComponent {
         this.isUgColab = payload['user_group_colaboration'];
       }
       
-      this.getUsersInThisUG().then(resp=>{
-        console.log(resp.data.body);
-        
-      this.userList = resp.data.body;
-      this.userList?.forEach((user)=>{
-        this.getProfileUrlForUser(user.profilePicture).then((url)=>{
-          user.profilePicture = url;
-        });
+      this.getUsersInThisUG().then(resp=>{        
+        this.userList = resp.data.body;
+        this.userList?.forEach((user)=>{
+          this.getProfileUrlForUser(user.profilePicture).then((url)=>{
+            user.profilePicture = url;
+          });
       }); 
     });
   });
