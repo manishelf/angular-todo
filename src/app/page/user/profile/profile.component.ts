@@ -77,7 +77,7 @@ export class ProfileComponent implements OnInit{
       for(let key of Object.keys(recentLogins)){
         let userKey = key.split('/');
         if(userKey[1] == user.email){
-          this.addUserGroup(userKey[0]);
+          this.userGroupList.push(userKey[0]);
         }
       }
       
