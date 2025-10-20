@@ -67,13 +67,13 @@ export class AppComponent implements AfterViewInit{
     let canvas: HTMLCanvasElement = this.backgroundCanvasEle.nativeElement;
     this.gameBoard = new GameBoard(canvas);
     
-    // let gameInstance = this.getGameInstance(gameBackground);
-    // if(!gameInstance) return;
+    let gameInstance = this.getGameInstance(gameBackground);
+    if(!gameInstance) return;
     
 
-    // this.themeGames(this.gameBoard);
+    this.themeGames(this.gameBoard);
     
-    this.gameBoard.startGame(new Arkanoid());
+    this.gameBoard.startGame(gameBackground);
     
     setInterval(()=>{
       if(!this.gameBoard?.GAME_CONFIG.ALLOW_CURSOR_INTERACTION)
