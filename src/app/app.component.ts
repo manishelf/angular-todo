@@ -6,6 +6,12 @@ import { AngularToastifyModule } from 'angular-toastify';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { GameOfLife } from './game/GameOfLife';
 import { GameBoard } from './game/GameBoard';
+import { Checkered } from './game/Checkered';
+import { LineGrid } from './game/LineGrid';
+import { MandelBrotSet } from './game/MandelBrotSet';
+import { JuliaSet } from './game/JuliaSet';
+import { Game } from './game/Game';
+import { JuliaSet0_7885 } from './game/JuliaSet0_7885';
 
 @Component({
   selector: 'app-root',
@@ -26,6 +32,8 @@ export class AppComponent implements AfterViewInit{
 
   gameBoard: GameBoard | null = null;
 
+  currentGameInstanceName: string = '';
+
   constructor(private router : Router){
   }
 
@@ -45,16 +53,44 @@ export class AppComponent implements AfterViewInit{
   }
 
   ngAfterViewInit(){
+    
+    let gameBackground = localStorage['background'];    
+    
+    
+    this.currentGameInstanceName = gameBackground;
+    
     let canvas: HTMLCanvasElement = this.backgroundCanvasEle.nativeElement;
     this.gameBoard = new GameBoard(canvas);
-    this.themeGames();
-    this.gameBoard.startGame(new GameOfLife());
+    
+    let gameInstance = this.getGameInstance(gameBackground);
+    if(!gameInstance) return;
+    
+
+    this.themeGames(this.gameBoard);
+    
+    this.gameBoard.startGame(gameInstance);
+    
     setInterval(()=>{
-      this.themeGames();
+      if(!this.gameBoard?.GAME_CONFIG.ALLOW_CURSOR_INTERACTION)
+      this.themeGames(this.gameBoard);
     }, 500);
   }
 
-  themeGames(){
+  getGameInstance(game: string): Game | null{
+    switch(game){
+      case "GameOfLife": return new GameOfLife();
+      case "JuliaSet": return new JuliaSet();
+      case "JuliaSet0_7885": return new JuliaSet0_7885();
+      case "MandelBrotSet": return new MandelBrotSet(); 
+      case "LineGrid": return new LineGrid();
+      case "Checkered": return new Checkered();
+      default: return null;
+    }
+  }
+
+  themeGames(gameBoard: GameBoard | null){
+    if(!gameBoard) return;
+
     let currentTheme = getComputedStyle(document.documentElement);
     let GAME_BACKGROUND = currentTheme.getPropertyValue('--game-background');
     let GAME_STROKE_COLOR = currentTheme.getPropertyValue('--game-stroke-color');
@@ -72,35 +108,41 @@ export class AppComponent implements AfterViewInit{
     let GAME_CELL_COLOR_E = currentTheme.getPropertyValue('--game-cell-color-e');
 
 
-    if(this.gameBoard){
-      this.gameBoard.GAME_CONFIG.CELL_COLOR = GAME_CELL_COLOR;
-      this.gameBoard.GAME_CONFIG.CELL_SEED_CUTOFF = Number.parseFloat(GAME_CELL_SEED_CUTOFF);
+    gameBoard.GAME_CONFIG.CELL_COLOR = GAME_CELL_COLOR;
+    gameBoard.GAME_CONFIG.CELL_SEED_CUTOFF = Number.parseFloat(GAME_CELL_SEED_CUTOFF);
 
-      let lastCellSize = this.gameBoard.GAME_CONFIG.CELL_SIZE;
-      this.gameBoard.GAME_CONFIG.CELL_SIZE = Number.parseFloat(GAME_CELL_SIZE);
-      if(lastCellSize != this.gameBoard.GAME_CONFIG.CELL_SIZE){
-        this.gameBoard.resizeCanvas(); // so that canvas is drawn based on cell size
+    let lastCellSize = gameBoard.GAME_CONFIG.CELL_SIZE;
+    gameBoard.GAME_CONFIG.CELL_SIZE = Number.parseFloat(GAME_CELL_SIZE);
+    if(lastCellSize != gameBoard.GAME_CONFIG.CELL_SIZE){
+      gameBoard.resizeCanvas(); // so that canvas is drawn based on cell size
+    }
+
+    gameBoard.GAME_CONFIG.FRAME_DELTA = Number.parseFloat(GAME_FRAME_DELTA);
+    gameBoard.GAME_CONFIG.GAME_BACKGROUND = GAME_BACKGROUND;
+    gameBoard.GAME_CONFIG.STROKE_COLOR = GAME_STROKE_COLOR;
+    gameBoard.GAME_CONFIG.GRID_LINES = GAME_DRAW_GRID_LINES === 'Y';
+
+    gameBoard.GAME_CONFIG.CELL_COLOR_A = GAME_CELL_COLOR_A;
+    gameBoard.GAME_CONFIG.CELL_COLOR_B = GAME_CELL_COLOR_B;
+    gameBoard.GAME_CONFIG.CELL_COLOR_C = GAME_CELL_COLOR_C;
+    gameBoard.GAME_CONFIG.CELL_COLOR_D = GAME_CELL_COLOR_D;
+    gameBoard.GAME_CONFIG.CELL_COLOR_E = GAME_CELL_COLOR_E;
+    let clearBackgroundIn = Number.parseInt(GAME_CLEAR_FRAME_EVERY) * Number.parseFloat(GAME_FRAME_DELTA);
+
+    let gameBackgroud = localStorage['background'];
+    
+    if(gameBackgroud != this.currentGameInstanceName){
+      let newInstace = this.getGameInstance(gameBackgroud);
+      if(newInstace){
+        this.gameBoard?.startGame(newInstace);
+        this.currentGameInstanceName = gameBackgroud;
       }
-
-      this.gameBoard.GAME_CONFIG.FRAME_DELTA = Number.parseFloat(GAME_FRAME_DELTA);
-      this.gameBoard.GAME_CONFIG.GAME_BACKGROUND = GAME_BACKGROUND;
-      this.gameBoard.GAME_CONFIG.STROKE_COLOR = GAME_STROKE_COLOR;
-      this.gameBoard.drawGridLines = GAME_DRAW_GRID_LINES === 'Y';
-
-      this.gameBoard.GAME_CONFIG.CELL_COLOR_A = GAME_CELL_COLOR_A;
-      this.gameBoard.GAME_CONFIG.CELL_COLOR_B = GAME_CELL_COLOR_B;
-      this.gameBoard.GAME_CONFIG.CELL_COLOR_C = GAME_CELL_COLOR_C;
-      this.gameBoard.GAME_CONFIG.CELL_COLOR_D = GAME_CELL_COLOR_D;
-      this.gameBoard.GAME_CONFIG.CELL_COLOR_E = GAME_CELL_COLOR_E;
-
-      let clearBackgroundIn = Number.parseInt(GAME_CLEAR_FRAME_EVERY) * Number.parseFloat(GAME_FRAME_DELTA);
-
     }
   }
 
   setGameClearFrame(state: boolean){
     if(this.gameBoard)
-      this.gameBoard.clearBackground = state;
+      this.gameBoard.GAME_CONFIG.CLEAR_BG_EACH_FRAME = true;
   }
 }
 

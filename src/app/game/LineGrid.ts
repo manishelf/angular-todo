@@ -1,18 +1,20 @@
 import { Game, GameConfig } from "./Game";
 
-export class Checkered implements Game{
+export class LineGrid implements Game{
     state:string = 'NOT_PLAYING';
     paused: boolean = false;
-
+    config!: GameConfig;
     init(config: GameConfig): number[][] {
+        this.config = config;
         const grid: number[][] = [];
         for (let y = 0; y < config.BOARD_HEIGHT; y++) {
             grid[y] = [];
             for (let x = 0; x < config.BOARD_WIDTH; x++) {
-                grid[y][x] = ((x + y) % 2 == 0 )? 0 : -1;
+                grid[y][x] = -5; // allow existing thing
             }
         }
         config.HOLD_FRAME = true;
+        config.GRID_LINES = true;
         return grid;
     }
 
@@ -31,6 +33,7 @@ export class Checkered implements Game{
     }
 
     update(grid: number[][]): number[][] {
+        // not called
         return grid;
     }
 }

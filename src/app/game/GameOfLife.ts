@@ -8,12 +8,9 @@ export class GameOfLife implements Game {
 
   config! : GameConfig;
 
-  width: number = -1;
-  height: number = -1;
-  
   CELL_STATE = {
-    ALIVE: 0,
-    DEAD: -2
+    ALIVE: 5,
+    DEAD: -1
   }
 
   pause(){
@@ -31,19 +28,18 @@ export class GameOfLife implements Game {
     this.paused = false;
   }
 
-  init(width: number, height: number, config: GameConfig): number[][]{
-    let gameGrid = [];
+  init(config: GameConfig): number[][]{
+    let gameGrid = new Array(config.BOARD_HEIGHT);
     this.config = config;
-    this.width = width;
-    this.height = height;
 
-    for(let i = 0 ; i< height ; i++){
-      let row = new Array(width);
-      for(let j = 0; j< width; j++){
+    for(let i = 0 ; i< config.BOARD_HEIGHT ; i++){
+      let row = new Array(config.BOARD_WIDTH);
+      for(let j = 0; j< config.BOARD_WIDTH; j++){
         row[j] = Math.random() > config.CELL_SEED_CUTOFF ? this.CELL_STATE.ALIVE : this.CELL_STATE.DEAD;
       }
-      gameGrid.push(row);
+      gameGrid[i] = row;
     }
+
     return gameGrid;
   }
 

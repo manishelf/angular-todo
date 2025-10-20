@@ -75,10 +75,19 @@ export class NavbarComponent implements AfterViewInit {
     "synthwave-84",
     "hacker",
     "neon"
+    ], 
+    "background": [
+      "GameOfLife",
+      "JuliaSet",
+      "JuliaSet0_7885",
+      "MandelBrotSet",
+      "LineGrid",
+      "Checkered",
+      "plain"
     ],
     "random":[
       "random"
-    ]
+    ],
   };
 
   constructor(
@@ -400,7 +409,7 @@ export class NavbarComponent implements AfterViewInit {
     this.userService.loggedInUser.next(user);
   }
 
-  changeTheme(themeName: string){
+  changeTheme(themeName: string){  
     if(themeName === 'random'){
       const allThemes = Object.values(this.availableThemes)
         .flat()
@@ -408,14 +417,21 @@ export class NavbarComponent implements AfterViewInit {
       const randomIndex = Math.floor(Math.random() * allThemes.length);
       themeName = allThemes[randomIndex] as string;
     }
-    
+  
     document.documentElement.setAttribute('data-theme', themeName);
-    this.currentTheme = themeName;    
   }
 
   updateTheme(event: Event){
     let target = event.target as HTMLSelectElement;
     let sel = target.value;
+
+    if(this.availableThemes["background"].includes(sel)){
+      localStorage['background'] = sel;
+      target.selectedIndex = 0;
+      return;
+    }
+  
+
     if(document.startViewTransition){
       document.startViewTransition(()=>{
         this.changeTheme(sel);    

@@ -6,37 +6,44 @@ export class GameBoard {
   gameGrid:number[][] = [[-1]];
 
   canvas: HTMLCanvasElement;
-  boardHeight: number = 1;
-  boardWidth: number = 1;
 
   GAME_CONFIG: GameConfig = {
     CELL_SIZE: 5,
+    BOARD_WIDTH: 5,
+    BOARD_HEIGHT: 5,
     STROKE_COLOR: 'BLACK',
     GAME_BACKGROUND: '#FFFF',
     CELL_SEED_CUTOFF: 0.85,
     FRAME_DELTA: 50,
+    GRID_LINES: true,
+    HOLD_FRAME: false,
+    CLEAR_BG_EACH_FRAME: false,
     ALPHA: 0.5,
     CELL_COLOR: 'RED',
     CELL_COLOR_A: 'GREEN',
     CELL_COLOR_B: 'BLUE',
     CELL_COLOR_C: 'YELLOW',
     CELL_COLOR_D: 'MAGENTA',
-    CELL_COLOR_E: 'CYAN'
+    CELL_COLOR_E: 'CYAN',
+    ALLOW_CURSOR_INTERACTION: false,
+    TOGGLE_ON_MOUSE_MOVE: true,
+    TOGGLE_PAUSE_ON_MOUSE_CLICK: true,
+    TOGGLE_CELL_ON_MOUSE_CLICK: true
   }
 
-  allowCursorInteraction = true;
-  toggleOnMouseMove = true;
-  clearBackground = true;
-  drawGridLines = true;
   paused = false;
 
   private previousFrameData: Uint8ClampedArray | null = null; 
 
   gameInstance: Game | null = null;
 
+  cameraOffsetX: number = 0; 
+  cameraOffsetY: number = 0;
+
   tick = -1;
   private timeLapsedSinceLastFrame: number = performance.now();
 
+  private pauseTimer = -1;
   constructor(canvas: HTMLCanvasElement){
     this.canvas = canvas;
 
@@ -44,15 +51,7 @@ export class GameBoard {
     this.resizeCanvas();
 
     canvas.onclick = this.toggleCell.bind(this);
-    canvas.onwheel = (event)=>{
-      if(this.allowCursorInteraction){
-        if(this.GAME_CONFIG.CELL_SIZE>1){
-          this.GAME_CONFIG.CELL_SIZE+=event.deltaY>0?1:-1;
-        }else{
-          this.GAME_CONFIG.CELL_SIZE = 1;
-        }
-      }
-    }
+    canvas.onwheel = this.handleMouseZoom.bind(this); 
   }
 
   startGame(gameInstance: Game){
@@ -61,9 +60,9 @@ export class GameBoard {
     }
     this.gameInstance = gameInstance;
 
-    let startup = this.gameInstance.init(this.boardWidth, this.boardHeight, this.GAME_CONFIG);
+    let startup = this.gameInstance.init(this.GAME_CONFIG);
     if(startup.length == 0)
-      startup = this.newGrid(this.boardWidth, this.boardHeight);
+      startup = this.newGrid(this.GAME_CONFIG.BOARD_WIDTH, this.GAME_CONFIG.BOARD_HEIGHT);
     this.gameGrid = startup;
 
     let ctx = this.canvas.getContext('2d');
@@ -77,18 +76,34 @@ export class GameBoard {
     requestAnimationFrame(()=>{this.gameLoop(ctx)});
     if(!this.gameInstance) return;
 
-    if(!this.gameInstance.paused){
+    if(this.GAME_CONFIG.ALLOW_CURSOR_INTERACTION){
+      this.canvas.classList.add('z-2');
+      // does not create duplicates and setting css property does not work here
+    }else{
+      this.canvas.classList.add('z-0');
+    }
+
+    if(!this.gameInstance.paused || this.GAME_CONFIG.HOLD_FRAME){
       this.tick = performance.now() - this.timeLapsedSinceLastFrame; 
       if(this.tick >= this.GAME_CONFIG.FRAME_DELTA){
         const logicStartTime = performance.now();
         ctx.globalAlpha = this.GAME_CONFIG.ALPHA;
 
-        this.drawBackground(ctx, this.boardWidth, this.boardHeight);
+        // this.drawBackground(ctx, this.GAME_CONFIG.BOARD_WIDTH, this.GAME_CONFIG.BOARD_HEIGHT);
 
-        if(this.gameGrid && this.gameGrid.length > 0 && this.gameGrid[0].length>0){
-          let latestGrid = this.gameInstance.update(this.gameGrid);
-          this.drawGrid(ctx, latestGrid,this.boardWidth, this.boardHeight);
+        if(this.gameGrid && 
+          this.gameGrid.length == this.GAME_CONFIG.BOARD_HEIGHT && 
+          this.gameGrid[0].length == this.GAME_CONFIG.BOARD_WIDTH){
+          let latestGrid;
+          if(!this.GAME_CONFIG.HOLD_FRAME){
+            latestGrid = this.gameInstance.update(this.gameGrid);
+          }else{
+            latestGrid = this.gameGrid;
+          }
+          this.drawGrid(ctx, latestGrid, this.GAME_CONFIG.BOARD_WIDTH, this.GAME_CONFIG.BOARD_HEIGHT);
           this.gameGrid = latestGrid;
+        }else{
+          this.gameGrid = this.newGrid(this.GAME_CONFIG.BOARD_WIDTH, this.GAME_CONFIG.BOARD_HEIGHT);
         }
 
         const logicEndTime = performance.now();
@@ -104,134 +119,217 @@ export class GameBoard {
     }    
   }
 
-  drawBackground(ctx : CanvasRenderingContext2D , width: number, height: number){
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = this.GAME_CONFIG.STROKE_COLOR;
-    ctx.fillStyle = this.GAME_CONFIG.GAME_BACKGROUND;
-
-    width = this.getInPx(width);
-    height = this.getInPx(height);
-
-    if(this.clearBackground){
-      ctx.clearRect(0,0,width,height);
-      this.previousFrameData = ctx.createImageData(width, height).data;
-    }  
-
-    ctx.fillRect(0,0, width, height);
-
-    if(!this.drawGridLines) return;
-
-    ctx.beginPath();
-
-    for(let j = 0; j < height ; j += this.GAME_CONFIG.CELL_SIZE){
-      ctx.moveTo(0, j+0.5);
-      ctx.lineTo(width, j+0.5);
-    }
-
-    for(let i = 0; i < width ; i += this.GAME_CONFIG.CELL_SIZE){
-      ctx.moveTo(i+0.5, 0);
-      ctx.lineTo(i+0.5, height);
-    }
-
-    ctx.stroke();
-  }
-
   drawGrid(ctx: CanvasRenderingContext2D, gameGrid: number[][], width: number, height: number){
     let frame = this.generateFrame(ctx, gameGrid, width, height);
     ctx.putImageData(frame, 0, 0);
   }
 
-  generateFrame1(ctx: CanvasRenderingContext2D, gameGrid: number[][], width: number, height: number){
-    width = this.getInPx(width);
-    height = this.getInPx(height);
+  // drawBackground(ctx : CanvasRenderingContext2D , width: number, height: number){
+   
+  //   if(this.GAME_CONFIG.CLEAR_BG_EACH_FRAME){
+  //     ctx.fillStyle = this.GAME_CONFIG.GAME_BACKGROUND;
+  //     ctx.clearRect(0,0,width,height);
+  //     this.previousFrameData = ctx.createImageData(width, height).data;
+  //     ctx.fillRect(0,0, width, height);
+  //   }  
+
+  //   if(!this.GAME_CONFIG.GRID_LINES) return;
     
-    let imageBuffer: ImageData;
-    if (this.previousFrameData) {
-        // Reuse the existing buffer structure if available
-        imageBuffer = new ImageData(this.previousFrameData, width, height);
-    } else {
-        // Create a new one on first run
-        imageBuffer = ctx.createImageData(width, height);
-    }
-    const data = imageBuffer.data;
+  //   requestAnimationFrame(()=>{
+  //     ctx.lineWidth = 1;
+  //     ctx.strokeStyle = this.GAME_CONFIG.STROKE_COLOR;
+      
+  //     width = this.getInPx(width);
+  //     height = this.getInPx(height);
+ 
+  //     ctx.beginPath();
 
-    for (let i = 3; i < data.length; i += 4) {
-        data[i] *= (1 - this.GAME_CONFIG.ALPHA); 
-    }
+  //     for(let j = 0; j < height ; j += this.GAME_CONFIG.CELL_SIZE){
+  //       ctx.moveTo(0, j+0.5);
+  //       ctx.lineTo(width, j+0.5);
+  //     }
 
-    for (let i = 0; i < height; i++) {
-      for (let j = 0; j < width; j++) {
-        let cellValue = gameGrid[this.getInCell(i)][this.getInCell(j)];
-        const index = (i * width + j) * 4;
-        let [r, g, b, a] = this.getColorForCell(cellValue);
+  //     for(let i = 0; i < width ; i += this.GAME_CONFIG.CELL_SIZE){
+  //       ctx.moveTo(i+0.5, 0);
+  //       ctx.lineTo(i+0.5, height);
+  //     }
 
-        if(r == -1 && g == -1 && b == -1) continue;
+  //     ctx.stroke();
+  //   });
+  // }
 
-        data[index] = r;  
-        data[index + 1] = g;   
-        data[index + 2] = b;  
-        data[index + 3] = 255;
-      }
-    }
-    this.previousFrameData = data;
-    return imageBuffer
-  }
+  // generateFrame1(ctx: CanvasRenderingContext2D, gameGrid: number[][], width: number, height: number){
+  //   width = this.getInPx(width);
+  //   height = this.getInPx(height);
+    
+  //   let imageBuffer: ImageData;
+  //   if (this.previousFrameData) {
+  //       // Reuse the existing buffer structure if available
+  //       imageBuffer = new ImageData(this.previousFrameData, width, height);
+  //   } else {
+  //       // Create a new one on first run
+  //       imageBuffer = ctx.createImageData(width, height);
+  //   }
+  //   const data = imageBuffer.data;
+
+  //   for (let i = 3; i < data.length; i += 4) {
+  //       data[i] *= (1 - this.GAME_CONFIG.ALPHA); 
+  //   }
+
+  //   for (let i = 0; i < height; i++) {
+  //     for (let j = 0; j < width; j++) {
+  //       let cellValue = gameGrid[this.getInCell(i)][this.getInCell(j)];
+  //       const index = (i * width + j) * 4;
+  //       let [r, g, b, a] = this.getColorForCell(cellValue);
+
+  //       if(r == -1 && g == -1 && b == -1) continue;
+
+  //       data[index] = r;  
+  //       data[index + 1] = g;   
+  //       data[index + 2] = b;  
+  //       data[index + 3] = 255;
+  //     }
+  //   }
+  //   this.previousFrameData = data;
+  //   return imageBuffer
+  // }
+
+  // generateFrame2(ctx: CanvasRenderingContext2D, gameGrid: number[][], width: number, height: number) {
+  //     const pixelWidth = this.getInPx(width);
+  //     const pixelHeight = this.getInPx(height);
+
+  //     let imageBuffer;
+  //     if (this.previousFrameData && this.previousFrameData.length === pixelWidth * pixelHeight * 4) {
+  //         imageBuffer = new ImageData(this.previousFrameData.slice(), pixelWidth, pixelHeight);
+  //     } else {
+  //         imageBuffer = ctx.createImageData(pixelWidth, pixelHeight);
+  //         this.previousFrameData = imageBuffer.data;
+  //     }
+
+  //     const data = imageBuffer.data;
+  //     const alphaFactor = 1 - this.GAME_CONFIG.ALPHA;
+
+  //     const gridCellHeight = gameGrid.length;
+  //     const gridCellWidth = gameGrid[0].length; 
+
+  //     for (let cellY = 0; cellY < gridCellHeight; cellY++) {
+  //         for (let cellX = 0; cellX < gridCellWidth; cellX++) {
+  //             const cellValue = gameGrid[cellY][cellX];
+  //             const [r, g, b] = this.getColorForCell(cellValue);
+              
+  //             // optimization 
+  //             const startPixelY = this.getInPx(cellY); 
+  //             const endPixelY = startPixelY + this.getInPx(1); 
+  //             const startPixelX = this.getInPx(cellX);
+  //             const endPixelX = startPixelX + this.getInPx(1);
+
+  //             if (r !== -1 || g !== -1 || b !== -1) {
+  //                 for (let i = startPixelY; i < endPixelY && i < pixelHeight; i++) {
+  //                     for (let j = startPixelX; j < endPixelX && j < pixelWidth; j++) {
+  //                         const index = (i * pixelWidth + j) * 4;
+
+  //                         data[index + 3] *= alphaFactor;
+
+  //                         data[index] = r;
+  //                         data[index + 1] = g;
+  //                         data[index + 2] = b;
+  //                         data[index + 3] = 255;
+  //                     }
+  //                 }
+  //             } else if(!this.GAME_CONFIG.CLEAR_BG_EACH_FRAME){
+  //               // fade for transparent / inactive
+  //                   for (let i = startPixelY; i < endPixelY && i < pixelHeight; i++) {
+  //                     for (let j = startPixelX; j < endPixelX && j < pixelWidth; j++) {
+  //                         const index = (i * pixelWidth + j) * 4;
+  //                         data[index + 3] *= alphaFactor;
+  //                     }
+  //                 }
+  //             }
+  //         }
+  //     }
+
+  //     return imageBuffer;
+  // }
 
   generateFrame(ctx: CanvasRenderingContext2D, gameGrid: number[][], width: number, height: number) {
       const pixelWidth = this.getInPx(width);
       const pixelHeight = this.getInPx(height);
 
-      let imageBuffer;
-      if (this.previousFrameData && this.previousFrameData.length === pixelWidth * pixelHeight * 4) {
+      let imageBuffer: ImageData;
+      let data: Uint8ClampedArray;
+      const alphaFactor = 1 - this.GAME_CONFIG.ALPHA;
+      const [bgR, bgG, bgB] = this.hexToRgb(this.GAME_CONFIG.GAME_BACKGROUND);
+      const [lineR, lineG, lineB] = this.hexToRgb(this.GAME_CONFIG.STROKE_COLOR);
+
+      if (this.previousFrameData && this.previousFrameData.length === pixelWidth * pixelHeight * 4 && !this.GAME_CONFIG.CLEAR_BG_EACH_FRAME) {
           imageBuffer = new ImageData(this.previousFrameData.slice(), pixelWidth, pixelHeight);
+          data = imageBuffer.data;
+
+          for (let i = 0; i < data.length; i += 4) {
+              data[i + 3] *= alphaFactor;
+          }
       } else {
           imageBuffer = ctx.createImageData(pixelWidth, pixelHeight);
-          this.previousFrameData = imageBuffer.data;
+          data = imageBuffer.data;
+          
+          for (let i = 0; i < data.length; i += 4) {
+              data[i] = bgR;     
+              data[i + 1] = bgG;  
+              data[i + 2] = bgB;  
+              data[i + 3] = 255;  
+          }
       }
 
-      const data = imageBuffer.data;
-      const alphaFactor = 1 - this.GAME_CONFIG.ALPHA;
+      if (this.GAME_CONFIG.GRID_LINES) {
+          for (let i = 0; i < pixelWidth; i++) {
+              for (let j = 0; j < pixelHeight; j++) {
+                  
+                  if (j % this.GAME_CONFIG.CELL_SIZE === 0 || 
+                      i % this.GAME_CONFIG.CELL_SIZE === 0) {
+                      
+                      const index = (j * pixelWidth + i) * 4;
+                      data[index] = lineR;
+                      data[index + 1] = lineG;
+                      data[index + 2] = lineB;
+                      data[index + 3] = 255; 
+                  }
+              }
+          }
+      }
 
-      const gridCellHeight = gameGrid.length;
-      const gridCellWidth = gameGrid[0].length; 
-
-      for (let cellY = 0; cellY < gridCellHeight; cellY++) {
-          for (let cellX = 0; cellX < gridCellWidth; cellX++) {
+      for (let cellY = 0; cellY < this.GAME_CONFIG.BOARD_HEIGHT; cellY++) {
+          for (let cellX = 0; cellX < this.GAME_CONFIG.BOARD_WIDTH; cellX++) {
               const cellValue = gameGrid[cellY][cellX];
               const [r, g, b] = this.getColorForCell(cellValue);
               
-              // optimization 
-              const startPixelY = this.getInPx(cellY); 
-              const endPixelY = startPixelY + this.getInPx(1); 
-              const startPixelX = this.getInPx(cellX);
-              const endPixelX = startPixelX + this.getInPx(1);
-
+              // Only draw non-background cells
               if (r !== -1 || g !== -1 || b !== -1) {
+                  const startPixelY = this.getInPx(cellY); 
+                  const endPixelY = startPixelY + this.getInPx(1); 
+                  const startPixelX = this.getInPx(cellX);
+                  const endPixelX = startPixelX + this.getInPx(1);
+
                   for (let i = startPixelY; i < endPixelY && i < pixelHeight; i++) {
                       for (let j = startPixelX; j < endPixelX && j < pixelWidth; j++) {
+                          // Skip if the pixel is part of a drawn grid line, 
+                          if (this.GAME_CONFIG.GRID_LINES && 
+                              (i % this.GAME_CONFIG.CELL_SIZE === 0 || j % this.GAME_CONFIG.CELL_SIZE === 0)) {
+                              continue;
+                          }
+                          
                           const index = (i * pixelWidth + j) * 4;
-
-                          data[index + 3] *= alphaFactor;
-
+                          
                           data[index] = r;
                           data[index + 1] = g;
                           data[index + 2] = b;
-                          data[index + 3] = 255;
-                      }
-                  }
-              } else if(!this.clearBackground){
-                // fade for transparent / inactive
-                    for (let i = startPixelY; i < endPixelY && i < pixelHeight; i++) {
-                      for (let j = startPixelX; j < endPixelX && j < pixelWidth; j++) {
-                          const index = (i * pixelWidth + j) * 4;
-                          data[index + 3] *= alphaFactor;
+                          data[index + 3] = 255; 
                       }
                   }
               }
           }
       }
 
-      // Since we are modifying the data array directly, the imageBuffer is updated.
+      this.previousFrameData = data.slice();
       return imageBuffer;
   }
 
@@ -264,7 +362,7 @@ export class GameBoard {
     const b = parseInt(cleanedHex.substring(4, 6), 16);
     
     return [r,g,b];
-}
+  }
 
   newGrid(width: number, height: number){
     let gameGrid = [];
@@ -279,20 +377,50 @@ export class GameBoard {
   }
 
   toggleCell(event: MouseEvent) {
-    this.gameInstance?.pause();
+
+    if(!this.GAME_CONFIG.ALLOW_CURSOR_INTERACTION) return;
+
+    if(this.GAME_CONFIG.TOGGLE_PAUSE_ON_MOUSE_CLICK){
+      if(this.gameInstance?.paused){
+        this.gameInstance.play();
+      }else{
+        this.gameInstance?.pause()
+      }
+    }
+    
+    if(!this.GAME_CONFIG.TOGGLE_CELL_ON_MOUSE_CLICK) return;
+    
     const rect = this.canvas.getBoundingClientRect();
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
 
     const j = this.getInCell(x);
     const i = this.getInCell(y);
-    if (i < 0 || j < 0 || i >= this.boardHeight || j >= this.boardWidth) return;
+    if (i < 0 || j < 0 || i >= this.GAME_CONFIG.BOARD_HEIGHT || j >= this.GAME_CONFIG.BOARD_WIDTH) return;
 
     let newGrid = this.gameGrid;
-    newGrid[i][j] = 5 - newGrid[i][j]; // 0 is default
+    let cellValue = newGrid[i][j];
+    newGrid[i][j] = 5 - cellValue
+    if(cellValue < -1){
+      newGrid[i][j] = 5; // 0 is default
+    }
 
+    const MAX_COLOR_VALUE = 5;
+    const MIN_COLOR_VALUE = 0;
+    const BACKGROUND_VALUE = -1;
+
+    if (cellValue == MAX_COLOR_VALUE) {
+      newGrid[i][j] = BACKGROUND_VALUE; 
+    } else if (cellValue > BACKGROUND_VALUE && cellValue < MAX_COLOR_VALUE) {
+      newGrid[i][j] = cellValue + 1;
+    } else if (cellValue == BACKGROUND_VALUE){
+      newGrid[i][j] = MAX_COLOR_VALUE;
+    } else {
+      newGrid[i][j] = BACKGROUND_VALUE;
+    }
+    
     this.gameGrid = newGrid;
-    this.pauseForDuration(1500);
+    this.pauseForDuration(2500);
   }
 
   getInPx(cells: number){
@@ -312,17 +440,54 @@ export class GameBoard {
     this.canvas.height = newHeight;
     this.canvas.style.width = newWidth+'px';
     this.canvas.style.height = newHeight+'px';
+    
+    this.GAME_CONFIG.BOARD_WIDTH = this.getInCell(newWidth);
+    this.GAME_CONFIG.BOARD_HEIGHT = this.getInCell(newHeight);
+    
+    if(this.GAME_CONFIG.HOLD_FRAME && this.gameInstance){
+      this.startGame(this.gameInstance);
+    }
+  }
 
-    this.boardWidth = this.getInCell(newWidth);
-    this.boardHeight = this.getInCell(newHeight);
+  handleMouseZoom(event: WheelEvent){
+    if (!this.GAME_CONFIG.ALLOW_CURSOR_INTERACTION) return;
+    event.preventDefault(); // Stop the page from scrolling
+
+    const oldCellSize = this.GAME_CONFIG.CELL_SIZE;
+    let newCellSize = oldCellSize;
+
+    if (event.deltaY < 0) {
+        newCellSize = Math.min(oldCellSize + 1, 50); // Zoom in, max size 50
+    } else if (event.deltaY > 0) {
+        newCellSize = Math.max(oldCellSize - 1, 1);  // Zoom out, min size 1
+    }
+    
+    if (newCellSize === oldCellSize) return;
+    
+    const rect = this.canvas.getBoundingClientRect();
+    const cursorX = event.clientX - rect.left;
+    const cursorY = event.clientY - rect.top;
+
+    const virtualCursorX = cursorX - this.cameraOffsetX;
+    const virtualCursorY = cursorY - this.cameraOffsetY;
+
+    const scaleFactor = newCellSize / oldCellSize;
+
+    this.GAME_CONFIG.CELL_SIZE = newCellSize;
+
+    this.cameraOffsetX = cursorX - (virtualCursorX * scaleFactor);
+    this.cameraOffsetY = cursorY - (virtualCursorY * scaleFactor);
   }
 
   pauseForDuration(durationMs: number = 10000) {
     if (!this.gameInstance) return;
 
     this.gameInstance.pause(); 
-    setTimeout(() => {
+    this.GAME_CONFIG.HOLD_FRAME = true;
+    clearTimeout(this.pauseTimer);
+    this.pauseTimer = setTimeout(() => {
         this.gameInstance?.play(); 
+        this.GAME_CONFIG.HOLD_FRAME = false;
     }, durationMs); 
   }
 }
