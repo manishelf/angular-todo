@@ -80,6 +80,7 @@ export class NavbarComponent implements AfterViewInit {
       "GameOfLife",
       "JuliaSet",
       "JuliaSet0_7885",
+      "Arkanoid",
       "MandelBrotSet",
       "LineGrid",
       "Checkered",

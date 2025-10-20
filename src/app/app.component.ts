@@ -12,6 +12,7 @@ import { MandelBrotSet } from './game/MandelBrotSet';
 import { JuliaSet } from './game/JuliaSet';
 import { Game } from './game/Game';
 import { JuliaSet0_7885 } from './game/JuliaSet0_7885';
+import { Arkanoid } from './game/Arkanoid';
 
 @Component({
   selector: 'app-root',
@@ -66,13 +67,13 @@ export class AppComponent implements AfterViewInit{
     let canvas: HTMLCanvasElement = this.backgroundCanvasEle.nativeElement;
     this.gameBoard = new GameBoard(canvas);
     
-    let gameInstance = this.getGameInstance(gameBackground);
-    if(!gameInstance) return;
+    // let gameInstance = this.getGameInstance(gameBackground);
+    // if(!gameInstance) return;
     
 
-    this.themeGames(this.gameBoard);
+    // this.themeGames(this.gameBoard);
     
-    this.gameBoard.startGame(gameInstance);
+    this.gameBoard.startGame(new Arkanoid());
     
     setInterval(()=>{
       if(!this.gameBoard?.GAME_CONFIG.ALLOW_CURSOR_INTERACTION)
@@ -85,7 +86,8 @@ export class AppComponent implements AfterViewInit{
       case "GameOfLife": return new GameOfLife();
       case "JuliaSet": return new JuliaSet();
       case "JuliaSet0_7885": return new JuliaSet0_7885();
-      case "MandelBrotSet": return new MandelBrotSet(); 
+      case "MandelBrotSet": return new MandelBrotSet();
+      case "Arkanoid": return new Arkanoid(); 
       case "LineGrid": return new LineGrid();
       case "Checkered": return new Checkered();
       default: return null;
