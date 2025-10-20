@@ -78,9 +78,11 @@ export class GameBoard {
 
     if(this.GAME_CONFIG.ALLOW_CURSOR_INTERACTION){
       this.canvas.classList.add('z-2');
+      this.canvas.classList.remove('z-0');
       // does not create duplicates and setting css property does not work here
     }else{
       this.canvas.classList.add('z-0');
+      this.canvas.classList.remove('z-2');
     }
 
     if(!this.gameInstance.paused || this.GAME_CONFIG.HOLD_FRAME){

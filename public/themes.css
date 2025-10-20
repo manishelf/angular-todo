@@ -85,7 +85,7 @@ html[data-theme="tokyo-night"] {
  --game-cell-color-b: #7aa2f7;
  --game-cell-color-c: #f7768e;
  --game-cell-color-d: #414868;
- --game-cell-color-e: #24283b; 
+ --game-cell-color-e: #fff; 
 }
 
 html[data-theme="neon"] {

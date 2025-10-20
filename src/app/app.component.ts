@@ -49,6 +49,10 @@ export class AppComponent implements AfterViewInit{
     }else if (event.key ===']' && event.ctrlKey){
       event.preventDefault();
       this.router.navigate(['/home']);
+    }else if(event.key === 'l' && event.altKey){
+      if(this.gameBoard){
+        this.gameBoard.GAME_CONFIG.ALLOW_CURSOR_INTERACTION = !this.gameBoard.GAME_CONFIG.ALLOW_CURSOR_INTERACTION;
+      }
     }
   }
 
@@ -138,11 +142,6 @@ export class AppComponent implements AfterViewInit{
         this.currentGameInstanceName = gameBackgroud;
       }
     }
-  }
-
-  setGameClearFrame(state: boolean){
-    if(this.gameBoard)
-      this.gameBoard.GAME_CONFIG.CLEAR_BG_EACH_FRAME = true;
   }
 }
 
