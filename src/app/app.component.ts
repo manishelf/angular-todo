@@ -73,7 +73,7 @@ export class AppComponent implements AfterViewInit{
 
     this.themeGames(this.gameBoard);
     
-    this.gameBoard.startGame(gameBackground);
+    this.gameBoard.startGame(gameInstance);
     
     setInterval(()=>{
       if(!this.gameBoard?.GAME_CONFIG.ALLOW_CURSOR_INTERACTION)
