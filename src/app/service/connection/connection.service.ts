@@ -41,7 +41,7 @@ export class ConnectionService {
         (con)=>{
           if(!con) return;
           let recentLoginsMap = localStorage['recentLogins'];
-          if(recentLoginsMap == 'null') {
+          if(!recentLoginsMap || recentLoginsMap == 'null') {
             this.router.navigate(['/login']);
             return;
           }

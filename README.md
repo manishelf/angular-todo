@@ -33,6 +33,7 @@
                     </ul>
                     </li>
                 </ul>
+                <span> Alt+l to hide the item list using the background</span>
             </span>
         </div>
     </div>
