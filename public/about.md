@@ -108,20 +108,26 @@
 ---
 ---
 ## <a id="usergroups">User Groups</a>
-  - when tha App server is deployed users can Signup for the default usergroup 'qtodo' or create their own usergroup
+  - when tha App server is deployed users can Signup for the default usergroup `qtodo` or create their own usergroup
   - each user will belong to some usergroup created by them or some other usergroup
-  - usergroups proved ability for users to colaborate on notes / share their notes to others in a Author -> Audience way
-  - usegroups can be access controled by Owner / Manager
+  - usergroups proved ability for users to colaborate on notes o share their notes to others in a Author -> Audience way
+  - usegroups can be **access controled** by Owner / Manager
   - Permissions are discrete and can be granted / removed for given participants
-  - A usergroup can be open (group is selectable at signup) or not (user must be made aware of the name to join)
-  - A usegroup can be colaboration (participants are sent realtime updates of items) or not
-  - 
+  - A usergroup can be **open** (group is selectable at signup) or not (user must be made aware of the name to join)
+  - A usegroup can be **colaboration** (participants are sent **realtime updates** of items) or not
+  - Permission list -
+    - `READ,  GET_DOCUMENT,  WRITE,  EDIT,  DELETE,  COLAB,  SHARE, `
+    - `CHANGE_UG_CONFIG,  REMOVE_PARTICIPANT,  ADD_PARTICIPANTS,  MANAGE_PARTICIPANT_PERMISSIONS,  ENABLE_DISABLE_UG,  SERVER_TOOLS,`
+  - Roles -
+    - `AUTHOR,  AUDIENCE,  COLLABORATOR,  ADMIN,  UG_OWNER`
+  - For user to colaborate the user must have COLAB permission to allow the socket connection
   - usergroup can be managed in the profile page
 ---
 
 ---
 ## <a id="usergroups">Tech stack</a>
-
+  - **Frontend** - IndexDB, angular 19, tailwind
+  - **Backend** - Java - H2DB, Spring Boot REST service, Spring Security with JWT, Protobuf
 ---
 
 ## <a id="backup">Backup</a>
