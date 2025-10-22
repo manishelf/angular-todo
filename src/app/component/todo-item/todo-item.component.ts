@@ -48,6 +48,9 @@ export class TodoItemComponent implements OnChanges, AfterContentChecked{
   }
   
   ngOnChanges(): void {
+    
+    this.borderColour = '';
+
     this.borderColour += 'type-normal ';
     if (this.item.setForReminder) {
       this.borderColour += 'type-reminder ';

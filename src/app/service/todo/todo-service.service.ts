@@ -73,7 +73,7 @@ export class TodoServiceService implements OnDestroy {
             return null;
           }
           else{
-            listUpdated = true;                        
+            listUpdated = true;                                    
             return {...changedItem};
           }
         }

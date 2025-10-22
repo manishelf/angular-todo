@@ -414,7 +414,10 @@ export class NavbarComponent implements AfterViewInit {
     if(themeName === 'random'){
       const allThemes = Object.values(this.availableThemes)
         .flat()
-        .filter(name => name !== 'random');
+        .filter(name => name !== 'random' 
+          && !this.availableThemes['background'].includes(name));
+        // O(n*3)?
+        
       const randomIndex = Math.floor(Math.random() * allThemes.length);
       themeName = allThemes[randomIndex] as string;
     }
