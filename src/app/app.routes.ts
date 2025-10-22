@@ -6,6 +6,7 @@ import { AboutComponent } from './page/about/about.component';
 import { VisualizeComponent } from './page/visualize/visualize.component';
 import { LoginComponent } from './page/login/login.component';
 import { ProfileComponent } from './page/user/profile/profile.component';
+import { BinComponent } from './page/bin/bin.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -13,8 +14,8 @@ export const routes: Routes = [
   { path: 'home', component: HomeComponent , children: [
     { path: 'clear', component: HomeComponent },
   ]},
-  { path: 'bin', component: HomeComponent, children:[
-    { path: 'clear', component: HomeComponent }
+  { path: 'bin', component: BinComponent, children:[
+    { path: 'clear', component: BinComponent }
   ] },
   { path: 'demo', component: HomeComponent },
   { path: 'edit', component: EditorComponent, children: [

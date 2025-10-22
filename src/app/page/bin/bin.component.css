@@ -1,0 +1,18 @@
+.animate-focus > * {
+    display: block;
+    transition: .2s;
+}
+
+.animate-focus:hover > *,
+.animate-focus:focus > * {
+    translate: 0 -0.2lh;
+}
+
+.shadow-colored:hover,
+.shadow-colored:focus {
+  filter: drop-shadow(2px 2px 2px var(--button-icon-color));
+}
+
+.shadow-colored{
+  filter: drop-shadow(1px 1px 1px var(--button-icon-color));
+}

@@ -547,6 +547,8 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
   }
 
   async onAddClick() {
+    if(this.todoItem.deleted) return;
+    
     if (this.userForm?.dynamicForm.invalid) {
       console.log('user defined field validation failed - ');
       console.error(this.userForm.state());

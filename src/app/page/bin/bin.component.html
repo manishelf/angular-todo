@@ -1,4 +1,12 @@
 <div tabindex="1"  class="h-full overflow-y-auto justify-center">
+    <div class="w-full flex flex-col justify-center">
+        <div class="mb-8">
+            <span class="block text-center text-3xl font-semibold text-amber-600 m-4">
+                Local Recycle Bin
+                <a routerLink="/bin/clear" routerLinkActive="active" ariaCurrentWhenActive="page" title="Clear the recycle bin" class="ml-4 text-2xl text-gray-500 hover:text-amber-800 transition-colors duration-200">Clear</a>
+            </span>
+        </div>
+    </div>
     <cdk-virtual-scroll-viewport itemSize="autosize" class="h-full">
         <header class="m-2"></header>
         <div class="flex flex-row flex-wrap">
@@ -8,7 +16,7 @@
         *cdkVirtualFor="let todoItem of itemList$ | async; let i = index; trackBy: trackById" [id]="i"  
         class="flex-auto relative max-w-full w-fit h-fit mx-2 my-1 rounded-2xl focus:outline-2 hover:outline-2 hover:shadow-lg
          outline-offset-2 shadow-colored transition-all animate-focus">
-            <app-todo-item [item]="todoItem" [fromBin]="false" [minimized]="!fromSearch  || (i>1)"/>
+            <app-todo-item [item]="todoItem" [fromBin]="true" [minimized]="!fromSearch  || (i>1)"/>
         </div>
         </div>
         <footer class="w-full h-10" ></footer>

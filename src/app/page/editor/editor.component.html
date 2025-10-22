@@ -14,6 +14,7 @@
         (click)="onAddClick()"
         title="Save the note"
         class="bg-[#70e000]"
+        *ngIf="!todoItem.deleted"
       >
         <mat-icon>save</mat-icon>
       </button> 

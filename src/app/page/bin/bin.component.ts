@@ -5,19 +5,25 @@ import { CommonModule } from '@angular/common';
 import { TodoItemComponent } from './../../component/todo-item/todo-item.component';
 import {
   ActivatedRoute,
+  NavigationExtras,
   Params,
   Router,
+  RouterLink,
+  RouterLinkActive,
 } from '@angular/router';
 import { last, Observable, of, Subscription, switchMap } from 'rxjs';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, TodoItemComponent, ScrollingModule],
-  templateUrl: './home.component.html',
-  styleUrl: './home.component.css',
+  imports: [CommonModule, TodoItemComponent, RouterLink, RouterLinkActive, ScrollingModule],
+  templateUrl: './bin.component.html',
+  styleUrl: './bin.component.css',
 })
-export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
+export class BinComponent implements OnInit, OnDestroy {
+
+  /** Code duplication for Home / bin as the caching does not allow correct functionality / customization*/
+
   itemList$: Observable<TodoItem[]> = of([])
   fromSearch: boolean = false;
 
@@ -34,28 +40,10 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
       todoService.fromBin = true;
       todoService.deleteAll();
       this.router.navigate(['/bin']);
-    } else if (url === '/home/clear') {
-      todoService.fromBin = false;
-      todoService.deleteAll();
-      this.router.navigate(['/home']);
-    } else if (url === '/demo') {
-      let confirm = prompt('Download sample todo items? [Y|N]');
-      if (confirm === 'Y') {
-        fetch('/todo-demo-items.json')
-          .then((response) => {
-            if (!response.ok) {
-              console.error('failed to load the demo items', response);
-            }
-            return response.json();
-          })
-          .then((data) => {
-            this.todoService.addMany(data.items);
-            this.router.navigate(['/home']);
-          });
-      }
     }
-    this.todoService.fromBin = false;
-    console.log('ctor - home', Date.now());
+    this.todoService.fromBin = true;
+    this.todoService.initializeItems();
+    console.log('ctor - bin', Date.now());
   }
 
   ngOnInit(): void {
@@ -88,7 +76,7 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       }
     );
-    console.log('init', Date.now());
+    console.log('init - bin', Date.now());
   }
 
    onClickTodoItem(event: Event, item: TodoItem) {
@@ -202,15 +190,13 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
       this.onClickTodoItem(event, item);
     }
   }
-  ngAfterViewInit(): void {
-    console.log('view init', Date.now());
-  }
+  
   ngOnDestroy(): void {
     if (this.queryParamSubscription) {
       this.queryParamSubscription.unsubscribe();
     }
-    console.log('Destroy', Date.now());
-    
+    this.todoService.fromBin = false;
+    this.todoService.initializeItems();
   }
 
   //called on each view check
