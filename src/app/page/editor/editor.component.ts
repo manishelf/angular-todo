@@ -7,6 +7,7 @@ import {
   HostListener,
   Input,
   OnChanges,
+  OnDestroy,
   OnInit,
   Output,
   ViewChild,
@@ -32,6 +33,7 @@ import { ToastService } from 'angular-toastify';
 import { TagListComponent } from '../../component/tag-list/tag-list.component';
 import{v4 as uuidv4} from 'uuid';
 import { localUser, UserService } from '../../service/user/user.service';
+import { Subscription } from 'rxjs';
 
 declare var Prism: any;
 
@@ -41,7 +43,7 @@ declare var Prism: any;
   styleUrls: ['./editor.component.css'],
   imports: [FormsModule, CommonModule, MatIconModule, UserFormComponent, TagListComponent],
 })
-export class EditorComponent implements AfterViewChecked, AfterViewInit {
+export class EditorComponent implements AfterViewChecked, AfterViewInit, OnDestroy {
   
   @ViewChild('editorContainer') editorContainer!: ElementRef;
   @ViewChild('subjectTxt') subjectTxt!: ElementRef;
@@ -68,6 +70,8 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
 
   owningUsersEmail: string = '';
   owningUsersAlias: string = '';
+
+  userSubscription!: Subscription;
 
   todoItem: Omit<TodoItem, 'id'> = {
     subject: '',
@@ -132,6 +136,11 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
           }
         },100);
       });
+
+      this.userSubscription = this.userService.loggedInUser$.subscribe((user)=>{
+        if(this.todoItem.owningUser == localUser)
+          this.todoItem.owningUser = user;
+      });
     }
   }
 
@@ -148,7 +157,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
   
   updateOwningUser(): void {
     if(!this.todoItem.owningUser) return;
-    
+
     this.owningUsersAlias = this.todoItem.owningUser.alias || this.todoItem.owningUser.email;
     this.owningUsersEmail = this.todoItem.owningUser.email;
     
@@ -768,5 +777,11 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
 
   onCompletionClick() {
     this.todoItem.completionStatus = !this.todoItem.completionStatus;
+  }
+
+  ngOnDestroy(): void {
+    if(this.userSubscription){
+      this.userSubscription.unsubscribe();
+    }
   }
 }
