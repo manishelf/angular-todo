@@ -133,7 +133,7 @@ export class LoginComponent {
       user.password = "";
       let recentLogins = localStorage["recentLogins"];
       if(!recentLogins || recentLogins == 'null'){
-        recentLogins = `{"${localUser.email}/${localUser.userGroup}":${JSON.stringify(localUser)}}`;
+        recentLogins = `{"${localUser.userGroup}/${localUser.email}":${JSON.stringify(localUser)}}`;
       }
         
       recentLogins = JSON.parse(recentLogins);

@@ -49,7 +49,7 @@ export class ConnectionService {
           let lastUserKey = localStorage['lastLoggedInAs'];
           let lastUser = recentLoginsMap[lastUserKey];
 
-          if(lastUser.email == localUser.email && lastUser.userGroup == localUser.userGroup)
+          if(!lastUser || lastUser.email == localUser.email && lastUser.userGroup == localUser.userGroup)
             return;
 
           this.userService.loggedInUser.next(lastUser);
