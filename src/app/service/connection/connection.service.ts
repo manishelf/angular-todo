@@ -92,8 +92,8 @@ export class ConnectionService {
           });
           this.socketWorkers.set(payload['user_group'], wsWorker);
         }
+        localStorage['lastLoggedInAs'] = user.userGroup+'/'+user.email;
       }
-      localStorage['lastLoggedInAs'] = user.userGroup+'/'+user.email;
     });
 
     this.axios.interceptors.request.use(async (config)=> {

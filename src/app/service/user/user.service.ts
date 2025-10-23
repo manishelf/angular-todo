@@ -51,4 +51,10 @@ export class UserService {
     }
     return null;
   }
+
+  isThisCurrentUser(user: User): boolean{
+    let currentUser = this.loggedInUser.value;
+    return (currentUser.email === user.email)
+    && (currentUser.userGroup === user.userGroup);      
+  }
 }

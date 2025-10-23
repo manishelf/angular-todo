@@ -31,6 +31,7 @@ import { FormField, FormSchema, inputTagTypes } from '../../models/FormSchema';
 import { ToastService } from 'angular-toastify';
 import { TagListComponent } from '../../component/tag-list/tag-list.component';
 import{v4 as uuidv4} from 'uuid';
+import { localUser, UserService } from '../../service/user/user.service';
 
 declare var Prism: any;
 
@@ -63,6 +64,10 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
 
   leftIndentSpcaeCount: number = 0;
 
+  ownedByCurrentUser: boolean = false;
+
+  owningUsersEmail: string = '';
+  owningUsersAlias: string = '';
 
   todoItem: Omit<TodoItem, 'id'> = {
     subject: '',
@@ -73,7 +78,8 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
     completionStatus: false,
     setForReminder: false,
     creationTimestamp: new Date(Date.now()).toISOString(),
-    updationTimestamp: new Date(Date.now()).toISOString()
+    updationTimestamp: new Date(Date.now()).toISOString(),
+    owningUser: localUser
   };
 
   constructor(
@@ -82,6 +88,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
     private domSanitizer: DomSanitizer,
     private toaster: ToastService,
     private route: ActivatedRoute,
+    private userService: UserService
   ) {
     if (this.router.url.startsWith('/edit')) {
       const navigation = this.router.getCurrentNavigation();
@@ -133,9 +140,19 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit {
     setTimeout(()=>{
       this.subjectTxt.nativeElement.scrollIntoView();
       this.subjectTxt.nativeElement.focus();
-      this.onEventForResize()
+      this.onEventForResize();
+      this.updateOwningUser();
     },100); 
     this.convertedMarkdown = '';    
+  }
+  
+  updateOwningUser(): void {
+    if(!this.todoItem.owningUser) return;
+    
+    this.owningUsersAlias = this.todoItem.owningUser.alias || this.todoItem.owningUser.email;
+    this.owningUsersEmail = this.todoItem.owningUser.email;
+    
+    this.ownedByCurrentUser = this.userService.isThisCurrentUser(this.todoItem.owningUser); 
   }
 
   ngAfterViewChecked(): void {

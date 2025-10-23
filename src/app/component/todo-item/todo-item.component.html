@@ -3,36 +3,43 @@
         <div class="flex-grow-1 overflow-hidden cursor-pointer animate-flip" title="edit">
             <h2 class="border-0 border-b-1 w-fit">{{item.subject}}</h2> 
         </div>
-        <div class="flex flex-shrink-0">
-            <mat-icon (click)="optionsDisplayed=!optionsDisplayed" class="cursor-pointer hover:scale-120 option" title="options">
-              more_horiz
-            </mat-icon>
-            <mat-icon *ngIf="!minimized && item.description" class="cursor-pointer hover:scale-120 option" title="minimize" (click)="minimized=true">
-              unfold_less
-            </mat-icon>
-            <mat-icon *ngIf="minimized && item.description" class="cursor-pointer hover:scale-120 option" title="maximize" (click)="minimized=false">
-              unfold_more
-            </mat-icon>
-        </div>
-        <div *ngIf="optionsDisplayed" class="flex flex-row">
-            <div *ngIf="!fromBin">
-                <app-tag-list *ngIf="showTags" [tags]="item.tags" [editable]="true" (onChange)="onUpdateTags($event)" class="option"></app-tag-list>
-                <button type="button" class="cursor-pointer m-0.5 hover:scale-120" title="tags" (click)="showTags = !showTags" >
-                    <mat-icon class="option">local_offer</mat-icon>
-                </button>
-                <button type="button" class="cursor-pointer m-0.5 hover:scale-120" (click)="onClickSetReminder()" [title]="!item.setForReminder?'set reminder':'clear reminder'">
-                    <mat-icon class="option">{{!item.setForReminder?'alarm_add':'alarm_off'}}</mat-icon>
-                </button>
-                <button class="cursor-pointer m-0.5 hover:scale-120" (click)="onClickCompletionStatus()" [title]="!item.completionStatus?'mark done':'mark pending'">
-                <mat-icon class="option">{{!item.completionStatus?'done_all':'timelapse'}}</mat-icon>
-                </button>
-                <button class="cursor-pointer m-0.5 hover:scale-120" (click)="onClickDuplicate()" title="duplicate this item">
-                <mat-icon class="option">file_copy</mat-icon>
-                </button>
+        <div class="flex flex-col">
+            <div class="ml-auto">
+                <div class="flex flex-shrink-0">
+                    <mat-icon (click)="optionsDisplayed=!optionsDisplayed" class="cursor-pointer hover:scale-120 option" title="options">
+                    more_horiz
+                    </mat-icon>
+                    <mat-icon *ngIf="!minimized && item.description" class="cursor-pointer hover:scale-120 option" title="minimize" (click)="minimized=true">
+                    unfold_less
+                    </mat-icon>
+                    <mat-icon *ngIf="minimized && item.description" class="cursor-pointer hover:scale-120 option" title="maximize" (click)="minimized=false">
+                    unfold_more
+                    </mat-icon>
+                </div>
+                <div *ngIf="optionsDisplayed" class="flex flex-row">
+                    <div *ngIf="!fromBin">
+                        <app-tag-list *ngIf="showTags" [tags]="item.tags" [editable]="true" (onChange)="onUpdateTags($event)" class="option"></app-tag-list>
+                        <button type="button" class="cursor-pointer m-0.5 hover:scale-120" title="tags" (click)="showTags = !showTags" >
+                            <mat-icon class="option">local_offer</mat-icon>
+                        </button>
+                        <button type="button" class="cursor-pointer m-0.5 hover:scale-120" (click)="onClickSetReminder()" [title]="!item.setForReminder?'set reminder':'clear reminder'">
+                            <mat-icon class="option">{{!item.setForReminder?'alarm_add':'alarm_off'}}</mat-icon>
+                        </button>
+                        <button class="cursor-pointer m-0.5 hover:scale-120" (click)="onClickCompletionStatus()" [title]="!item.completionStatus?'mark done':'mark pending'">
+                        <mat-icon class="option">{{!item.completionStatus?'done_all':'timelapse'}}</mat-icon>
+                        </button>
+                        <button class="cursor-pointer m-0.5 hover:scale-120" (click)="onClickDuplicate()" title="duplicate this item">
+                        <mat-icon class="option">file_copy</mat-icon>
+                        </button>
+                    </div>
+                    <button type="button" class="cursor-pointer m-0.5 hover:scale-120" title="move to recycle bin" (click)="onClickDelete()">
+                        <mat-icon class="option">delete</mat-icon>
+                    </button>
+                </div>            
             </div>
-            <button type="button" class="cursor-pointer m-0.5 hover:scale-120" title="move to recycle bin" (click)="onClickDelete()">
-                <mat-icon class="option">delete</mat-icon>
-            </button>
+            <i *ngIf="!ownedByCurrentUser" [title]="owningUserEmail">
+                By {{owningUserAlias}}
+            </i>
         </div>
     </div>
     <div [ngClass]="minimized?'max-h-0 opacity-0':'max-h-[500px] max-w-29/30 opacity-100 overflow-auto m-auto pt-2 visible'"

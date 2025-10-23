@@ -364,6 +364,7 @@ export class TodoServiceService implements OnDestroy {
       eventFullDay: false,
       deleted: false,
       userDefined: { tag: {name:''}, formControlSchema: {}, data: null },
+      owningUser: localUser
     };
     try {
       item = JSON.parse(jsonString);

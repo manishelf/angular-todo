@@ -72,15 +72,21 @@
       </div>
   </div>
     <div class="editor-input-container rounded-lg shadow-md p-4">
-    <input
-    type="text"
-    #subjectTxt
-    class="w-full editor-subject-input p-3 rounded-lg outline-0 ring-2 ring-inset focus:ring-blue-600"
-    id="editor-subject-input"
-    [(ngModel)]="todoItem.subject"
-    placeholder="Title"
-    (keydown)="handleKeydownForSubject($event)"
-    />
+      <div class="flex flex-row">
+         <input
+          type="text"
+          #subjectTxt
+          class="w-full editor-subject-input p-3 rounded-lg outline-0 ring-2 ring-inset focus:ring-blue-600"
+          id="editor-subject-input"
+          [(ngModel)]="todoItem.subject"
+          placeholder="Title"
+          (keydown)="handleKeydownForSubject($event)"
+          />
+          <i class="pl-1" *ngIf="!ownedByCurrentUser" [title]="owningUsersEmail">
+            By <br> {{owningUsersAlias}}
+          </i>
+      </div>
+   
     <div *ngIf="option !== 'Editor'">
       <div  id="container" class="input-area-container w-full">
       <div id="line-numbers" (click)="onOptionClickOnDelay($event)" #lineNumbers class="container__lines mt-2"></div>

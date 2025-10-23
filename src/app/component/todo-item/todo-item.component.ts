@@ -8,6 +8,7 @@ import { ActivatedRoute, NavigationExtras, Route, Router } from '@angular/router
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { TagListComponent } from '../tag-list/tag-list.component';
 import { Tag } from '../../models/tag';
+import { localUser, UserService } from '../../service/user/user.service';
 
 declare var Prism : any;
 
@@ -29,7 +30,8 @@ export class TodoItemComponent implements OnChanges, AfterContentChecked{
     completionStatus: false,
     setForReminder: false,
     creationTimestamp: Date.now().toString(),
-    updationTimestamp: Date.now().toString()
+    updationTimestamp: Date.now().toString(),
+    owningUser: localUser
   };
 
   toolTipString: string = '';
@@ -43,12 +45,19 @@ export class TodoItemComponent implements OnChanges, AfterContentChecked{
   @Input() minimized: boolean = true;
   markdownHighlighted: boolean = false;
 
+  owningUserAlias: string = '';
+  owningUserEmail: string = '';
+  ownedByCurrentUser: boolean = true;
 
-  constructor(private todoService: TodoServiceService, private route:ActivatedRoute, private router: Router, private sanitizer: DomSanitizer) {
+  constructor(
+    private todoService: TodoServiceService,
+    private userService: UserService, 
+    private route:ActivatedRoute, 
+    private router: Router, 
+    private sanitizer: DomSanitizer) {
   }
   
-  ngOnChanges(): void {
-    
+  ngOnChanges(): void {     
     this.borderColour = '';
 
     this.borderColour += 'type-normal ';
@@ -63,6 +72,15 @@ export class TodoItemComponent implements OnChanges, AfterContentChecked{
                                         'last updated on - ' + new Date(this.item.updationTimestamp).toLocaleString();
 
     this.todoService.fromBin = this.fromBin;
+    this.updateOwningUser();
+  }
+
+  updateOwningUser(): void {
+    if(!this.item.owningUser) return;
+
+    this.owningUserAlias = this.item.owningUser.alias || this.item.owningUser.email;
+    this.owningUserEmail = this.item.owningUser.email;
+    this.ownedByCurrentUser = this.userService.isThisCurrentUser(this.item.owningUser); 
   }
 
   ngAfterContentChecked() {

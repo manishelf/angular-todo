@@ -6,6 +6,7 @@ import { Router, TitleStrategy, withDebugTracing } from '@angular/router';
 import { Subscription } from 'rxjs';
 import {v4 as uuidv4} from 'uuid';
 import { ConnectionService } from '../../service/connection/connection.service';
+import { localUser, UserService } from '../../service/user/user.service';
 
 declare var FullCalendar: any;
 
@@ -40,6 +41,7 @@ export class CalendarComponent implements AfterViewInit{
     private changeDetector: ChangeDetectorRef,
     private todoService: TodoServiceService,
     private router: Router,
+    private userService: UserService,
     @Inject(APP_BASE_HREF) private baseHref : string
   ) {
     this.todoService.fromBin = false;
@@ -191,6 +193,7 @@ export class CalendarComponent implements AfterViewInit{
         eventEnd: end,
         tags: [{ name: 'calendar event' }],
         eventFullDay: selectInfo.allDay,
+        owningUser: this.userService.loggedInUser.value
       };
       this.todoService.addItem(newTodoItem);
     }
