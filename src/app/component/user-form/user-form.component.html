@@ -116,7 +116,7 @@
               [placeholder]="field.placeholder"
               [readonly]="field.validation?.readonly"
             />
-            <a [href]="dynamicForm.get(field.name)?.value" class="outline-1">↗️</a>
+            <a [href]="dynamicForm.get(field.name)?.value" target="_blank" class="outline-1">↗️</a>
           </div>
           <iframe
             [src]="dynamicForm.get(field.name)?.value"
