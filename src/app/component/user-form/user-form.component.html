@@ -78,7 +78,8 @@
           [title]="field.label"
           class="w-2/3"
         >
-          <input
+          <div class="flex flex-row”>
+            <input
             class="w-full outline-1 overflow-auto"
             style="mix-blend-mode: difference"
             [value]="dynamicForm.get(field.name)?.value"
@@ -87,6 +88,8 @@
             [placeholder]="field.placeholder"
             [readonly]="field.validation?.readonly"
           />
+            <a [href]="dynamicForm.get(field.name)?.value" target="_blank" class="outline-1">↗️</a>
+          </div>
           <img
             [src]="dynamicForm.get(field.name)?.value"
             class="border border-1 w-full"
