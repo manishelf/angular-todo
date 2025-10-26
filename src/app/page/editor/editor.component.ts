@@ -138,7 +138,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit, OnDestr
       });
 
       this.userSubscription = this.userService.loggedInUser$.subscribe((user)=>{
-        if(this.todoItem.owningUser == localUser)
+        if(this.todoItem.owningUser == localUser && user != localUser)
           this.todoItem.owningUser = user;
       });
     }

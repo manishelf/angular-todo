@@ -120,7 +120,7 @@ export class UserFormComponent implements OnChanges {
 
           if( isFile && (typeof field.default) == "string" && field.default?.startsWith('/item/doc/')){
            this.connectionService.getUrlWithToken(field.default).then(url=>{
-            field.default = url;
+            (field.default as any) = this.getSafeLinkHtmlForIframe(url);
             this.createForm();
            });
           }
