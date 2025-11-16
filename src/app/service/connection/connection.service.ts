@@ -115,7 +115,7 @@ export class ConnectionService {
 
                     let data = (item.userDefined.data as any )[field.name] || '';
                     (item.userDefined.data as any)[field.name]=
-                      '/item/doc/'+user.userGroup+'_'+user.email.replace('.','_').replace('@','_')+'_'+fieldKey;
+                      '/item/doc/'+user.userGroup+'_'+user.email.replaceAll('.','_').replaceAll('@','_')+'_'+fieldKey;
 
                     const parts = data.split(';');
                     const mimeType = parts[0].split(':')[1];
