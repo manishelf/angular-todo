@@ -1,8 +1,9 @@
 import { User } from "../../../models/User";
 import { Axios } from "axios";
 import { BehaviorSubject, debounceTime, take } from 'rxjs';
-import { localUser } from "../../user/user.service";
+import { localUser } from "../../consts";
 import { TodoItem } from "../../../models/todo-item";
+import { escapeCharsRex } from "../../consts";
 import {v4} from 'uuid'
 export enum SYNC_OP{
     SYNC,
@@ -47,11 +48,11 @@ axios.interceptors.request.use(async (config)=> {
                 if(item.userDefined?.data){
                   if(field.type == 'image' || field.type == 'file' || field.type == 'iframe'){
 
-                    let fieldKey = item.uuid+'_'+item.userDefined?.tag.name+'_'+field.name.replaceAll('/','_').replaceAll('\\','_');
+                    let fieldKey = item.uuid+'_'+item.subject.replaceAll(escapeCharsRex,'_')+'_'+item.userDefined?.tag.name+'_'+field.name.replaceAll(escapeCharsRex,'_');
                     
                     let data = (item.userDefined.data as any )[field.name] || '';
                     (item.userDefined.data as any)[field.name]=
-                      '/item/doc/'+user?.userGroup+'_'+user?.email.replaceAll('.','_').replaceAll('@','_')+'_'+fieldKey;
+                      '/item/doc/'+user?.userGroup+'/'+user?.email.replaceAll(escapeCharsRex,'_')+'/'+fieldKey;
 
                     const parts = data.split(';');
                     const mimeType = parts[0].split(':')[1];

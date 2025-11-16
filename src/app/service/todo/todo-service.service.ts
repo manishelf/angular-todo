@@ -21,11 +21,12 @@ import { TodoItemDeleteService } from './todo-item-crud/local-crud/todo-item-del
 import { TodoItemGetService } from './todo-item-crud/local-crud/todo-item-get.service';
 import { ToastService } from 'angular-toastify';
 import { SortService } from '../sort/sort.service';
-import { UserService , localUser} from '../user/user.service';
+import { UserService } from '../user/user.service';
 import { User } from '../../models/User';
 import { BackendCrudService } from './todo-item-crud/backend-crud/backend-crud.service';
 import { Tag } from '../../models/tag';
 import { SearchService } from '../search/search.service';
+import { IDbRootName, localUser } from '../consts';
 
 @Injectable({
   providedIn: 'root',
@@ -95,7 +96,7 @@ export class TodoServiceService implements OnDestroy {
 
 
   initializeIndexDB(user:User){
-    let dbName = 'todo_items_db/'+user.userGroup+'/'+user.email;
+    let dbName = IDbRootName+'/'+user.userGroup+'/'+user.email;
     console.log(dbName);
     
     const request = indexedDB.open(dbName, 1);

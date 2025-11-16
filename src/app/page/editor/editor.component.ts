@@ -32,8 +32,9 @@ import { FormField, FormSchema, inputTagTypes } from '../../models/FormSchema';
 import { ToastService } from 'angular-toastify';
 import { TagListComponent } from '../../component/tag-list/tag-list.component';
 import{v4 as uuidv4} from 'uuid';
-import { localUser, UserService } from '../../service/user/user.service';
+import { UserService } from '../../service/user/user.service';
 import { Subscription } from 'rxjs';
+import { localUser } from '../../service/consts';
 
 declare var Prism: any;
 

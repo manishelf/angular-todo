@@ -1,5 +1,5 @@
 import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
-import { UserService,localUser } from './../../service/user/user.service';
+import { UserService } from './../../service/user/user.service';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
@@ -7,6 +7,7 @@ import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, 
 import { ConnectionService } from '../../service/connection/connection.service';
 import { User } from '../../models/User';
 import { ToastService } from 'angular-toastify';
+import { localUser } from '../../service/consts';
 
 @Component({
   selector: 'app-login',

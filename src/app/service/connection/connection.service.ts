@@ -3,11 +3,12 @@ import { ToastService } from 'angular-toastify';
 import { BehaviorSubject, last } from 'rxjs';
 
 import {Axios} from 'axios';
-import { UserService , localUser} from './../user/user.service';
+import { UserService } from './../user/user.service';
 import { Route, Router } from '@angular/router';
 import { TodoItem } from '../../models/todo-item';
 import { TodoItemUpdateService } from '../todo/todo-item-crud/local-crud/todo-item-update.service';
 import { SOC_OP } from './socket/socket.worker';
+import { localUser , escapeCharsRex} from '../consts';
 
 @Injectable({
   providedIn: 'root',
@@ -111,11 +112,11 @@ export class ConnectionService {
                 if(item.userDefined?.data){
                   if(field.type == 'image' || field.type == 'file' || field.type == 'iframe'){
                     let user = this.userService.loggedInUser.value;
-                    let fieldKey = item.uuid+'_'+item.userDefined?.tag.name+'_'+field.name.replaceAll('/','_').replaceAll('\\','_');
+                    let fieldKey = item.uuid+'_'+item.subject.replaceAll(escapeCharsRex, '_')+'_'+item.userDefined?.tag.name+'_'+field.name.replaceAll(escapeCharsRex,"_");
 
                     let data = (item.userDefined.data as any )[field.name] || '';
                     (item.userDefined.data as any)[field.name]=
-                      '/item/doc/'+user.userGroup+'_'+user.email.replaceAll('.','_').replaceAll('@','_')+'_'+fieldKey;
+                      '/item/doc/'+user.userGroup+'/'+user.email.replaceAll(escapeCharsRex,'_')+'/'+fieldKey;
 
                     const parts = data.split(';');
                     const mimeType = parts[0].split(':')[1];

@@ -3,12 +3,7 @@ import { BehaviorSubject } from 'rxjs';
 import { User } from '../../models/User';
 import { ToastService } from 'angular-toastify';
 import { Route, Router } from '@angular/router';
-
-export const localUser:User = {
-  email: 'qtodo',
-  userGroup: 'local',
-  alias: 'local'
-}
+import { localUser } from '../consts';
 
 @Injectable({
   providedIn: 'root',

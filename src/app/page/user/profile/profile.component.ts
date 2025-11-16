@@ -1,6 +1,6 @@
 import { Component, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { User } from '../../../models/User';
-import { localUser, UserService } from '../../../service/user/user.service';
+import { UserService } from '../../../service/user/user.service';
 import { MatIcon } from '@angular/material/icon';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -8,6 +8,7 @@ import { BeanItemComponent } from '../../../component/bean-item/bean-item.compon
 import { ManageUserPermissionsComponent } from '../../../component/manage-user-permissions/manage-user-permissions.component';
 import { ConnectionService } from '../../../service/connection/connection.service';
 import { ToastService } from 'angular-toastify';
+import { localUser } from '../../../service/consts';
 
 @Component({
   selector: 'app-profile',

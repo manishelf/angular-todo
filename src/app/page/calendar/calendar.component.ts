@@ -6,7 +6,8 @@ import { Router, TitleStrategy, withDebugTracing } from '@angular/router';
 import { Subscription } from 'rxjs';
 import {v4 as uuidv4} from 'uuid';
 import { ConnectionService } from '../../service/connection/connection.service';
-import { localUser, UserService } from '../../service/user/user.service';
+import { UserService } from '../../service/user/user.service';
+import { localUser } from '../../service/consts';
 
 declare var FullCalendar: any;
 

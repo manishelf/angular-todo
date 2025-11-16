@@ -8,7 +8,8 @@ import { ActivatedRoute, NavigationExtras, Route, Router } from '@angular/router
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { TagListComponent } from '../tag-list/tag-list.component';
 import { Tag } from '../../models/tag';
-import { localUser, UserService } from '../../service/user/user.service';
+import { UserService } from '../../service/user/user.service';
+import { localUser } from '../../service/consts';
 
 declare var Prism : any;
 
