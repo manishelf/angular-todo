@@ -136,13 +136,12 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit, OnDestr
             this.router.navigate(['/']);
           }
         },100);
-      });
-
-      this.userSubscription = this.userService.loggedInUser$.subscribe((user)=>{
-        if(this.todoItem.owningUser == localUser && user != localUser)
-          this.todoItem.owningUser = user;
-      });
+      });  
     }
+    this.userSubscription = this.userService.loggedInUser$.subscribe((user)=>{      
+      if(this.todoItem.owningUser == localUser && user != localUser)
+        this.todoItem.owningUser = user;
+    });
   }
 
 
