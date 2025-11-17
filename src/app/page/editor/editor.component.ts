@@ -378,7 +378,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit, OnDestr
           icon = '└──';
         }
         if(!visited.includes(child.subject)){
-          tree +=icon+' ['+child.subject+'](/edit?id='+child.id+')\n';
+          tree +=icon+' ['+child.subject+'](./edit?id='+child.id+')\n';
         }
         visited.push(child.subject);
         i++;
