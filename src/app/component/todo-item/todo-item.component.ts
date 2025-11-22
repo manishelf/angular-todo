@@ -10,8 +10,8 @@ import { TagListComponent } from '../tag-list/tag-list.component';
 import { Tag } from '../../models/tag';
 import { UserService } from '../../service/user/user.service';
 import { localUser } from '../../service/consts';
+import { MarkdownService } from '../../service/markdown/markdown.service';
 
-declare var Prism : any;
 
 @Component({
   selector: 'app-todo-item',
@@ -20,7 +20,7 @@ declare var Prism : any;
   styleUrl: './todo-item.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TodoItemComponent implements OnChanges, AfterContentChecked{
+export class TodoItemComponent implements OnChanges{
   @Input() item: TodoItem = {
     id:Number.MIN_VALUE,
     version:0,
@@ -36,7 +36,7 @@ export class TodoItemComponent implements OnChanges, AfterContentChecked{
   };
 
   toolTipString: string = '';
-  parsedMD: SafeHtml = '';
+  @Input() parsedMD: SafeHtml = '';
   
   borderColour: string = '';
   
@@ -44,7 +44,8 @@ export class TodoItemComponent implements OnChanges, AfterContentChecked{
   @Input() optionsDisplayed: boolean = false;
   @Input() showTags:boolean = false;
   @Input() minimized: boolean = true;
-  markdownHighlighted: boolean = false;
+  markdownParsed: boolean = false;
+  unfoldIcon = 'unfold_more';
 
   owningUserAlias: string = '';
   owningUserEmail: string = '';
@@ -53,10 +54,8 @@ export class TodoItemComponent implements OnChanges, AfterContentChecked{
   constructor(
     private todoService: TodoServiceService,
     private userService: UserService, 
-    private route:ActivatedRoute, 
-    private router: Router, 
-    private sanitizer: DomSanitizer) {
-  }
+    private markdownService: MarkdownService,
+  ) {}
   
   ngOnChanges(): void {     
     this.borderColour = '';
@@ -73,8 +72,13 @@ export class TodoItemComponent implements OnChanges, AfterContentChecked{
                                         'last updated on - ' + new Date(this.item.updationTimestamp).toLocaleString();
 
     this.todoService.fromBin = this.fromBin;
-    this.updateOwningUser();
+    this.updateOwningUser();    
+    if(!this.minimized && !this.markdownParsed){      
+      this.parseMd();
+    }
   }
+
+
 
   updateOwningUser(): void {
     if(!this.item.owningUser) return;
@@ -83,24 +87,6 @@ export class TodoItemComponent implements OnChanges, AfterContentChecked{
     this.owningUserEmail = this.item.owningUser.email;
     this.ownedByCurrentUser = this.userService.isThisCurrentUser(this.item.owningUser); 
   }
-
-  ngAfterContentChecked() {
-    if(!this.minimized && !this.markdownHighlighted){
-      this.markdownHighlighted = true;
-      
-      let markdown = marked.parse(this.item.description).toString();
-      markdown = markdown.replace(/\n\n/g, '<br>');
-      let code = markdown.match(/<code class="language-(\w+)">([\s\S]*?)<\/code>/g) || markdown.match(/<code>([\s\S]*?)<\/code>/);
-      if (code) {
-        for (let i = 0; i < code.length; i++) {
-          let snippet = code[i];
-          markdown = markdown.replace(snippet,  snippet.replace(/<br>/g,'\n').replace(/&lt;br&gt;/g, '<br>'));
-        }
-      }
-      this.parsedMD = this.sanitizer.bypassSecurityTrustHtml(markdown);
-      requestAnimationFrame(()=>{Prism.highlightAll()});
-    } 
-  } 
 
   onClickDelete(){
     this.todoService.deleteItem(this.item);
@@ -139,5 +125,24 @@ export class TodoItemComponent implements OnChanges, AfterContentChecked{
     duplicateItem.creationTimestamp = new Date(Date.now()).toISOString();
     duplicateItem.updationTimestamp = new Date(Date.now()).toISOString();
     this.todoService.addItem(duplicateItem);
+  }
+
+  onClickToggleMarkdownUnfold(){
+    if(this.minimized){
+      this.unfoldIcon = 'unfold_less';
+    }else {
+      this.unfoldIcon = 'unfold_more';
+    }
+    if(!this.markdownParsed){
+      this.parseMd();
+    }
+    this.minimized = !this.minimized;
+  }
+
+  parseMd(){
+    this.markdownService.parse(this.item.description).then((safeHtml)=>{
+        this.markdownParsed = true;
+        this.parsedMD = safeHtml;   
+    });
   }
 }

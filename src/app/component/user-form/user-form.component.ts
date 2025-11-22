@@ -67,10 +67,12 @@ export class UserFormComponent implements OnChanges {
       }
 
       if(this.fileControlsId.length>0){
-        await new Promise((res)=>{
+        console.log(1);
+        
+        await new Promise((res,rej)=>{
           for(let fileId of this.fileControlsId){
             let ele = document.getElementById(fileId);
-            let file = (ele as any).files[0];
+            let file = (ele as any)?.files[0];
             if (file) {
                 const reader = new FileReader();
 
@@ -79,8 +81,10 @@ export class UserFormComponent implements OnChanges {
                   data[fileId]=dataUrl;
                   res(data);
                 };
-
+                
                 reader.readAsDataURL(file);
+            }else{
+              res(data);
             }
           }
         });

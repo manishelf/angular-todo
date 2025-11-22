@@ -12,7 +12,6 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
-import * as marked from 'marked';
 import { FormControl, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
@@ -35,8 +34,7 @@ import{v4 as uuidv4} from 'uuid';
 import { UserService } from '../../service/user/user.service';
 import { Subscription } from 'rxjs';
 import { localUser } from '../../service/consts';
-
-declare var Prism: any;
+import { MarkdownService } from '../../service/markdown/markdown.service';
 
 @Component({
   selector: 'app-markdown-editor',
@@ -90,10 +88,10 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit, OnDestr
   constructor(
     private todoServie: TodoServiceService,
     private router: Router,
-    private domSanitizer: DomSanitizer,
     private toaster: ToastService,
     private route: ActivatedRoute,
-    private userService: UserService
+    private userService: UserService,
+    private markdownService: MarkdownService
   ) {
     if (this.router.url.startsWith('/edit')) {
       const navigation = this.router.getCurrentNavigation();
@@ -473,9 +471,9 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit, OnDestr
               '_' +
               new Date(data.file.lastModified).toLocaleString().replaceAll(/[-,\/.: ]/g,'_');
           let field: FormField = {
-            type: 'iframe',
+            type: 'file',
             name: fileName,
-            label: fileName,
+            label: data.file.name,
             default: 'file data',
             validation:{
               readonly: true,
@@ -501,13 +499,12 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit, OnDestr
           if(!hasPastedFiles){
             this.todoItem.tags.push({name: 'has-attachments'});
           }
-          
+          let fieldRef = 
+          ` @media[${field.label}](#Ref:${field.name}){type:${field.type}, width:100px, height:100px} `
           const cursorPosition = descArea.selectionStart;
           this.todoItem.description =
             this.todoItem.description.substring(0, cursorPosition) +
-            ' #Ref:' +
-            field.label +
-            ' ' +
+            fieldRef + 
             this.todoItem.description.substring(cursorPosition);
         }
       };
@@ -518,7 +515,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit, OnDestr
 
   onOptionClickOnDelay(event: Event){
     let selection = window.getSelection();
-    if(selection && selection.toString().length > 0) {
+    if(selection && selection.toString().length > 0 || (event.target as HTMLElement).classList.contains('option')) {
         return;
     }
 
@@ -540,28 +537,9 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit, OnDestr
     }  
 
     if (this.option == 'Preview') {
-      requestAnimationFrame(()=>{
-        this.editiorLinesLoaded = false;
-        let markdown = marked.parse(this.todoItem.description).toString();
-
-        let code =
-          markdown.match(/<code class="language-(\w+)">([\s\S]*?)<\/code>/g) ||
-          markdown.match(/<code>([\s\S]*?)<\/code>/);
-
-          if (code) {
-            for (let i = 0; i < code.length; i++) {
-            let snippet = code[i];
-            markdown = markdown.replace(snippet, snippet.replace(/<br>/g, '\n'));
-          }
-          requestAnimationFrame(() => {
-            Prism.highlightAll();
-          });
-        }
-        this.convertedMarkdown =
-          this.domSanitizer.bypassSecurityTrustHtml(markdown);
-        if (this.todoItem.subject.trim().length != 0) {
-          this.convertedMarkdown = this.domSanitizer.bypassSecurityTrustHtml(markdown);
-        }
+      this.editiorLinesLoaded = false;
+      this.markdownService.parse(this.todoItem.description).then((markdown)=>{
+        this.convertedMarkdown = markdown;
       });
     }else{
       requestAnimationFrame(()=>{

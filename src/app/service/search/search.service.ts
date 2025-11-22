@@ -148,9 +148,8 @@ export class SearchService {
             this.getService.getAllItems(db, fromBin).subscribe(
               (items)=>{
                 const escapedTokens = searchTerms.map((term)=>term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
-                const pattern = (escapedTokens.length>1)?new RegExp(`\\b(${exact?escapedTokens:escapedTokens.join('|')})\\b`, 'i'):
+                const pattern = (escapedTokens.length>1)?new RegExp(`\\b(${exact?escapedTokens.join(' '):escapedTokens.join('|')})\\b`, 'i'):
                                 new RegExp(escapedTokens[0],'i');
-
                 let result = new Set<TodoItem>();
                 
                 for(let i = 0; i<items.length; i++){

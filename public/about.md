@@ -34,7 +34,8 @@
     - Refresh token is stored in https secure cookies
     - Document access and socket connection is managed with url parameter based token and not Authorization Header 
 - **Perk**:
-    - Item description supports full Markdown and code formatting. You can paste images and files from the clipboard too.
+    - Item description supports full Markdown and code formatting. You can paste images and files from the clipboard too. with custom extensions like \[collapse: title\]content\[/collapse\]
+      - [collapse: this is a collapsable block] conetent is here [/collapse]
     - When Using along with App Server the documents are stored on servers os in folder qtodo_data/user_data
     - Customize Appearence with 11 available themes Themes & Customization
       Themes: Choose from 11 themes, including Classic, Vibrant, Cool, Developer, and Retro.
