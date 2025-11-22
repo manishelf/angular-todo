@@ -27,9 +27,57 @@ export class TodoItemUpdateService {
         request.onerror = handleErr;
       }
     }
-  
-    updateTags(db: IDBDatabase, todoItem: TodoItem, handleSucc = (e:Event)=>{}, handleErr = (e:Event)=>{}): void{
-      todoItem.tags.forEach(
+
+    updateTags(db: IDBDatabase, todoItem: TodoItem, handleSucc = (e: Event) => {},handleErr = (e: Event) => {}) {
+
+      if (!todoItem.tags || todoItem.tags.length === 0) return;
+
+      const tx = db.transaction(['tags_todo_items'], 'readwrite');
+      const store = tx.objectStore('tags_todo_items');
+
+      todoItem.tags.forEach(tag => {
+        const name = tag.name.trim();
+
+        const request = store.get(name);
+
+        request.onsuccess = (event) => {
+          const target = event.target as IDBRequest;
+          let record = target.result;
+
+          if (record) {
+            if (!record.todo_items.includes(todoItem.id)) {
+              record.todo_items.push(todoItem.id);
+            }
+            store.put(record);
+          } else {
+            store.add({ name, todo_items: [todoItem.id] });
+          }
+        };
+
+        request.onerror = handleErr;
+      });
+
+      tx.oncomplete = handleSucc;
+      tx.onerror = handleErr;
+    }
+
+    /* this is no good because each operation is not in correct transaction and
+        creates a race condition also causes unnecessary load
+        IndexedDB is not atomic unless you use a single transaction.
+
+        Because every get → modify → put is in a different auto-committed transaction, you get a classic race condition:
+
+        Race Condition 
+
+        Request A reads tag → sees todo_items = [1,2,3]
+
+        Request B reads tag → sees todo_items = [1,2,3]
+
+        A pushes itemId → writes [1,2,3,4]
+
+        B pushes itemId → writes [1,2,3,5]
+      updateTagsx(db: IDBDatabase, todoItem: TodoItem, handleSucc = (e:Event)=>{}, handleErr = (e:Event)=>{}): void{
+      todoItem.tags?.forEach(
           (tag)=>{
             let name = tag.name.trim();
             let request = this.todoItemUtils.getObjectStoreRO(db, 'tags_todo_items').get(name);
@@ -52,6 +100,7 @@ export class TodoItemUpdateService {
           }
         );
     }
+    */
 
     updateCustom(db: IDBDatabase, tag: string, item: any, handleSucc = (e:Event)=>{}, handleErr = (e:Event)=>{}){
       let request = this.todoItemUtils.getObjectStoreRW(db, 'custom_items').get(tag);
