@@ -8,7 +8,7 @@ import {
   Params,
   Router,
 } from '@angular/router';
-import { last, Observable, of, Subscription, switchMap } from 'rxjs';
+import { debounceTime, last, Observable, of, Subscription, switchMap } from 'rxjs';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 
 @Component({
@@ -20,7 +20,6 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
   itemList$: Observable<TodoItem[]> = of([])
   fromSearch: boolean = false;
-
   private queryParamSubscription!: Subscription;
 
   constructor(

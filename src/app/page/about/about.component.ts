@@ -1,10 +1,10 @@
 import { Component, OnInit , OnDestroy} from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import * as marked from 'marked';
 import { UserService } from './../../service/user/user.service';
 import { ConnectionService } from './../../service/connection/connection.service';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
+import { MarkdownService } from '../../service/markdown/markdown.service';
 @Component({
   selector: 'app-about',
   templateUrl: './about.component.html',
@@ -23,7 +23,11 @@ export class AboutComponent implements OnInit, OnDestroy{
 
   private userSubscription: Subscription;
 
-  constructor(private domSanitizer: DomSanitizer, private userService: UserService, private connectionService: ConnectionService){
+  constructor(private domSanitizer: DomSanitizer, 
+    private userService: UserService,
+    private connectionService: ConnectionService,
+    private markdownService: MarkdownService
+  ){
     this.userSubscription = userService.loggedInUser$.subscribe((user)=>{
       this.swaggerConsoleUrl = connectionService.backendUrl+'/swagger-ui/index.html?sessionToken='+user?.token;
       this.h2ConsoleUrl = connectionService.backendUrl+'/qtodo-h2-console?sessionToken='+user?.token;
@@ -41,8 +45,9 @@ export class AboutComponent implements OnInit, OnDestroy{
       let decoder = new TextDecoder();
       reader?.read().then((readerResult)=>{
         let md = decoder.decode(readerResult.value, {stream: !readerResult.done});
-        let markdown = marked.parse(md).toString();
-        this.parsedMD = this.domSanitizer.bypassSecurityTrustHtml(markdown);
+        this.markdownService.parse(md).then((result)=>{
+          this.parsedMD = result;
+        })
       })
     });
   }

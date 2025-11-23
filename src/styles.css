@@ -338,6 +338,11 @@ ol ol ol ol ol li {
   list-style-type: lower-roman;
 }
 
+/*virtual scroll*/
+.cdk-virtual-scroll-content-wrapper {
+  max-width: 100% !important;
+}
+
 /* markdown special styles*/
 .markdown-collapse-block {
   border: 1px solid var(--todo-item-description-text-color);
@@ -367,7 +372,6 @@ ol ol ol ol ol li {
   /* Visual cues and layout control */
   border: 1px dashed #ccc;
   padding: 5px;
-  margin: 10px 0;
   display: inline-block; /* Allows flow with text */
   min-width: 100px;
   min-height: 50px;

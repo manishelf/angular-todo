@@ -58,29 +58,30 @@ export const mediaEmbedExtension = {
     level: 'inline',
 
     start(src:any) {
-        return src.indexOf('@media[')
+        return src.match(/@(media|m)\[/)?.index;
     },
 
     tokenizer(src:any, tokens:any) {
         // Regex Explanation:
-        // @media\[([^\]]+)\]                     -> @media[1: Title/Alt Text]
-        // \(([^)]+)\)                           -> (2: URL)
-        // \{type:(image|video|audio)            -> {type:3: mediaType
-        // (?:,\s*width:(\d+(?:px|%)?))?          -> (Optional: 4: width value, e.g., 500px, 100%)
-        // (?:,\s*height:(\d+(?:px|%)?))?         -> (Optional: 5: height value, e.g., 300px, 50%)
-        // \}                                     -> closing brace
-        const rule = /^@media\[([^\]]+)\]\(([^)]+)\)\{type:(image|video|audio|iframe|file|any)(?:,\s*width:(\d+(?:px|%)?))?(?:,\s*height:(\d+(?:px|%)?))?\}/;
+        // ^@(media|m)\[([^\]]+)\]                  -> @media[1: Title/Alt Text] (capturing anything inside the brackets)
+        // \(([^)]+)\)                          -> (2: URL) (capturing anything inside the parentheses)
+        // \{type:(img|image|vid|video|aud|audio|ifr|iframe|fl|file|any) -> {type:3: mediaType (matching various media types, including shorthand versions like "img" for "image")
+        // (?:,\s*(wth|width|wd):(\d+(?:px|%)?))? -> (Optional: 4: width value, e.g., 500px, 100%) (matches width with shorthands "wth", "width", or "w")
+        // (?:,\s*(ht|height|h):(\d+(?:px|%)?))?  -> (Optional: 5: height value, e.g., 300px, 50%) (matches height with shorthands "ht", "height", or "h")
+        // \}                                    -> closing brace, marking the end of the media query
+        const rule = /^@(media|m)\[([^\]]+)\]\(([^)]+)\)\{(type|t):(img|image|vid|video|aud|audio|ifr|iframe|fl|file|any|[^,}]+)(?:,\s*(wth|width|w):(\d+(?:px|%)?))?(?:,\s*(ht|height|h):(\d+(?:px|%)?))?\}/;
+
         const match = rule.exec(src);
  
         if (match) {
             const token = {
                 type: 'mediaEmbedExtension',
                 raw: match[0],
-                title: match[1],
-                url: match[2],
-                mediaType: match[3],
-                width: match[4] || null,  // Capture width, if provided
-                height: match[5] || null  // Capture height, if provided
+                title: match[2],
+                url: match[3],
+                mediaType: match[5],
+                width: match[7] || null,  // Capture width, if provided
+                height: match[9] || null  // Capture height, if provided
             };
             return token;
         }
@@ -120,10 +121,12 @@ export const mediaEmbedExtension = {
         let mediaHtml = '';
 
         switch (mediaType) {
+            case 'img':
             case 'image':
                 mediaHtml = `<img src="${url}" alt="${title}" class="markdown-media-image" loading="lazy" />`;
                 break;
             
+            case 'vid':
             case 'video':
                 mediaHtml = `
                     <video src="${url}" title="${title}" controls class="markdown-media-video" preload="metadata">
@@ -132,6 +135,7 @@ export const mediaEmbedExtension = {
                 `;
                 break;
 
+            case 'aud':
             case 'audio':
                 // Audio elements are wrapped for consistency, but the resize handles
                 // may not be visually useful for this media type.
@@ -147,14 +151,12 @@ export const mediaEmbedExtension = {
         }
         
         // Wrap the media element in the resizable container
-        output += `
-        <div class="markdown-media-wrapper option" style="${styleAttr}" data-type="${mediaType}" title="${title}">
-                <a href=${url} target="_blank">
-                ${title}↗️
-                </a>
-                ${mediaHtml}
-            </div>
-        `;
+        output += `<div class="markdown-media-wrapper option" style="${styleAttr}" data-type="${mediaType}" title="${title}">
+                        <a href=${url} target="_blank">
+                        ${title}↗️
+                        </a>
+                    ${mediaHtml}
+                    </div>`;
 
         return output;
     }

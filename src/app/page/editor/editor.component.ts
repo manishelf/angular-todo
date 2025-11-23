@@ -344,7 +344,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit, OnDestr
     childItem.uuid = '';
     this.onAddClick(); 
     this.todoServie.addItem(childItem).then((id)=>{
-      this.router.navigate(['/edit/child'],{state:{item:{id: id, ...childItem}, params: this.queryParams}, queryParams:{id}});
+      this.router.navigate(['./edit/child'],{state:{item:{id: id, ...childItem}, params: this.queryParams}, queryParams:{id}});
     });
   }
 
@@ -353,7 +353,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit, OnDestr
     let parentSubjectMatch = this.todoItem.description.match(/^### \[child of (.+?)\]/);
     if (parentSubjectMatch) {
       this.updateParentDescForTree();
-      this.router.navigate(['/edit/parent'],{queryParams:{subject: parentSubjectMatch[1]}});
+      this.router.navigate(['./edit/parent'],{queryParams:{subject: parentSubjectMatch[1]}});
     }
     else {
        this.router.navigate(['/home'], {queryParams:this.queryParams});
@@ -376,7 +376,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit, OnDestr
           icon = '└──';
         }
         if(!visited.includes(child.subject)){
-          tree +=icon+' ['+child.subject+'](/edit?id='+child.id+')\n';
+          tree +=icon+' ['+child.subject+'](./edit?id='+child.id+')\n';
         }
         visited.push(child.subject);
         i++;
@@ -464,12 +464,13 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit, OnDestr
       data.reader.onload = (event: Event) => {
         let target: any = event.target;
         if (target.result) {
-          let fileName = 
-              data.file.type.replaceAll('/','_')+
-              '_' +
-              data.file.name.replaceAll(/[.]/g,'_') +
-              '_' +
-              new Date(data.file.lastModified).toLocaleString().replaceAll(/[-,\/.: ]/g,'_');
+          let fileType = data.file.type.replaceAll('/','_');
+          let fileName = data.file.name.replaceAll(/[.]/g,'_'); 
+          if(fileName==fileType){
+            fileType='SCP';
+          }
+          fileName = fileType+'_'+fileName+'_'+ data.file.lastModified;
+              // new Date(data.file.lastModified).toLocaleString().replaceAll(/[-,\/.: ]/g,'_');
           let field: FormField = {
             type: 'file',
             name: fileName,
@@ -499,8 +500,14 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit, OnDestr
           if(!hasPastedFiles){
             this.todoItem.tags.push({name: 'has-attachments'});
           }
-          let fieldRef = 
-          ` @media[${field.label}](#Ref:${field.name}){type:${field.type}, width:100px, height:100px} `
+
+          let fieldType = 'any';
+          if(field.type=='image'){
+            fieldType='img'
+          }
+
+          let fieldRef = ` @m[${field.label}](#Ref:${field.name}){t:${fieldType},w:100px,h:100px} `;
+
           const cursorPosition = descArea.selectionStart;
           this.todoItem.description =
             this.todoItem.description.substring(0, cursorPosition) +

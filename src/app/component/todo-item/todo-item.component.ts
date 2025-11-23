@@ -73,6 +73,7 @@ export class TodoItemComponent implements OnChanges{
 
     this.todoService.fromBin = this.fromBin;
     this.updateOwningUser();    
+    
     if(!this.minimized && !this.markdownParsed){      
       this.parseMd();
     }
@@ -140,9 +141,7 @@ export class TodoItemComponent implements OnChanges{
   }
 
   parseMd(){
-    this.markdownService.parse(this.item.description).then((safeHtml)=>{
-        this.markdownParsed = true;
-        this.parsedMD = safeHtml;   
-    });
+    this.parsedMD = this.markdownService.parseSync(this.item.description);
+    this.markdownParsed = true;
   }
 }

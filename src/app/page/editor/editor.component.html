@@ -82,7 +82,7 @@
           placeholder="Title"
           (keydown)="handleKeydownForSubject($event)"
           />
-          <i class="pl-1" *ngIf="!ownedByCurrentUser" [title]="owningUsersEmail">
+          <i class="pl-1" *ngIf="!ownedByCurrentUser && owningUsersAlias" [title]="owningUsersEmail">
             By <br> {{owningUsersAlias}}
           </i>
       </div>
