@@ -54,8 +54,8 @@ axios.interceptors.request.use(async (config)=> {
                     (item.userDefined.data as any)[field.name]=
                       '/item/doc/'+user?.userGroup+'/'+user?.email.replaceAll(escapeCharsRex,'_')+'/'+fieldKey;
 
-                    const parts = data.split(';');
-                    const mimeType = parts[0].split(':')[1];
+                    const parts = data?.split(';');
+                    const mimeType = parts?.[0]?.split(':')?.[1] ?? 'application/octet-stream';
                     let dataType = mimeType;
                     
                     postFileToBackend(
