@@ -1,27 +1,25 @@
 
 export const collapsibleBlock: any = {
     name: 'collapsibleBlock',
-    level: 'block', // Block level extension
+    level: 'inline',
     start(src:any) {
-    // Look for the start pattern
-    return src.match(/^\[collapse: /m)?.index;
+        return src.match(/\[collapse-(b|i):/)?.index;
     },
     tokenizer(src:any, tokens:any) {
     // Regex to capture: [collapse: HEADER] \n CONTENT \n [/collapse]
     // The 's' flag is crucial for '.' to match newlines
-    // The 'm' flag is crucial for '^' to match start of line
-    const rule = /^\[collapse: (.+?)\]([\s\S]*?)\[\/collapse\]/m;
+    const rule = /^\[collapse-(b|i):(.+?)\]([\s\S]*?)\[\/collapse\]/;
     const match = rule.exec(src);
-    
+    console.log(match);
     if (match) {
         const token = {
-        type: 'collapsibleBlock',
-        raw: match[0],
-        header: match[1].trim(),
-        text: match[2].trim(), // The content between the tags
-        tokens: [], 
+            type: 'collapsibleBlock',
+            raw: match[0],
+            inline: match[1] == 'i',
+            header: match[2].trim(),
+            text: match[3].trim(), 
+            tokens: [], 
         };          
-        // **Crucial Fix:** Use the lexer to tokenize the content (match[2]) 
         // as block-level Markdown. This generates tokens for paragraphs, lists, etc.
         (this as any).lexer.blockTokens(token.text, token.tokens); 
         
@@ -33,16 +31,15 @@ export const collapsibleBlock: any = {
     // 2. Define the custom block renderer
     const contentHtml = (this as any).parser.parse(token.tokens).trim();
     
-    return `
-        <details class="option markdown-collapse-block">
-        <summary class="option markdown-collapse-summary">${token.header}</summary>
-        <div class="option markdown-collapse-content">
-            ${contentHtml}
-        </div>
-        </details>
-    `;
+    return `<details class="option markdown-collapse-block" style="display:${token.inline?'inline-block':'block'}" >
+                <summary class="option markdown-collapse-summary">${token.header}</summary>
+                <div class="option markdown-collapse-content">
+                    ${contentHtml}
+                </div>
+            </details>`;
     }
 };
+
 /**
  * @media[A simple placeholder image](https://placehold.co/400x200){type:image}
  * @media[Product Demo Clip](https://example.com/videos/demo.mp4){type:video}

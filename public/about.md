@@ -34,8 +34,8 @@
     - Refresh token is stored in https secure cookies
     - Document access and socket connection is managed with url parameter based token and not Authorization Header 
 - **Perk**:
-    - Item description supports full Markdown and code formatting. You can paste images and files from the clipboard too. with custom extensions like `[collapse: title]content[collapse]` `@m[title](url){type:t,width:w,height:h}`
-      - [collapse: this is a collapsable block]
+    - Item description supports full Markdown and code formatting. You can paste images and files from the clipboard too. with custom extensions like `[collapse-(i|b): title]content[collapse]` `@m[title](url){type:t,width:w,height:h}`
+      - [collapse-i: this is a collapsable block]
        conetent is here 
        @m[dummy_img](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ89TzGh0JE2R8h80nW682bu-q0XAHMX0Rkyg&s){t:img}
        @m[dummy_vid](https://www.pexels.com/download/video/4620563/){t:vid,w:200px,h:300px}
