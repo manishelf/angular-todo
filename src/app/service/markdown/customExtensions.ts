@@ -4,13 +4,13 @@ export const collapsibleBlock: any = {
     level: 'block', // Block level extension
     start(src:any) {
     // Look for the start pattern
-    return src.match(/^\[collapse: /m)?.index;
+    return src.search(/\[collapse:\s/);
     },
     tokenizer(src:any, tokens:any) {
     // Regex to capture: [collapse: HEADER] \n CONTENT \n [/collapse]
     // The 's' flag is crucial for '.' to match newlines
     // The 'm' flag is crucial for '^' to match start of line
-    const rule = /^\[collapse: (.+?)\]([\s\S]*?)\[\/collapse\]/m;
+    const rule = /\[collapse:(.+?)\]([\s\S]*?)\[\/collapse\]/m;
     const match = rule.exec(src);
     
     if (match) {
