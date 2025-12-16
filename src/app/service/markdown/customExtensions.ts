@@ -1,7 +1,7 @@
 
 export const collapsibleBlock: any = {
     name: 'collapsibleBlock',
-    level: 'inline',
+    level: 'block',
     start(src:any) {
         return src.match(/\[collapse-(b|i):/)?.index;
     },
