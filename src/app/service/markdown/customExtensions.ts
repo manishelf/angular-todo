@@ -8,9 +8,8 @@ export const collapsibleBlock: any = {
     tokenizer(src:any, tokens:any) {
     // Regex to capture: [collapse: HEADER] \n CONTENT \n [/collapse]
     // The 's' flag is crucial for '.' to match newlines
-    const rule = /^\[collapse-(b|i):(.+?)\]([\s\S]*?)\[\/collapse\]/;
+    const rule = /^\[collapse(-(?:b|i))?:(.+?)\]([\s\S]*?)\[\/collapse\]/;
     const match = rule.exec(src);
-    console.log(match);
     if (match) {
         const token = {
             type: 'collapsibleBlock',
