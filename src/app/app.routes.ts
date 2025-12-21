@@ -7,6 +7,7 @@ import { VisualizeComponent } from './page/visualize/visualize.component';
 import { LoginComponent } from './page/login/login.component';
 import { ProfileComponent } from './page/user/profile/profile.component';
 import { BinComponent } from './page/bin/bin.component';
+import { CompoundViewComponent } from './page/compound-view/compound-view.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -27,5 +28,10 @@ export const routes: Routes = [
   { path: 'about', component: AboutComponent },
   { path: 'login', component: LoginComponent},
   { path: 'signup', component: LoginComponent},
-  { path: 'user/profile', component: ProfileComponent},
+  { path: 'user/profile', component: ProfileComponent}, 
+  { path: 'comp', component: CompoundViewComponent, children:[
+      {path: 'home/editor', component: CompoundViewComponent},
+      { path: 'user/visualize', component: CompoundViewComponent},
+      { path: 'user/calander', component: CompoundViewComponent},
+  ]},
 ];

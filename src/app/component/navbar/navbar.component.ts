@@ -76,7 +76,7 @@ export class NavbarComponent implements AfterViewInit {
     "synthwave-84",
     "hacker",
     "neon"
-    ], 
+    ],
     "background": [
       "GameOfLife",
       "JuliaSet",
@@ -110,7 +110,7 @@ export class NavbarComponent implements AfterViewInit {
         }, 200);
       }
     }
-    
+
     // to avoid keyboards from poping upp on phones constantly
     if (window.innerWidth > 400) {
       this.router.events
@@ -121,7 +121,7 @@ export class NavbarComponent implements AfterViewInit {
           }, 100);
         });
     }
-    
+
     connectionService.connected$.subscribe((status)=>{
       if(status){
         this.online = true;
@@ -132,7 +132,7 @@ export class NavbarComponent implements AfterViewInit {
 
     userService.loggedInUser$.subscribe((user)=>{
       this.user = user;
-      
+
       if(this.user.profilePicture){
         if(this.user.profilePicture.startsWith('/item/doc/')){
           this.connectionService.getUrlWithToken(this.user.profilePicture).then(url=>this.userProfilePicture=url);
@@ -147,7 +147,7 @@ export class NavbarComponent implements AfterViewInit {
       if(!recentLogins || recentLogins == 'null'){
         recentLogins = `{"${localUser.userGroup}/${localUser.email}":${JSON.stringify(localUser)}}`;
       }
-      
+
       recentLogins = JSON.parse(recentLogins);
       this.recentLogins = Object.entries(recentLogins);
 
@@ -195,7 +195,7 @@ export class NavbarComponent implements AfterViewInit {
     let reconstructedOrderString = '';
     if (qp.ord && Array.isArray(qp.ord) && qp.ord.length > 0) {
       const orderKeywords = ['asc', 'desc', 'lat', 'old'];
-      let currentTag = ''; 
+      let currentTag = '';
       let currentFields = [];
 
       const isDefaultAscOnly = qp.ord.length === 1 && qp.ord[0] === 'asc';
@@ -225,6 +225,8 @@ export class NavbarComponent implements AfterViewInit {
       queryParts.push(`!ALL:`);
     }
 
+    queryParts.push(mainQuery);
+
     if (qp.has && Array.isArray(qp.has) && qp.has.length > 0) {
       queryParts.push(`!F:${qp.has.join(' ')}`);
     }
@@ -233,7 +235,6 @@ export class NavbarComponent implements AfterViewInit {
       queryParts.push(`!T:${qp.tag.join(',')}`);
     }
 
-    queryParts.push(mainQuery);
 
     return queryParts.join('');
   }
@@ -268,7 +269,7 @@ export class NavbarComponent implements AfterViewInit {
 
     const populateFields = (x: string) => {
       if(x.startsWith('!')) return; // incase a following tag is used
-      
+
       let fields = x?.substring(0, x?.indexOf(';'))?.split(',').map(f=>f.trim());
       fields?.map((field) => field.trim()).filter((field) => field != '');
       order.push(...fields);
@@ -308,6 +309,11 @@ export class NavbarComponent implements AfterViewInit {
       populateFields(input[1]);
     }
 
+    input = searchQuery.split('!FAM:');
+    if(input.length == 2){
+      searchQuery = `!ALL:${input[1]}!T:child of ${input[1]}`
+    }
+
     exact = !searchQuery.startsWith('!ALL:');
     if (!exact) {
       searchQuery = searchQuery.split('!ALL:')[1];
@@ -326,7 +332,7 @@ export class NavbarComponent implements AfterViewInit {
       tagList = input[1].split(',');
       tagList = tagList.map((tag) => tag.trim());
     }
-    
+
     order = order.filter(o=>o!='');
 
     let extras = {
@@ -347,7 +353,7 @@ export class NavbarComponent implements AfterViewInit {
   syncNotes(): void {
     this.toaster.info('Downloading notes...');
     this.todoService.fromBin = false;
-    
+
     if(this.lastQueryParams){
       let {lim , ord, abs, q, tags, has} = this.lastQueryParams?.queryParams;
       this.todoService.searchTodos(q,tags,has,abs)
@@ -365,7 +371,7 @@ export class NavbarComponent implements AfterViewInit {
 
   save(list: TodoItem[]){
     this.toaster.info('Merging '+list.length+' items');
-    
+
     this.todoService.downloadTodoItemsAsJson(list);
   }
 
@@ -383,7 +389,7 @@ export class NavbarComponent implements AfterViewInit {
           if(jsonBuffer){
             this.todoService
             .deserializeManyFromJson(jsonBuffer.toString())
-            .subscribe((itemList) => {              
+            .subscribe((itemList) => {
               this.todoService.addMany(itemList);
             });
           }
@@ -405,24 +411,24 @@ export class NavbarComponent implements AfterViewInit {
   changeCurrentUser(event: Event){
     let ele = event.target as HTMLInputElement;
     let i = (ele?.value as any) || this.recentLogins.length-1;
-    
+
     let user = this.recentLogins[i][1]; // reversed
     this.selectedUserIndex = i;
     this.userService.loggedInUser.next(user);
   }
 
-  changeTheme(themeName: string){  
+  changeTheme(themeName: string){
     if(themeName === 'random'){
       const allThemes = Object.values(this.availableThemes)
         .flat()
-        .filter(name => name !== 'random' 
+        .filter(name => name !== 'random'
           && !this.availableThemes['background'].includes(name));
         // O(n*3)?
-        
+
       const randomIndex = Math.floor(Math.random() * allThemes.length);
       themeName = allThemes[randomIndex] as string;
     }
-  
+
     document.documentElement.setAttribute('data-theme', themeName);
   }
 
@@ -435,11 +441,11 @@ export class NavbarComponent implements AfterViewInit {
       target.selectedIndex = 0;
       return;
     }
-  
+
 
     if(document.startViewTransition){
       document.startViewTransition(()=>{
-        this.changeTheme(sel);    
+        this.changeTheme(sel);
       });
     }
     else this.changeTheme(sel);

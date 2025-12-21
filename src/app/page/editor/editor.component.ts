@@ -6,10 +6,10 @@ import {
   EventEmitter,
   HostListener,
   Input,
+  Output,
   OnChanges,
   OnDestroy,
   OnInit,
-  Output,
   ViewChild,
 } from '@angular/core';
 import { FormControl, FormsModule } from '@angular/forms';
@@ -37,13 +37,18 @@ import { localUser } from '../../service/consts';
 import { MarkdownService } from '../../service/markdown/markdown.service';
 
 @Component({
-  selector: 'app-markdown-editor',
+  selector: 'app-editor',
   templateUrl: './editor.component.html',
   styleUrls: ['./editor.component.css'],
   imports: [FormsModule, CommonModule, MatIconModule, UserFormComponent, TagListComponent],
 })
-export class EditorComponent implements AfterViewChecked, AfterViewInit, OnDestroy {
-  
+export class EditorComponent implements AfterViewChecked, AfterViewInit, OnDestroy, OnChanges {
+
+  @Input('inCompoundView') inCompoundView: boolean = false;
+  @Input('compoundViewActiveItem') compoundViewActiveItem: TodoItem|null = null;
+
+  @Output('saved') itemSavedEvent = new EventEmitter<boolean>();
+
   @ViewChild('editorContainer') editorContainer!: ElementRef;
   @ViewChild('subjectTxt') subjectTxt!: ElementRef;
   @ViewChild('descriptionArea') descriptionArea!: ElementRef;
@@ -62,6 +67,8 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit, OnDestr
   customFormSchema: FormSchema | undefined;
   customFormData: any;
   editiorLinesLoaded: boolean = false;
+
+  @Input() navigateBackOnSave = true;
 
   leftIndentSpcaeCount: number = 0;
 
@@ -86,7 +93,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit, OnDestr
   };
 
   constructor(
-    private todoServie: TodoServiceService,
+    private todoService: TodoServiceService,
     private router: Router,
     private toaster: ToastService,
     private route: ActivatedRoute,
@@ -96,29 +103,30 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit, OnDestr
     if (this.router.url.startsWith('/edit')) {
       const navigation = this.router.getCurrentNavigation();
       this.route.queryParams.subscribe((params)=>{
-        setTimeout(()=>{ // delay as the last item may not have updated just yet 
+        setTimeout(()=>{ // delay as the last item may not have updated just yet
           let id = params['id'];
           let subject = params['subject'];
           id = Number.parseInt(id);
           let noData = false;
           if(id){
-            this.todoServie.getItemById(id).subscribe((item)=>{
+            this.todoService.getItemById(id).subscribe((item)=>{
               this.forEdit = id;
               this.todoItem = item;
             });
-            
+
           }else if(subject){
-            this.todoServie.searchTodos(subject).subscribe((item)=>{
+            this.todoService.searchTodos(subject).subscribe((item)=>{
               this.forEdit = item[0].id;
               this.todoItem = item[0];
             });
-          } else {
+          }
+          else {
             noData = true;
           }
 
           if (navigation?.extras?.state) {
             let itemForUpdate = navigation.extras.state['item'] as TodoItem;
-            this.queryParams = navigation.extras.state['query'];     
+            this.queryParams = navigation.extras.state['query'];
             this.forEdit = itemForUpdate.id;
             this.todoItem = itemForUpdate;
             this.todoItem.description = this.todoItem.description.replace(
@@ -134,9 +142,10 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit, OnDestr
             this.router.navigate(['/']);
           }
         },100);
-      });  
+      });
     }
-    this.userSubscription = this.userService.loggedInUser$.subscribe((user)=>{      
+
+    this.userSubscription = this.userService.loggedInUser$.subscribe((user)=>{
       if(this.todoItem.owningUser == localUser && user != localUser)
         this.todoItem.owningUser = user;
     });
@@ -146,20 +155,36 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit, OnDestr
   ngAfterViewInit(): void {
     setTimeout(()=>{
       this.subjectTxt.nativeElement.scrollIntoView();
-      this.subjectTxt.nativeElement.focus();
+      if(!this.inCompoundView){
+        this.subjectTxt.nativeElement.focus();
+      }
       this.onEventForResize();
       this.updateOwningUser();
-    },100); 
-    this.convertedMarkdown = '';    
+    },100);
+    this.convertedMarkdown = '';
+    this.navigateBackOnSave = true;
+    if(this.inCompoundView && this.compoundViewActiveItem){
+      this.todoItem = this.compoundViewActiveItem;
+    }
   }
-  
+
+  ngOnChanges(changes: any): void{
+    if(this.inCompoundView && this.compoundViewActiveItem){
+      this.todoItem = this.compoundViewActiveItem;
+      this.option = 'Preview';
+      this.forEdit = this.compoundViewActiveItem.id;
+      this.navigateBackOnSave=false;
+      this.onOptionClick();
+    }
+  }
+
   updateOwningUser(): void {
     if(!this.todoItem.owningUser) return;
 
     this.owningUsersAlias = this.todoItem.owningUser.alias || this.todoItem.owningUser.email;
     this.owningUsersEmail = this.todoItem.owningUser.email;
-    
-    this.ownedByCurrentUser = this.userService.isThisCurrentUser(this.todoItem.owningUser); 
+
+    this.ownedByCurrentUser = this.userService.isThisCurrentUser(this.todoItem.owningUser);
   }
 
   ngAfterViewChecked(): void {
@@ -246,7 +271,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit, OnDestr
         {
           length: lineNumbers.length,
         },
-        (_, i) => 
+        (_, i) =>
           `<div style="cursor:pointer"
              onmouseover="this.style.color = 'white'"
              onmouseout="this.style.color = '#39ff13'">
@@ -276,7 +301,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit, OnDestr
   }
 
   handleKeydownForDescription(event: KeyboardEvent): void {
-    
+
     const targetTextArea = event.target as HTMLTextAreaElement;
     const start = targetTextArea.selectionStart;
     const end = targetTextArea.selectionEnd;
@@ -342,20 +367,37 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit, OnDestr
     childItem.userDefined = undefined;
     childItem.tags.push({name});
     childItem.uuid = '';
-    this.onAddClick(); 
-    this.todoServie.addItem(childItem).then((id)=>{
-      this.router.navigate(['./edit/child'],{state:{item:{id: id, ...childItem}, params: this.queryParams}, queryParams:{id}});
+
+    this.navigateBackOnSave=false;
+    this.onAddClick();
+    this.todoService.addItem(childItem).then((id)=>{
+      this.itemSavedEvent.emit(true);
+      if(this.inCompoundView){
+        this.todoItem = {id, ...childItem};
+        this.forEdit = id;
+      }else{
+        this.router.navigate(['./edit/child'],{state:{item:{id: id, ...childItem}, params: this.queryParams}, queryParams:{id}});
+      }
     });
   }
 
   navigateToParent(): void {
-    this.todoServie.updateItem({id:this.forEdit, ...this.todoItem});
+    this.todoService.updateItem({id:this.forEdit, ...this.todoItem});
     let parentSubjectMatch = this.todoItem.description.match(/^### \[child of (.+?)\]/);
+    this.itemSavedEvent.emit(true);
     if (parentSubjectMatch) {
       this.updateParentDescForTree();
-      this.router.navigate(['./edit/parent'],{queryParams:{subject: parentSubjectMatch[1]}});
+      if(this.inCompoundView){
+        this.todoService.searchTodos(parentSubjectMatch[1]).subscribe((itemList: TodoItem[])=>{
+          if(itemList && itemList.length > 0){
+            this.todoItem = itemList[0];
+          }
+        });
+      }else if(this.navigateBackOnSave){
+        this.router.navigate(['./edit/parent'],{queryParams:{subject: parentSubjectMatch[1]}});
+      }
     }
-    else {
+    else if(this.navigateBackOnSave){
        this.router.navigate(['/home'], {queryParams:this.queryParams});
     }
     requestAnimationFrame(()=>{
@@ -381,7 +423,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit, OnDestr
         visited.push(child.subject);
         i++;
       }
-    } 
+    }
     tree+='\n```\n';
     return tree;
   }
@@ -392,35 +434,35 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit, OnDestr
       let replaceDesc = (parent:TodoItem, tree:string)=>{
           let existingTree = parent.description.match(new RegExp('\n```treeview\n'+parent.subject+'.*\n```\n','s'));
           if(existingTree){
-            parent.description = parent.description.replace(new RegExp('\n```treeview\n'+parent.subject+'.*\n```\n','s'), tree); 
+            parent.description = parent.description.replace(new RegExp('\n```treeview\n'+parent.subject+'.*\n```\n','s'), tree);
           }else{
             parent.description += tree;
           }
       }
-      this.todoServie.searchTodos(parentSubjectMatch[1]).subscribe((res)=>{
+      this.todoService.searchTodos(parentSubjectMatch[1]).subscribe((res)=>{
         let parent = res[0];
         let hierarchy = new Map();
-        this.todoServie.searchTodos('', ['child of '+parentSubjectMatch[1]], [], true).subscribe((children)=>{
+        this.todoService.searchTodos('', ['child of '+parentSubjectMatch[1]], [], true).subscribe((children)=>{
           hierarchy?.set(this.todoItem.subject, {item: {id:this.forEdit, ...this.todoItem}, children: new Set(children)})
           let tree = this.createChildTreeview(parentSubjectMatch[1], hierarchy);
           replaceDesc(parent, tree);
-          this.todoServie.updateItem(parent);
+          this.todoService.updateItem(parent);
         });
       });
     }
 
   }
-  
+
   onEventForResize(): void {
     if (this.descriptionArea) {
-      const descriptionArea = this.descriptionArea.nativeElement;         
+      const descriptionArea = this.descriptionArea.nativeElement;
       descriptionArea.style.height = 'auto';
       requestAnimationFrame(() => { // because setTimeout causes the text to jump up and down
-        descriptionArea.style.height = descriptionArea.scrollHeight + 'px';  
+        descriptionArea.style.height = descriptionArea.scrollHeight + 'px';
       });
     }
   }
-  
+
   @HostListener('paste', ['$event'])
   onPasteEvent(event: Event) {
     if(!(event.target instanceof HTMLTextAreaElement)){
@@ -438,7 +480,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit, OnDestr
       let cursorPosition = descArea.selectionStart;
       this.todoItem.description =
         this.todoItem.description.substring(0, cursorPosition) +
-        `[link_${new Date().getSeconds()}](${text})` + 
+        `[link_${new Date().getSeconds()}](${text})` +
       this.todoItem.description.substring(cursorPosition);
       event.preventDefault();
     }
@@ -465,7 +507,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit, OnDestr
         let target: any = event.target;
         if (target.result) {
           let fileType = data.file.type.replaceAll('/','_');
-          let fileName = data.file.name.replaceAll(/[.]/g,'_'); 
+          let fileName = data.file.name.replaceAll(/[.]/g,'_');
           if(fileName==fileType){
             fileType='SCP';
           }
@@ -483,13 +525,13 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit, OnDestr
           if (data.file.type.startsWith('image')) {
             field.type = 'image';
           }
-          
+
           this.appendCustomSchemaFields([field]);
           let formData: any = {};
-          formData[field.name] = target.result;          
+          formData[field.name] = target.result;
 
           this.customFormData = { ...this.customFormData, ...formData };
-          
+
           let hasPastedFiles = false;
           for(let t of this.todoItem.tags){
             if(t.name == 'has-attachments'){
@@ -511,7 +553,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit, OnDestr
           const cursorPosition = descArea.selectionStart;
           this.todoItem.description =
             this.todoItem.description.substring(0, cursorPosition) +
-            fieldRef + 
+            fieldRef +
             this.todoItem.description.substring(cursorPosition);
         }
       };
@@ -528,7 +570,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit, OnDestr
 
     const editorContainer = this.editorContainer.nativeElement;
     const scrollPercentage = editorContainer.scrollTop / editorContainer.scrollHeight;
-    
+
     requestAnimationFrame(()=>{
       this.onOptionClick();
       setTimeout(()=>{
@@ -541,7 +583,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit, OnDestr
   onOptionClick() {
     if(this.todoItem.subject === '' && this.todoItem.description === ''){
       return;
-    }  
+    }
 
     if (this.option == 'Preview') {
       this.editiorLinesLoaded = false;
@@ -553,13 +595,23 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit, OnDestr
         this.onEventForResize();
       });
     }
-    
+
     this.option = this.option === 'Preview' ? 'Editor' : 'Preview';
   }
 
   async onAddClick() {
-    if(this.todoItem.deleted) return;
-    
+    if(this.todoItem.deleted) {
+      if(prompt("item already deleted! do you want to save a copy? (Y|N)") != "Y"){
+        return;
+      }else{
+        this.forEdit = -1;
+        let {id, item} = (structuredClone(this.todoItem) as any);
+        item.subject += ' (restored-'+Date.now().toLocaleString()+')';
+        this.todoItem = item;
+        this.todoItem.deleted=false;
+      }
+    };
+
     if (this.userForm?.dynamicForm.invalid) {
       console.log('user defined field validation failed - ');
       console.error(this.userForm.state());
@@ -584,17 +636,22 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit, OnDestr
     }
 
     this.updateParentDescForTree();
-    
+
     if (this.forEdit !== -1) {
-      this.todoServie.updateItem({ id: this.forEdit, ...this.todoItem });
+      this.todoService.updateItem({ id: this.forEdit, ...this.todoItem });
     } else {
-      this.todoServie.addItem(this.todoItem);
+      this.todoService.addItem(this.todoItem);
     }
 
-    let lastNav = this.router.lastSuccessfulNavigation?.finalUrl?.toString();
-    if(lastNav?.includes('/home'))
-      this.router.navigate(['/home'], { queryParams: this.queryParams });
-    else history.back();
+
+    this.itemSavedEvent.emit(true);
+
+    if(this.navigateBackOnSave){
+      let lastNav = this.router.lastSuccessfulNavigation?.finalUrl?.toString();
+      if(lastNav?.includes('/home'))
+        this.router.navigate(['/home'], { queryParams: this.queryParams });
+      else history.back();
+    }
   }
 
   onUpdateTags(tags: Tag[]) {
@@ -616,7 +673,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit, OnDestr
         type: tagType as FormField['type'],
         placeholder: '',
         default: '',
-      }); 
+      });
     }
     this.appendCustomSchemaFields(fields);
   }
@@ -627,7 +684,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit, OnDestr
 
     this.customFormSchema = this.todoItem.userDefined?.formControlSchema;
 
-    this.todoServie.getAllCustom(tags).subscribe((resultArray) =>
+    this.todoService.getAllCustom(tags).subscribe((resultArray) =>
       resultArray.forEach((res) => {
         let schema = res?.item;
         if (!schema) return;
@@ -682,7 +739,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit, OnDestr
 
         let tag = 'form-' + formSchema.tag.trim();
         this.todoItem.tags.push({ name: tag });
-        this.todoServie.addCustom(tag, formSchema.formControlSchema);
+        this.todoService.addCustom(tag, formSchema.formControlSchema);
 
         if (this.customFormSchema && this.customFormSchema.fields) {
           this.customFormSchema = { // for angular to properly update ui. as only reference change is tracked.
@@ -708,18 +765,18 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit, OnDestr
     }
     localStorage['tempTodoDescription'] = this.todoItem.description;
     this.todoItem.description =
-     `/* Please add your json schema for desired custom form here - 
+     `/* Please add your json schema for desired custom form here -
       * Remove this commented part before save; Dont worry your description will be back once you save the schema by clicking the same 'add custom form' button
-      * the format is - 
+      * the format is -
       * {
-      *   "tag" : string, 
+      *   "tag" : string,
       *   "formControlSchema" : {
       *     "fields": [
       *        {
       *         "name" : string,
       *         "label" : string,
-      *         "type" : 'text' | 'textarea' | 'email' | 'password' 
-      *                  | 'number' | 'date' | 'select' | 'checkbox' | 'radio' | 'boolean' | 'image' | 'file' | 'iframe' | 'canvas' 
+      *         "type" : 'text' | 'textarea' | 'email' | 'password'
+      *                  | 'number' | 'date' | 'select' | 'checkbox' | 'radio' | 'boolean' | 'image' | 'file' | 'iframe' | 'canvas'
       *                  | 'color' | 'range' | 'month' | 'date' | 'time' | 'datetime-local' | 'timestamp' | 'history',
       *         "placeholder"?: string,
       *         "validation"?: {
@@ -739,8 +796,8 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit, OnDestr
       *   },
       *   "data" : Map<string, string> | null
       * }
-      * 
-      * sample - 
+      *
+      * sample -
       *   {"tag":"sample", "formControlSchema": {"fields": [{"name":"sample", "label":"sample text", "type":"text"}]}, "data":[["sample", "current value"]]}\n*/\n\n\n`;
     if (this.todoItem.userDefined) {
       if (this.todoItem.userDefined.formControlSchema.fields) {

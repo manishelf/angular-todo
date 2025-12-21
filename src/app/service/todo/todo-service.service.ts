@@ -59,12 +59,12 @@ export class TodoServiceService implements OnDestroy {
     });
 
     this.changedItem$.subscribe((changedItem)=>{
-      if(!changedItem) return;      
+      if(!changedItem) return;
 
       let listUpdated = false;
       /*
       JavaScript's design, combined with Angular's architecture,
-      is optimized for UI rendering efficiency, not for raw memory efficiency. 
+      is optimized for UI rendering efficiency, not for raw memory efficiency.
       The "inefficient" data manipulation is a small price to pay :> fu wd
        */
       const updatedList = this.todoItems.value.map((item)=>{
@@ -74,17 +74,17 @@ export class TodoServiceService implements OnDestroy {
             return null;
           }
           else{
-            listUpdated = true;                                    
+            listUpdated = true;
             return {...changedItem};
           }
         }
         return item;
       }).filter(item=>item!=null);
 
-      if(!listUpdated){ 
+      if(!listUpdated){
         updatedList.push(changedItem);
       }
-      this.todoItems.next(updatedList);        
+      this.todoItems.next(updatedList);
     });
 
     this.backendService.refresh$.subscribe((s)=>{
@@ -95,14 +95,16 @@ export class TodoServiceService implements OnDestroy {
   }
 
 
-  initializeIndexDB(user:User){
+  initializeIndexDB(user:User): Promise<IDBDatabase>{
+    return new Promise((res, rej)=>{
     let dbName = IDbRootName+'/'+user.userGroup+'/'+user.email;
     console.log(dbName);
-    
+
     const request = indexedDB.open(dbName, 1);
     request.onerror = (error) => {
       this.toaster.error('error connecting to local idexedDB!');
       console.error('Error opening IndexedDB:', error);
+      rej(error);
     };
 
     request.onupgradeneeded = (event) => {
@@ -133,7 +135,7 @@ export class TodoServiceService implements OnDestroy {
       deletedTodoItemsStore.createIndex('tagsIndex', 'tags', { multiEntry: true });
       deletedTodoItemsStore.createIndex('creationTimestampIndex', 'creationTimestamp');
       deletedTodoItemsStore.createIndex('updationTimestampIndex', 'updationTimestamp');
-      
+
       tagsTodoItemStroe.createIndex('tagName', 'name', { unique: true });
       customItemStroe.createIndex('tagIndex', 'tag', { unique: true });
       this.toaster.success('setup '+dbName);
@@ -142,12 +144,14 @@ export class TodoServiceService implements OnDestroy {
     request.onsuccess = (event) => {
       let db = (event.target as IDBOpenDBRequest).result;
       this.db = db;
+      res(db);
       db.onerror = (err) => {
         throw (err as any).srcElement.error;
-      };            
+      };
       this.backendService.init(db, user);
       this.initializeItems();
     };
+    });
   }
 
   initializeItems(): void {
@@ -157,10 +161,14 @@ export class TodoServiceService implements OnDestroy {
     });
   }
 
+  getDb() : IDBDatabase {
+    return this.db;
+  }
+
   getAll(): Observable<TodoItem[]> {
     console.log('Get all', Date.now());
-    
-    return  this.getService.getAllItems(this.db, this.fromBin).pipe(tap(()=>console.log('Get all done', Date.now())));
+
+    return  this.getService.getAllItems(this.getDb(), this.fromBin).pipe(tap(()=>console.log('Get all done', Date.now())));
   }
 
   deleteAll(): void {
@@ -173,7 +181,7 @@ export class TodoServiceService implements OnDestroy {
     {
       this.todoItems.next([]);
       this.getService
-      .getAllItems(this.db, this.fromBin)
+      .getAllItems(this.getDb(), this.fromBin)
       .subscribe((items) => {
         items.forEach((item) => {
           this.deleteItem(item);
@@ -181,12 +189,9 @@ export class TodoServiceService implements OnDestroy {
         this.toaster.success(
           'cleared all items from ' + (this.fromBin ? 'bin' : 'todo list')
         );
-      },(error)=>{
-        this.toaster.error('error deleting all items');
-        console.error(error);
       });
     }
-   
+
   }
 
   searchTodos(
@@ -196,7 +201,7 @@ export class TodoServiceService implements OnDestroy {
     exact = false,
   ): Observable<TodoItem[]> {
     return this.searchService.searchTodos(
-      this.db,
+      this.getDb(),
       subjectQuery,
       tagFilter,
       searchTerms,
@@ -216,9 +221,9 @@ export class TodoServiceService implements OnDestroy {
   addItem(item: Omit<TodoItem, 'id'>) : Promise<number>{
     return new Promise<number>((res,rej)=>{
       if(item.subject.trim()===''){
-       item.subject = new Date().toISOString(); 
+       item.subject = new Date().toISOString();
       }
-      this.addService.addItem(this.db, item, (suc)=>{
+      this.addService.addItem(this.getDb(), item, (suc)=>{
           let id = (suc.target as IDBRequest).result;
           res(id);
           this.backendService.addItem(item);
@@ -230,11 +235,11 @@ export class TodoServiceService implements OnDestroy {
         (err)=>{
           this.toaster.error('error adding todo item!');
           this.toaster.error((err as any).srcElement.error);
-          console.error('error adding todo item: ', err);   
-          rej(err);     
+          console.error('error adding todo item: ', err);
+          rej(err);
         }
       );
-      
+
 
       /*if(item.userDefined)
       this.getCustom(item.userDefined.tag.name).subscribe((schema)=>{
@@ -246,7 +251,7 @@ export class TodoServiceService implements OnDestroy {
   }
 
   addCustom(tag: string, item: any) {
-    this.addService.addCustom(this.db, tag, item,(suc)=>{
+    this.addService.addCustom(this.getDb(), tag, item,(suc)=>{
       this.toaster.success('saved ' + tag + ' localy');
     },
     (e)=>{
@@ -256,28 +261,28 @@ export class TodoServiceService implements OnDestroy {
   }
 
   getItemById(id: number): Observable<TodoItem> {
-    return this.getService.getItemById(this.db, id);
+    return this.getService.getItemById(this.getDb(), id);
   }
 
   getItemByUUID(uuid: string):Observable<TodoItem>{
-    return this.getService.getItemByUUID(this.db, uuid);
-  } 
+    return this.getService.getItemByUUID(this.getDb(), uuid);
+  }
 
   getCustom(tag: string): Observable<any> {
-    return this.getService.getCustom(this.db, tag);
+    return this.getService.getCustom(this.getDb(), tag);
   }
 
   getAllCustom(tags: Tag[]): Observable<any[]> {
-    return this.getService.getAllCustom(this.db, tags);
+    return this.getService.getAllCustom(this.getDb(), tags);
   }
 
   getTagWithNameLike(name: string): Observable<Tag[]>{
-    return this.getService.getTagWithNameLike(this.db, name);
+    return this.getService.getTagWithNameLike(this.getDb(), name);
   }
 
   updateItem(item: TodoItem): void {
-    this.backendService.updateItem(this.db, item);// order is important as subject can change
-    this.updateService.updateItem(this.db, item, (suc)=>{
+    this.backendService.updateItem(this.getDb(), item);// order is important as subject can change
+    this.updateService.updateItem(this.getDb(), item, (suc)=>{
       this.changedItem.next(item);
       this.toaster.success('todo item updated localy');
     },(e)=>{
@@ -287,7 +292,7 @@ export class TodoServiceService implements OnDestroy {
   }
 
   updateCustom(tag: string, item: any): void {
-    this.updateService.updateCustom(this.db, tag, item, (suc)=>{
+    this.updateService.updateCustom(this.getDb(), tag, item, (suc)=>{
       this.toaster.success('updated ' + tag + ' localy');
     },(e)=>{
       this.toaster.error('error updating ' + tag);
@@ -297,7 +302,7 @@ export class TodoServiceService implements OnDestroy {
 
   deleteItem(item: TodoItem): void {
     try {
-      this.deleteService.deleteItem(this.db, item, this.fromBin);
+      this.deleteService.deleteItem(this.getDb(), item, this.fromBin);
       item.deleted = true;
       this.changedItem.next(item);
       this.backendService.deleteItem(item);
@@ -309,7 +314,7 @@ export class TodoServiceService implements OnDestroy {
   }
 
   deleteItemById(id: number): void {
-    this.getService.getItemById(this.db, id).subscribe((item) => {
+    this.getService.getItemById(this.getDb(), id).subscribe((item) => {
       this.deleteItem(item);
     });
   }
@@ -396,24 +401,24 @@ export class TodoServiceService implements OnDestroy {
     let updateList = [];
     let errorList:any[] = [];
     let done = new BehaviorSubject<boolean>(false);
-    let currDBErrorHandler = this.db.onerror;
-    this.db.onerror = (err)=>{
+    let currDBErrorHandler = this.getDb().onerror;
+    this.getDb().onerror = (err)=>{
       errorList.push(err);
     };
 
-    for (let i = 0; i <= items?.length; i++) { // async as sync? wtf 
+    for (let i = 0; i <= items?.length; i++) { // async as sync? wtf
       let item = items[i];
-      
+
       if(!item) continue;
 
       if(item.subject.trim()===''){
-      item.subject = new Date().toISOString(); 
+      item.subject = new Date().toISOString();
       }
-      this.addService.addItem(this.db, item, (suc)=>{
+      this.addService.addItem(this.getDb(), item, (suc)=>{
           let id = (suc.target as IDBRequest).result;
           let savedItem = item as any;
           savedItem.id = id;
-          addList.push(savedItem);            
+          addList.push(savedItem);
 
           done.next(true);
         },
@@ -424,7 +429,7 @@ export class TodoServiceService implements OnDestroy {
                 new Date(existingItem.updationTimestamp) <
                 new Date(item.updationTimestamp)
               ){
-                this.updateService.updateItem(this.db, item, (suc)=>{
+                this.updateService.updateItem(this.getDb(), item, (suc)=>{
                   updateList.push(item);
 
                   done.next(true);
@@ -438,7 +443,7 @@ export class TodoServiceService implements OnDestroy {
                   new Date(item.updationTimestamp)
                 ) {
                   this.updateItem(item);
-                  this.updateService.updateItem(this.db, item, (suc)=>{
+                  this.updateService.updateItem(this.getDb(), item, (suc)=>{
                     updateList.push(item);
 
                     done.next(true);
@@ -448,11 +453,11 @@ export class TodoServiceService implements OnDestroy {
             }
           });
         }
-      ); 
+      );
     }
-    done.pipe(debounceTime(100)).subscribe((s)=>{ // runs after 100 ms of inactivity 
+    done.pipe(debounceTime(100)).subscribe((s)=>{ // runs after 100 ms of inactivity
         if(s){
-          this.db.onerror = currDBErrorHandler;
+          this.getDb().onerror = currDBErrorHandler;
           if(addList.length>0)
           this.toaster.success(`added ${addList.length} items`);
 
@@ -461,10 +466,10 @@ export class TodoServiceService implements OnDestroy {
 
           if(errorList.length>0)
           this.toaster.error(`encountered ${errorList.length} errors`);
-          
+
           if(staleItems.length>0)
           this.downloadTodoItemsAsJson(staleItems, 'stale');
-   
+
           this.initializeItems();
         }
       });

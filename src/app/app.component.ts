@@ -1,5 +1,6 @@
 import { Component, HostListener, OnInit, Renderer2, AfterViewInit, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
-import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import { NavigationEnd, Router, RouterOutlet, ActivatedRoute, Params } from '@angular/router';
+import { CommonModule } from '@angular/common';
 import { NavbarComponent } from './component/navbar/navbar.component';
 import { SidebarComponent } from './component/sidebar/sidebar.component';
 import { AngularToastifyModule } from 'angular-toastify';
@@ -21,7 +22,8 @@ import { Arkanoid } from './game/Arkanoid';
   NavbarComponent,
   SidebarComponent,
   AngularToastifyModule,
-  ScrollingModule
+  ScrollingModule,
+  CommonModule
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
@@ -35,7 +37,14 @@ export class AppComponent implements AfterViewInit{
 
   currentGameInstanceName: string = '';
 
-  constructor(private router : Router){
+  focusMode = false
+
+  constructor(private router : Router, private route: ActivatedRoute){
+    this.route.queryParams.subscribe((params: Params)=>{
+      if(params['focus']=='y'){
+        this.focusMode = true;
+      }
+    })
   }
 
   @HostListener('keydown', ['$event'])
@@ -54,27 +63,33 @@ export class AppComponent implements AfterViewInit{
       if(this.gameBoard){
         this.gameBoard.GAME_CONFIG.ALLOW_CURSOR_INTERACTION = !this.gameBoard.GAME_CONFIG.ALLOW_CURSOR_INTERACTION;
       }
+    }else if(event.key === '|' && event.ctrlKey){
+      this.route.queryParams.subscribe((params: Params)=>{
+        this.router.navigate(['/comp'], {queryParams:params});
+      }).unsubscribe();
     }
   }
 
   ngAfterViewInit(){
-    
-    let gameBackground = localStorage['background'];    
-    
-    
+
+    if(this.focusMode) return;
+
+    let gameBackground = localStorage['background'];
+
+
     this.currentGameInstanceName = gameBackground;
-    
+
     let canvas: HTMLCanvasElement = this.backgroundCanvasEle.nativeElement;
     this.gameBoard = new GameBoard(canvas);
-    
+
     let gameInstance = this.getGameInstance(gameBackground);
     if(!gameInstance) return;
-    
+
 
     this.themeGames(this.gameBoard);
-    
+
     this.gameBoard.startGame(gameInstance);
-    
+
     setInterval(()=>{
       if(!this.gameBoard?.GAME_CONFIG.ALLOW_CURSOR_INTERACTION)
       this.themeGames(this.gameBoard);
@@ -87,7 +102,7 @@ export class AppComponent implements AfterViewInit{
       case "JuliaSet": return new JuliaSet();
       case "JuliaSet0_7885": return new JuliaSet0_7885();
       case "MandelBrotSet": return new MandelBrotSet();
-      case "Arkanoid": return new Arkanoid(); 
+      case "Arkanoid": return new Arkanoid();
       case "LineGrid": return new LineGrid();
       case "Checkered": return new Checkered();
       default: return null;
@@ -136,7 +151,7 @@ export class AppComponent implements AfterViewInit{
     let clearBackgroundIn = Number.parseInt(GAME_CLEAR_FRAME_EVERY) * Number.parseFloat(GAME_FRAME_DELTA);
 
     let gameBackgroud = localStorage['background'];
-    
+
     if(gameBackgroud != this.currentGameInstanceName){
       let newInstace = this.getGameInstance(gameBackgroud);
       if(newInstace){

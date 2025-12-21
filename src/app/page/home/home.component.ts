@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, HostListener, AfterViewInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, HostListener, AfterViewInit, Input, EventEmitter, Output } from '@angular/core';
 import { TodoItem } from './../../models/todo-item';
 import { TodoServiceService } from '../../service/todo/todo-service.service';
 import { CommonModule } from '@angular/common';
@@ -8,7 +8,7 @@ import {
   Params,
   Router,
 } from '@angular/router';
-import { debounceTime, last, Observable, of, Subscription, switchMap } from 'rxjs';
+import { debounceTime, last, Observable, of, Subscription, switchMap, tap } from 'rxjs';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 
 @Component({
@@ -22,13 +22,24 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
   fromSearch: boolean = false;
   private queryParamSubscription!: Subscription;
 
+  @Input('inCompoundView') inCompoundView: boolean = false;
+  @Input('refresh') set refreshList(shouldRefresh: boolean){
+    if(shouldRefresh){
+      this.queryParamSubscription.unsubscribe();
+      setTimeout(()=>{
+        this.ngOnInit();
+      }, 500);
+    }
+  }
+  @Output() itemClickEvent = new EventEmitter<TodoItem>();
+
   constructor(
     private todoService: TodoServiceService,
     private router: Router,
     private route: ActivatedRoute
   ) {
     let url = this.router.url;
-    
+
     if (url === '/bin/clear') {
       todoService.fromBin = true;
       todoService.deleteAll();
@@ -74,10 +85,9 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
               switchMap((itemList) => {
                 return this.todoService.sortTodoItems(order, itemList, limit);
               })
-            );
-            this.fromSearch=true;
+          );
+          this.fromSearch=true;
         } else {
-          this.router.navigate([]);
           this.itemList$ = this.todoService.todoItems$.pipe(
             switchMap((itemList) => {
               return this.todoService.sortTodoItems(order, itemList)
@@ -87,27 +97,32 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       }
     );
+
     console.log('init', Date.now());
   }
 
    onClickTodoItem(event: Event, item: TodoItem) {
     let targetItem = event.target as HTMLElement;
-   
+
     let sel = window.getSelection();
     if (targetItem.classList.contains('option') || (sel && sel.toString().length>0)) {
       return;
     }
 
-    this.route.queryParams.subscribe((query, todoItem = this) => {
-      if (item) {
-        this.router.navigate(['/edit'], {
-          state: {
-            item,
-            query,
-          },
-        });
-      }
-    });
+    if(this.inCompoundView){
+      this.itemClickEvent.emit(item);
+    }else{
+      this.route.queryParams.subscribe((query, todoItem = this) => {
+        if (item) {
+          this.router.navigate(['/edit'], {
+            state: {
+              item,
+              query,
+            },
+          });
+        }
+      }).unsubscribe();
+    }
   }
 
   // my impl unreliable and maybe incorrect.
@@ -159,11 +174,11 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
         (nextLeft >= targetLeft * 0.9 || nextRight >= targetRight * 0.9)
       )
         break;
-      
+
       // where does this 100 come from? :' and why is it needed for this to work correctly? magic number?
       if (
         !down &&
-        width <= parentLeft + 100 &&      
+        width <= parentLeft + 100 &&
         (nextLeft <= targetLeft * 1.1 || nextRight <= targetRight * 1.1)
       )
         break;
@@ -209,7 +224,7 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
       this.queryParamSubscription.unsubscribe();
     }
     console.log('Destroy', Date.now());
-    
+
   }
 
   //called on each view check

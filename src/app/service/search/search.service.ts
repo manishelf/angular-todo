@@ -51,6 +51,7 @@ export class SearchService {
     const tagStore = this.todoItemUtils.getObjectStoreRO(db, 'tags_todo_items');
     const index = tagStore.index('tagName');
     const request = index.openCursor();
+
     return new Observable<Set<TodoItem>>((observer) => {
       const includeItems: number[] = [];
       const excludeItems: number[] = [];
@@ -79,7 +80,11 @@ export class SearchService {
           let itemsPromises = [];
           for(let id of uniqueTodoIds){
             let promise = new Promise<TodoItem>(
-              (resolve)=>this.getService.getItemById(db, id, fromBin).subscribe((item)=>resolve(item))
+              (resolve, reject)=>{
+                this.getService.getItemById(db, id, fromBin).subscribe((item)=>{
+                  item?resolve(item):reject('invalid id')
+                })
+              }
             );
             itemsPromises.push(promise);
           }
@@ -88,9 +93,9 @@ export class SearchService {
               if(exact){
                 let isResult = true;
                 for(let tag of tagsFilter){
-                  let tagList = item.tags.map(tag=>tag.name);
-                  let includes = tagList.includes(tag) || tagList.includes(tag.substring(1));
-                  isResult= isResult && ((tag.startsWith('+') && includes) || (tag.startsWith('-') && !includes) || includes);
+                    let tagList = item.tags.map(tag=>tag.name);
+                    let includes = tagList.includes(tag) || tagList.includes(tag.substring(1));
+                    isResult= isResult && ((tag.startsWith('+') && includes) || (tag.startsWith('-') && !includes) || includes);
                 }
                 if(isResult)
                   uniqueTodoItems.add(item);
@@ -118,6 +123,7 @@ export class SearchService {
     fromBin: boolean,
     exact: boolean = true,
   ): Observable<TodoItem[]> {
+
 
     if ((subjectQuery === '!ALL:' || subjectQuery === '') && tagsFilter.length === 0 && searchTerms.length === 0) {
       return this.getService.getAllItems(db,fromBin)
@@ -151,7 +157,7 @@ export class SearchService {
                 const pattern = (escapedTokens.length>1)?new RegExp(`\\b(${exact?escapedTokens.join(' '):escapedTokens.join('|')})\\b`, 'i'):
                                 new RegExp(escapedTokens[0],'i');
                 let result = new Set<TodoItem>();
-                
+
                 for(let i = 0; i<items.length; i++){
                   //let matchSubject = pattern.test(items[i].subject);
                   //let matchDescription = pattern.test(items[i].description);
@@ -173,7 +179,7 @@ export class SearchService {
 
       Promise.all(promises).then((results) => {
         if(!exact){ // cumulate results
-          const combinedResults = results.reduce((acc, curr) => new Set([...acc, ...curr]), new Set()); 
+          const combinedResults = results.reduce((acc, curr) => new Set([...acc, ...curr]), new Set());
           observer.next(Array.from(combinedResults));
           observer.complete();
         }else{ //exact results

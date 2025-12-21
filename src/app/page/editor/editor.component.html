@@ -12,11 +12,10 @@
       </button>
       <button
         (click)="onAddClick()"
-        title="Save the note"
+        [title]="!todoItem.deleted?'save':'restore'+ ' the note'"
         class="bg-[#70e000]"
-        *ngIf="!todoItem.deleted"
       >
-        <mat-icon>save</mat-icon>
+        <mat-icon>{{!todoItem.deleted?'save':'restore_from_trash'}}</mat-icon>
       </button> 
       <button
         (click)="onReminderClick()"
@@ -72,7 +71,7 @@
       </div>
   </div>
     <div class="editor-input-container rounded-lg shadow-md p-4">
-      <div class="flex flex-row">
+      <div *ngIf="option != 'Editor'" class="flex flex-row">
          <input
           type="text"
           #subjectTxt
@@ -86,6 +85,8 @@
             By <br> {{owningUsersAlias}}
           </i>
       </div>
+      <textarea class="w-full editor-subject-input p-3 rounded-lg outline-0 ring-2 ring-inset focus:ring-blue-600" [rows]="(todoItem.subject.length>20 && inCompoundView)?-1:1" *ngIf="option == 'Editor'" [(ngModel)]="todoItem.subject" readonly="true">
+      </textarea>
    
     <div *ngIf="option !== 'Editor'">
       <div  id="container" class="input-area-container w-full">
@@ -102,7 +103,8 @@
       </div>
     </div>
     <div *ngIf="option !== 'Preview'" id='editor-markdown-div' (click)="onOptionClickOnDelay($event)" [innerHTML]="convertedMarkdown" 
-      class="match-braces rainbow-braces overflow-ellipsis m-2 p-3 rounded-lg ring-2 ring-inset markdown-container ring-[#8900ff]">
+      class="match-braces max-w-full rainbow-braces overflow-ellipsis m-2 p-3 rounded-lg
+      overflow-x-auto ring-2 ring-inset markdown-container ring-[#8900ff]">
     </div>
   </div>
   <footer class="w-full h-20"></footer>
