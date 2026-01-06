@@ -24,6 +24,7 @@
         #ff0000 24px,    line height start  
         #00b515 26px     line height end
     ); */
+    background-size: 100% calc(var(--global-line-height) * var(--global-font-size));
     background-position: 0px 10px;
     line-height: calc(var(--global-line-height) * var(--global-font-size));
     white-space: pre-wrap;
