@@ -16,7 +16,7 @@
         class="bg-[#70e000]"
       >
         <mat-icon>{{!todoItem.deleted?'save':'restore_from_trash'}}</mat-icon>
-      </button> 
+      </button>
       <button
         (click)="onReminderClick()"
         [title]="!todoItem.setForReminder ? 'Set reminder' : 'Clear reminder'"
@@ -68,6 +68,13 @@
         >
           <mat-icon>widgets</mat-icon>
       </button>
+      <button
+          (click)="onNavigateToCompView()"
+          title="side pannel"
+          style="background-color: #36ce96;"
+        >
+        <mat-icon style="rotate: 180deg;">vertical_split</mat-icon>
+      </button>
       </div>
   </div>
     <div class="editor-input-container rounded-lg shadow-md p-4">
@@ -81,13 +88,13 @@
           placeholder="Title"
           (keydown)="handleKeydownForSubject($event)"
           />
-          <i class="pl-1" *ngIf="!ownedByCurrentUser && owningUsersAlias" [title]="owningUsersEmail">
-            By <br> {{owningUsersAlias}}
+          <i class="pl-1" *ngIf="!ownedByCurrentUser" [title]="owningUsersEmail">
+            {{owningUsersAlias}}
           </i>
       </div>
       <textarea class="w-full editor-subject-input p-3 rounded-lg outline-0 ring-2 ring-inset focus:ring-blue-600" [rows]="(todoItem.subject.length>20 && inCompoundView)?-1:1" *ngIf="option == 'Editor'" [(ngModel)]="todoItem.subject" readonly="true">
       </textarea>
-   
+
     <div *ngIf="option !== 'Editor'">
       <div  id="container" class="input-area-container w-full">
       <div id="line-numbers" (click)="onOptionClickOnDelay($event)" #lineNumbers class="container__lines mt-2"></div>
@@ -102,7 +109,7 @@
       ></textarea>
       </div>
     </div>
-    <div *ngIf="option !== 'Preview'" id='editor-markdown-div' (click)="onOptionClickOnDelay($event)" [innerHTML]="convertedMarkdown" 
+    <div *ngIf="option !== 'Preview'" id='editor-markdown-div' (click)="onOptionClickOnDelay($event)" [innerHTML]="convertedMarkdown"
       class="match-braces max-w-full rainbow-braces overflow-ellipsis m-2 p-3 rounded-lg
       overflow-x-auto ring-2 ring-inset markdown-container ring-[#8900ff]">
     </div>

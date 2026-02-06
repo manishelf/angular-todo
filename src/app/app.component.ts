@@ -40,6 +40,7 @@ export class AppComponent implements AfterViewInit{
   focusMode = false
 
   constructor(private router : Router, private route: ActivatedRoute){
+    (window as any).angularRouter = this.router; // for markdown routing
     this.route.queryParams.subscribe((params: Params)=>{
       if(params['focus']=='y'){
         this.focusMode = true;

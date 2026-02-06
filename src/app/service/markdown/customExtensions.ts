@@ -10,18 +10,19 @@ export const collapsibleBlock: any = {
     // The 's' flag is crucial for '.' to match newlines
     const rule = /^\[collapse(-(?:b|i))?:(.+?)\]([\s\S]*?)\[\/collapse\]/;
     const match = rule.exec(src);
+    console.log(match)
     if (match) {
         const token = {
             type: 'collapsibleBlock',
             raw: match[0],
-            inline: match[1] == 'i',
+            inline: match[1] == '-i',
             header: match[2].trim(),
-            text: match[3].trim(), 
-            tokens: [], 
-        };          
+            text: match[3].trim(),
+            tokens: [],
+        };
         // as block-level Markdown. This generates tokens for paragraphs, lists, etc.
-        (this as any).lexer.blockTokens(token.text, token.tokens); 
-        
+        (this as any).lexer.blockTokens(token.text, token.tokens);
+
         return token;
     }
     return undefined;
@@ -29,7 +30,7 @@ export const collapsibleBlock: any = {
     renderer(token:any) {
     // 2. Define the custom block renderer
     const contentHtml = (this as any).parser.parse(token.tokens).trim();
-    
+
     return `<details class="option markdown-collapse-block" style="display:${token.inline?'inline-block':'block'}" >
                 <summary class="option markdown-collapse-summary">${token.header}</summary>
                 <div class="option markdown-collapse-content">
@@ -68,7 +69,7 @@ export const mediaEmbedExtension = {
         const rule = /^@(media|m)\[([^\]]+)\]\(([^)]+)\)\{(type|t):(img|image|vid|video|aud|audio|ifr|iframe|fl|file|any|[^,}]+)(?:,\s*(wth|width|w):(\d+(?:px|%)?))?(?:,\s*(ht|height|h):(\d+(?:px|%)?))?\}/;
 
         const match = rule.exec(src);
- 
+
         if (match) {
             const token = {
                 type: 'mediaEmbedExtension',
@@ -110,8 +111,8 @@ export const mediaEmbedExtension = {
                         url = ele.getAttribute('href');
                     }
                     break;
-                }   
-            }           
+                }
+            }
         }
 
         let mediaHtml = '';
@@ -121,7 +122,7 @@ export const mediaEmbedExtension = {
             case 'image':
                 mediaHtml = `<img src="${url}" alt="${title}" class="markdown-media-image" loading="lazy" />`;
                 break;
-            
+
             case 'vid':
             case 'video':
                 mediaHtml = `
@@ -141,11 +142,11 @@ export const mediaEmbedExtension = {
                     </audio>
                 `;
                 break;
-                
+
             default:
                 mediaHtml = `<iframe src=${url} class="markdown-media-any" id="iframe_${title}"></iframe>`;
         }
-        
+
         // Wrap the media element in the resizable container
         output += `<div class="markdown-media-wrapper option" style="${styleAttr}" data-type="${mediaType}" title="${title}">
                         <a href=${url} target="_blank">
@@ -157,3 +158,63 @@ export const mediaEmbedExtension = {
         return output;
     }
 };
+
+
+
+export const treeviewExtension: any = {
+  name: 'treeviewExtension',
+  level: 'inline',
+
+  start(src: any) {
+    return src.match(/\[|\!\[/)?.index;
+  },
+
+  tokenizer(src: any) {
+    const rule = /\[tree:\s*([^\]]+)\s*\]([\s\S]*?)\[\/tree\]/;
+
+    const match = rule.exec(src);
+    if (match) {
+        const token :any = {
+            type: 'treeviewExtension',
+            raw: match[0],
+            title: match[1].trim(),
+            text: match[2].trim(),
+            tokens: [],
+        };
+        // as block-level Markdown. This generates tokens for paragraphs, lists, etc.
+        (this as any).lexer.blockTokens(token.text, token.tokens);
+
+        return token;
+    }
+    return undefined;
+  },
+
+  renderer(token: any) {
+    let result = token.raw;
+    if (token.type === 'treeviewExtension') {
+      token.tokens.forEach((token: any)=>{
+        token.tokens.forEach((token: any)=>{
+          if(token.type == 'link'){
+            let relative = token.href.startsWith('./')
+
+            // Use URLSearchParams to parse the query string
+            const url = new URL(token.href, window.location.origin);
+            const path = url.pathname;
+            const params = Object.fromEntries(url.searchParams.entries());
+            const jsonString = JSON.stringify(params).replace(/"/g, '&quot;');
+
+            const clickHandler = relative
+                                        ? `onclick="event.preventDefault();
+                                                    window.angularRouter.navigate(['${path}'],{queryParams:${jsonString}});
+                                                   "`
+                                        : '';
+           let anchor = `<a href="${token.href}" ${clickHandler}>${token.text}</a>`;
+            result = result.replace(token.raw, anchor);
+          }
+        })
+      });
+    }
+    return result;
+  }
+};
+

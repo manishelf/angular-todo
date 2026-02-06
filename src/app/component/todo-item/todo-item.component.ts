@@ -37,9 +37,9 @@ export class TodoItemComponent implements OnChanges{
 
   toolTipString: string = '';
   @Input() parsedMD: SafeHtml = '';
-  
+
   borderColour: string = '';
-  
+
   @Input() fromBin: boolean = false;
   @Input() optionsDisplayed: boolean = false;
   @Input() showTags:boolean = false;
@@ -53,11 +53,11 @@ export class TodoItemComponent implements OnChanges{
 
   constructor(
     private todoService: TodoServiceService,
-    private userService: UserService, 
+    private userService: UserService,
     private markdownService: MarkdownService,
   ) {}
-  
-  ngOnChanges(): void {     
+
+  ngOnChanges(): void {
     this.borderColour = '';
 
     this.borderColour += 'type-normal ';
@@ -72,9 +72,9 @@ export class TodoItemComponent implements OnChanges{
                                         'last updated on - ' + new Date(this.item.updationTimestamp).toLocaleString();
 
     this.todoService.fromBin = this.fromBin;
-    this.updateOwningUser();    
-    
-    if(!this.minimized && !this.markdownParsed){      
+    this.updateOwningUser();
+
+    if(!this.minimized && !this.markdownParsed){
       this.parseMd();
     }
   }
@@ -86,7 +86,7 @@ export class TodoItemComponent implements OnChanges{
 
     this.owningUserAlias = this.item.owningUser.alias || this.item.owningUser.email;
     this.owningUserEmail = this.item.owningUser.email;
-    this.ownedByCurrentUser = this.userService.isThisCurrentUser(this.item.owningUser); 
+    this.ownedByCurrentUser = this.userService.isThisCurrentUser(this.item.owningUser);
   }
 
   onClickDelete(){
@@ -128,7 +128,7 @@ export class TodoItemComponent implements OnChanges{
     this.todoService.addItem(duplicateItem);
   }
 
-  onClickToggleMarkdownUnfold(){
+  async onClickToggleMarkdownUnfold(){
     if(this.minimized){
       this.unfoldIcon = 'unfold_less';
     }else {
@@ -140,8 +140,8 @@ export class TodoItemComponent implements OnChanges{
     this.minimized = !this.minimized;
   }
 
-  parseMd(){
-    this.parsedMD = this.markdownService.parseSync(this.item.description);
+  async parseMd(){
+    this.parsedMD = await this.markdownService.parse(this.item.description);
     this.markdownParsed = true;
   }
 }

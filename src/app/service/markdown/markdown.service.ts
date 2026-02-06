@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { marked } from 'marked';
-import { collapsibleBlock, mediaEmbedExtension } from './customExtensions';
+import { collapsibleBlock, mediaEmbedExtension, treeviewExtension } from './customExtensions';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 declare var Prism : any;
@@ -12,26 +12,18 @@ export class MarkdownService {
 
   constructor(private domSanitizer: DomSanitizer) {
     marked.use({
-      extensions: [collapsibleBlock, mediaEmbedExtension],
+      extensions: [collapsibleBlock, mediaEmbedExtension, treeviewExtension],
       gfm: true,
     });
    }
 
    parse(input:string):Promise<SafeHtml> {
     return new Promise((res, rej)=>{
+      this.highlightCode(input);
       marked.parse(input, {async: true}).then((result)=>{
-        this.highlightCode(result); 
         res(this.domSanitizer.bypassSecurityTrustHtml(result))
       });
-    }); 
-   }
-
-   parseSync(input : string): SafeHtml{
-      let result =  marked.parse(input).toString();
-      setTimeout(()=>{
-        this.highlightCode(result); 
-      },100);
-      return this.domSanitizer.bypassSecurityTrustHtml(result);
+    });
    }
 
    highlightCode(result: string):void{

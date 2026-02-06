@@ -35,6 +35,7 @@ import { UserService } from '../../service/user/user.service';
 import { Subscription } from 'rxjs';
 import { localUser } from '../../service/consts';
 import { MarkdownService } from '../../service/markdown/markdown.service';
+import { delay } from 'rxjs';
 
 @Component({
   selector: 'app-editor',
@@ -100,50 +101,55 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit, OnDestr
     private userService: UserService,
     private markdownService: MarkdownService
   ) {
-    if (this.router.url.startsWith('/edit')) {
-      const navigation = this.router.getCurrentNavigation();
-      this.route.queryParams.subscribe((params)=>{
-        setTimeout(()=>{ // delay as the last item may not have updated just yet
-          let id = params['id'];
-          let subject = params['subject'];
-          id = Number.parseInt(id);
-          let noData = false;
-          if(id){
-            this.todoService.getItemById(id).subscribe((item)=>{
-              this.forEdit = id;
-              this.todoItem = item;
-            });
+    const navigation = this.router.getCurrentNavigation();
+    this.route.queryParams.pipe(delay(100)).subscribe((params)=>{
+        let id = params['id'];
+        let subject = params['subject'];
+        id = Number.parseInt(id);
+        let noData = false;
 
-          }else if(subject){
-            this.todoService.searchTodos(subject).subscribe((item)=>{
-              this.forEdit = item[0].id;
-              this.todoItem = item[0];
-            });
-          }
-          else {
-            noData = true;
-          }
-
-          if (navigation?.extras?.state) {
-            let itemForUpdate = navigation.extras.state['item'] as TodoItem;
-            this.queryParams = navigation.extras.state['query'];
-            this.forEdit = itemForUpdate.id;
-            this.todoItem = itemForUpdate;
-            this.todoItem.description = this.todoItem.description.replace(
-              /<br>/g,
-              '\n'
-            );
-            this.customFormSchema = this.todoItem.userDefined?.formControlSchema;
-            this.customFormData = this.todoItem.userDefined?.data;
+        if(id){
+          this.todoService.getItemById(id).subscribe((item)=>{
+            this.forEdit = id;
+            this.todoItem = item;
+            this.onEventForResize();
+            this.updateOwningUser();
             noData = false;
-          }
+          });
+        }else if(subject){
+          this.todoService.searchTodos(subject).subscribe((item)=>{
+            this.forEdit = item[0].id;
+            this.todoItem = item[0];
+            this.onEventForResize();
+            this.updateOwningUser();
+            noData = false;
+          });
+        }
+        else {
+          noData = true;
+        }
 
-          if(noData){
-            this.router.navigate(['/']);
-          }
-        },100);
-      });
-    }
+        if (navigation?.extras?.state) {
+          let itemForUpdate = navigation.extras.state['item'] as TodoItem;
+          this.queryParams = navigation.extras.state['query'];
+          this.forEdit = itemForUpdate.id;
+          this.todoItem = itemForUpdate;
+          this.compoundViewActiveItem = itemForUpdate;
+          this.todoItem.description = this.todoItem.description.replace(
+            /<br>/g,
+            '\n'
+          );
+          this.customFormSchema = this.todoItem.userDefined?.formControlSchema;
+          this.customFormData = this.todoItem.userDefined?.data;
+          this.onEventForResize();
+          this.updateOwningUser();
+          noData = false;
+        }
+
+        if(noData && !this.router.url.startsWith('/create') && !this.router.url.startsWith('/comp')){
+          this.router.navigate(['/']);
+        }
+    });
 
     this.userSubscription = this.userService.loggedInUser$.subscribe((user)=>{
       if(this.todoItem.owningUser == localUser && user != localUser)
@@ -158,9 +164,8 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit, OnDestr
       if(!this.inCompoundView){
         this.subjectTxt.nativeElement.focus();
       }
-      this.onEventForResize();
-      this.updateOwningUser();
     },100);
+    requestAnimationFrame(()=>{this.onEventForResize();});
     this.convertedMarkdown = '';
     this.navigateBackOnSave = true;
     if(this.inCompoundView && this.compoundViewActiveItem){
@@ -184,7 +189,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit, OnDestr
     this.owningUsersAlias = this.todoItem.owningUser.alias || this.todoItem.owningUser.email;
     this.owningUsersEmail = this.todoItem.owningUser.email;
 
-    this.ownedByCurrentUser = this.userService.isThisCurrentUser(this.todoItem.owningUser);
+    this.ownedByCurrentUser = this.userService.isThisCurrentUser(this.todoItem.owningUser) && this.owningUsersAlias != '';
   }
 
   ngAfterViewChecked(): void {
@@ -350,6 +355,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit, OnDestr
     } else if(event.key === ']' && event.ctrlKey) {
       this.navigateToParent();
     }
+
   }
 
   handleKeydownForSubject(event: KeyboardEvent){
@@ -368,8 +374,13 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit, OnDestr
     childItem.tags.push({name});
     childItem.uuid = '';
 
-    this.navigateBackOnSave=false;
+    let toggleNavOnSave = this.navigateBackOnSave
+    if(toggleNavOnSave)
+      this.navigateBackOnSave = false;
     this.onAddClick();
+    if(toggleNavOnSave)
+      this.navigateBackOnSave = true;
+
     this.todoService.addItem(childItem).then((id)=>{
       this.itemSavedEvent.emit(true);
       if(this.inCompoundView){
@@ -390,11 +401,14 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit, OnDestr
       if(this.inCompoundView){
         this.todoService.searchTodos(parentSubjectMatch[1]).subscribe((itemList: TodoItem[])=>{
           if(itemList && itemList.length > 0){
+            this.forEdit = itemList[0].id;
             this.todoItem = itemList[0];
           }
         });
       }else if(this.navigateBackOnSave){
-        this.router.navigate(['./edit/parent'],{queryParams:{subject: parentSubjectMatch[1]}});
+        setTimeout(()=>{
+          this.router.navigate(['./edit/parent'],{queryParams:{subject: parentSubjectMatch[1]}});
+        },1000)
       }
     }
     else if(this.navigateBackOnSave){
@@ -402,55 +416,101 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit, OnDestr
     }
     requestAnimationFrame(()=>{
       this.descriptionArea?.nativeElement.focus();
-      this.onEventForResize();
     });
   }
 
-  createChildTreeview(parentSubject: string, hierarchy: Map<string, {item:TodoItem, children: Set<TodoItem>}>): string{
-    let tree = '\n```treeview\n';
-    tree += parentSubject+'/\n';
-    let visited:string[] = [];
-    for(let entry of hierarchy!.entries()){
-      let i = 1;
-      for(let child of entry[1].children){
+  createChildTreeview(parentSubject: string, hierarchy: {item:TodoItem, children: Set<TodoItem>}[]): string{
+
+/*
+    let tree = '\n[tree: ';
+    tree += parentSubject+' ]\n';
+
+    let level = 0;
+    let visited = new Set();
+    for(let entry of hierarchy){
+      visited.add(entry.item.subject)
+      let i = 0 ;
+      for(let child of entry.children){
+        i++;
+        if(visited.has(child.subject)){
+          continue;
+        }
+
         let icon = '├──';
-        if(i == entry[1].children.size){
+        if(i == entry.children.size){
           icon = '└──';
         }
-        if(!visited.includes(child.subject)){
-          tree +=icon+' ['+child.subject+'](./edit?id='+child.id+')\n';
-        }
-        visited.push(child.subject);
-        i++;
+
+        let parentSubject = child.description?.match(/^### \[child of (.+?)\]/);
+        if(parentSubject && !visited.has(parentSubject[1])){
+          level+=1;
+        }else level=0;
+
+        tree += '\t'.repeat((level+1)*2) + icon+' ['+child.subject+'](./edit?id='+child.id+')\n';
       }
     }
-    tree+='\n```\n';
-    return tree;
+
+    tree+='[/tree]\n';
+*/
+
+    const lines: string[] = [];
+    const visited = new Set<string>();
+
+    lines.push('');
+    lines.push(`[tree: ${parentSubject} ]`);
+
+    for (const entry of hierarchy) {
+      visited.add(entry.item.subject);
+
+      const children = Array.from(entry.children);
+      children.forEach((child, index) => {
+        if (visited.has(child.subject)) return;
+
+        const isLast = index === children.length - 1;
+        const icon = isLast ? '└──' : '├──';
+
+        // determine depth from description
+        const parentMatch = child.description?.match(/^### \[child of (.+?)\]/);
+        const level = parentMatch && !visited.has(parentMatch[1]) ? 1 : 0;
+
+        lines.push(
+          `${'\t'.repeat((level + 1) * 2)}${icon} [${child.subject}](./edit?id=${child.id})`
+        );
+
+        visited.add(child.subject);
+      });
+    }
+
+    lines.push('[/tree]');
+    lines.push('');
+
+    return lines.join('\n');
+
   }
 
   updateParentDescForTree(){
     let parentSubjectMatch = this.todoItem.description.match(/^### \[child of (.+?)\]/);
     if(parentSubjectMatch){
       let replaceDesc = (parent:TodoItem, tree:string)=>{
-          let existingTree = parent.description.match(new RegExp('\n```treeview\n'+parent.subject+'.*\n```\n','s'));
+        let existingTree = parent.description.match(
+                           new RegExp(`\\n\\[tree: ${parentSubjectMatch[1]} \\][\\s\\S]*?\\[\\/tree\\]\\n`, 's'));
           if(existingTree){
-            parent.description = parent.description.replace(new RegExp('\n```treeview\n'+parent.subject+'.*\n```\n','s'), tree);
+            parent.description = parent.description.replace(new RegExp(`\\n\\[tree: ${parentSubjectMatch[1]} \\][\\s\\S]*?\\[\\/tree\\]\\n`,'s'), tree);
           }else{
             parent.description += tree;
           }
       }
+      let hierarchy = [];
       this.todoService.searchTodos(parentSubjectMatch[1]).subscribe((res)=>{
         let parent = res[0];
-        let hierarchy = new Map();
         this.todoService.searchTodos('', ['child of '+parentSubjectMatch[1]], [], true).subscribe((children)=>{
-          hierarchy?.set(this.todoItem.subject, {item: {id:this.forEdit, ...this.todoItem}, children: new Set(children)})
+          hierarchy.push({item: parent, children: new Set(children)})
           let tree = this.createChildTreeview(parentSubjectMatch[1], hierarchy);
           replaceDesc(parent, tree);
           this.todoService.updateItem(parent);
         });
       });
     }
-
   }
 
   onEventForResize(): void {
@@ -483,6 +543,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit, OnDestr
         `[link_${new Date().getSeconds()}](${text})` +
       this.todoItem.description.substring(cursorPosition);
       event.preventDefault();
+      this.onEventForResize();
     }
     interface data {
       file: File;
@@ -555,10 +616,11 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit, OnDestr
             this.todoItem.description.substring(0, cursorPosition) +
             fieldRef +
             this.todoItem.description.substring(cursorPosition);
+
+          this.onEventForResize();
         }
       };
     });
-    requestAnimationFrame(()=>this.onEventForResize());
   }
 
 
@@ -576,6 +638,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit, OnDestr
       setTimeout(()=>{
         const newScrollTop = editorContainer.scrollHeight * scrollPercentage;
         editorContainer.scrollTop = newScrollTop;
+        this.onEventForResize();
       },100); // needs to be timeout instead of requAnimFrame as ther is timing issue otherwise
     });
   }
@@ -590,12 +653,9 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit, OnDestr
       this.markdownService.parse(this.todoItem.description).then((markdown)=>{
         this.convertedMarkdown = markdown;
       });
-    }else{
-      requestAnimationFrame(()=>{
-        this.onEventForResize();
-      });
+    }else {
+      this.onEventForResize();
     }
-
     this.option = this.option === 'Preview' ? 'Editor' : 'Preview';
   }
 
@@ -640,7 +700,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit, OnDestr
     if (this.forEdit !== -1) {
       this.todoService.updateItem({ id: this.forEdit, ...this.todoItem });
     } else {
-      this.todoService.addItem(this.todoItem);
+      this.todoService.addItem(this.todoItem).then(id=>{this.forEdit = id;});
     }
 
 
@@ -809,7 +869,6 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit, OnDestr
       }
     }
 
-    requestAnimationFrame(this.onEventForResize.bind(this));
     this.schemaEditingInProgress = true;
   }
 
@@ -820,6 +879,15 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit, OnDestr
   onCompletionClick() {
     this.todoItem.completionStatus = !this.todoItem.completionStatus;
   }
+
+  onNavigateToCompView(){
+    if(!this.router.url.endsWith('/comp')){
+     this.navigateBackOnSave = false;
+     this.onAddClick();
+     this.router.navigate(['/comp'], {});
+    }
+  }
+
 
   ngOnDestroy(): void {
     if(this.userSubscription){
