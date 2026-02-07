@@ -621,6 +621,7 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit, OnDestr
         }
       };
     });
+    this.onEventForResize();
   }
 
 
@@ -895,3 +896,4 @@ export class EditorComponent implements AfterViewChecked, AfterViewInit, OnDestr
     }
   }
 }
+
